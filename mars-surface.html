@@ -3,45 +3,36 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#32170f">
+<meta name="theme-color" content="#2b110c">
 <title>Mars Arrival & Surface Explorer</title>
 
 <style>
 :root{
-  --bg:#06101b;
+  --space:#03070d;
   --panel:#102235;
-  --line:#36536d;
+  --panel2:#0b1826;
+  --line:#35546e;
   --text:#f4f8fb;
-  --muted:#aec4d5;
+  --muted:#abc1d2;
   --yellow:#ffd35a;
-  --mars:#a94d31;
+  --blue:#4aaaff;
+  --mars:#ad5032;
+  --darkmars:#5c251c;
 }
 
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
-html{
-  scroll-behavior:smooth;
-}
+html{scroll-behavior:smooth}
 
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
   color:var(--text);
   background:
-    radial-gradient(
-      circle at 50% 0,
-      #163653 0,
-      #091725 38%,
-      #050b13 78%
-    );
+    radial-gradient(circle at 50% 0,#16324d 0,#081521 38%,#03070d 78%);
 }
 
-button{
-  font:inherit;
-  cursor:pointer;
-}
+button{font:inherit;cursor:pointer}
 
 button:focus-visible{
   outline:3px solid var(--yellow);
@@ -53,13 +44,8 @@ header{
   padding:25px 18px;
   text-align:center;
   background:
-    linear-gradient(
-      135deg,
-      #2b110c,
-      #6c2a1c 54%,
-      #ad4c2e
-    );
-  border-bottom:1px solid #74422f;
+    linear-gradient(135deg,#2a100b,#6d291b 54%,#aa4c2e);
+  border-bottom:1px solid #73412e;
 }
 
 header h1{
@@ -68,10 +54,10 @@ header h1{
 }
 
 header p{
-  max-width:760px;
+  max-width:800px;
   margin:8px auto 0;
-  color:#ffe2d2;
-  line-height:1.45;
+  color:#ffe3d3;
+  line-height:1.5;
 }
 
 .brand{
@@ -79,22 +65,22 @@ header p{
   right:16px;
   top:13px;
   padding:8px 10px;
-  border:1px solid #ffffff47;
+  border:1px solid rgba(255,255,255,.25);
   border-radius:11px;
-  background:#ffffff14;
+  background:rgba(255,255,255,.08);
   font-weight:900;
   letter-spacing:.12em;
 }
 
 .brand small{
   display:block;
-  color:#f0c5b5;
+  color:#efc5b5;
   font-size:9px;
   letter-spacing:.04em;
 }
 
 main{
-  width:min(1150px,100%);
+  width:min(1160px,100%);
   margin:auto;
   padding:18px;
 }
@@ -104,13 +90,8 @@ main{
   padding:17px;
   border:1px solid var(--line);
   border-radius:18px;
-  background:
-    linear-gradient(
-      145deg,
-      #14283c,
-      #081521
-    );
-  box-shadow:0 12px 30px #0003;
+  background:linear-gradient(145deg,#14283c,#081521);
+  box-shadow:0 12px 30px rgba(0,0,0,.18);
 }
 
 h2{
@@ -120,9 +101,7 @@ h2{
   font-size:23px;
 }
 
-h3{
-  margin:0 0 8px;
-}
+h3{margin:0 0 8px}
 
 .lead{
   color:var(--muted);
@@ -149,16 +128,16 @@ h3{
   font-weight:800;
 }
 
-.active,
-.primary{
+button.active,
+button.primary{
   color:#171004!important;
   background:var(--yellow)!important;
   border-color:#e2b631!important;
 }
 
-.mars-btn{
+button.mars-btn{
+  border-color:#96543d!important;
   background:#633022!important;
-  border-color:#98563d!important;
 }
 
 .status{
@@ -173,16 +152,13 @@ h3{
 
 .grid-two{
   display:grid;
-  grid-template-columns:
-    minmax(0,1.25fr)
-    minmax(290px,.75fr);
+  grid-template-columns:minmax(0,1.25fr) minmax(290px,.75fr);
   gap:15px;
 }
 
 .grid-three{
   display:grid;
-  grid-template-columns:
-    repeat(3,minmax(0,1fr));
+  grid-template-columns:repeat(3,minmax(0,1fr));
   gap:11px;
 }
 
@@ -197,9 +173,7 @@ h3{
   touch-action:pan-y;
 }
 
-.viewer:active{
-  cursor:grabbing;
-}
+.viewer:active{cursor:grabbing}
 
 #surfaceCanvas{
   position:absolute;
@@ -218,21 +192,15 @@ h3{
   position:absolute;
   top:13px;
   padding:7px 10px;
-  border:1px solid #ffffff40;
+  border:1px solid rgba(255,255,255,.25);
   border-radius:9px;
-  background:#04090eaa;
+  background:rgba(4,9,14,.68);
   font-size:12px;
   font-weight:900;
 }
 
-.left{
-  left:13px;
-}
-
-.right{
-  right:13px;
-  text-align:center;
-}
+.left{left:13px}
+.right{right:13px;text-align:center}
 
 .reticle{
   position:absolute;
@@ -241,7 +209,7 @@ h3{
   width:58px;
   height:58px;
   transform:translate(-50%,-50%);
-  border:1px solid #ffffff59;
+  border:1px solid rgba(255,255,255,.35);
   border-radius:50%;
 }
 
@@ -249,7 +217,7 @@ h3{
 .reticle:after{
   content:"";
   position:absolute;
-  background:#ffffff66;
+  background:rgba(255,255,255,.4);
 }
 
 .reticle:before{
@@ -272,12 +240,7 @@ h3{
   right:0;
   bottom:0;
   padding:32px 15px 13px;
-  background:
-    linear-gradient(
-      180deg,
-      transparent,
-      #05080be8
-    );
+  background:linear-gradient(180deg,transparent,rgba(5,8,11,.9));
 }
 
 .hud-bottom strong{
@@ -292,14 +255,11 @@ h3{
 
 .readouts{
   display:grid;
-  grid-template-columns:
-    repeat(2,minmax(0,1fr));
+  grid-template-columns:repeat(2,minmax(0,1fr));
   gap:10px;
 }
 
-.readout,
-.card,
-.info{
+.readout,.card,.info{
   padding:12px;
   border:1px solid #36546c;
   border-radius:12px;
@@ -315,9 +275,7 @@ h3{
   text-transform:uppercase;
 }
 
-.readout strong{
-  font-size:17px;
-}
+.readout strong{font-size:17px}
 
 .card strong{
   display:block;
@@ -325,23 +283,16 @@ h3{
   font-size:17px;
 }
 
-.card p,
-.info{
+.card p,.info{
   color:#bdd2e1;
   line-height:1.5;
 }
 
-.card p{
-  margin:0;
-}
+.card p{margin:0}
 
-.info{
-  margin-top:12px;
-}
+.info{margin-top:12px}
 
-.info strong{
-  color:#ffe0a5;
-}
+.info strong{color:#ffe0a5}
 
 .warning{
   margin-top:12px;
@@ -353,8 +304,7 @@ h3{
   line-height:1.48;
 }
 
-.tech,
-.advanced{
+.tech,.advanced{
   padding:14px;
   border-radius:12px;
   line-height:1.5;
@@ -370,16 +320,9 @@ h3{
   border:1px solid #68558a;
 }
 
-footer{
-  padding:24px 16px;
-  text-align:center;
-  color:#9eb7c9;
-}
-
-
-/* ===========================
-   MARS ARRIVAL
-=========================== */
+/* =====================================================
+   REALISTIC ARRIVAL SIMULATION
+===================================================== */
 
 .arrival{
   position:fixed;
@@ -390,13 +333,9 @@ footer{
   justify-content:center;
   padding:16px;
   background:
-    linear-gradient(
-      180deg,
-      #02060d,
-      #08111c 58%,
-      #190b08
-    );
-  transition:.6s;
+    radial-gradient(circle at 50% 8%,rgba(96,46,31,.24),transparent 34%),
+    linear-gradient(180deg,#02060d,#07111b 55%,#160a08);
+  transition:opacity .65s ease,visibility .65s ease;
 }
 
 .arrival.hidden{
@@ -406,18 +345,13 @@ footer{
 }
 
 .arrival-card{
-  width:min(1060px,100%);
-  max-height:95vh;
+  width:min(1120px,100%);
+  max-height:96vh;
   overflow:auto;
   border:1px solid #704630;
   border-radius:21px;
-  background:
-    linear-gradient(
-      145deg,
-      #102033,
-      #160e0c
-    );
-  box-shadow:0 28px 75px #0009;
+  background:linear-gradient(145deg,#0f2031,#150d0b);
+  box-shadow:0 28px 75px rgba(0,0,0,.58);
 }
 
 .arrival-head{
@@ -436,7 +370,7 @@ footer{
 
 .arrival-view{
   position:relative;
-  min-height:500px;
+  min-height:540px;
   overflow:hidden;
   border-top:1px solid #4f3c36;
   border-bottom:1px solid #4f3c36;
@@ -468,9 +402,10 @@ footer{
 
 .arrival-chip{
   padding:7px 10px;
-  border:1px solid #ffffff38;
+  border:1px solid rgba(255,255,255,.22);
   border-radius:9px;
-  background:#03080eaf;
+  background:rgba(3,8,14,.72);
+  backdrop-filter:blur(4px);
   font-size:12px;
   font-weight:900;
 }
@@ -482,7 +417,7 @@ footer{
   width:72px;
   height:72px;
   transform:translate(-50%,-50%);
-  border:1px solid #c1e5ff47;
+  border:1px solid rgba(193,229,255,.28);
   border-radius:50%;
 }
 
@@ -490,7 +425,7 @@ footer{
 .arrival-cross:after{
   content:"";
   position:absolute;
-  background:#c1e5ff59;
+  background:rgba(193,229,255,.35);
 }
 
 .arrival-cross:before{
@@ -507,55 +442,78 @@ footer{
   width:1px;
 }
 
+.flight-tape{
+  position:absolute;
+  left:13px;
+  top:58px;
+  padding:7px 9px;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:8px;
+  background:rgba(3,8,14,.67);
+  color:#9ec1d9;
+  font-size:11px;
+  font-weight:800;
+  line-height:1.55;
+}
+
+.flight-tape b{color:#fff}
+
 .arrival-bottom{
   position:absolute;
   left:13px;
   right:13px;
   bottom:13px;
   display:grid;
-  grid-template-columns:
-    minmax(0,1fr)
-    auto;
+  grid-template-columns:minmax(0,1fr) minmax(270px,.38fr);
   gap:12px;
   align-items:end;
 }
 
-.stage,
-.data{
+.stage,.data{
   padding:12px 13px;
-  border:1px solid #ffffff2e;
+  border:1px solid rgba(255,255,255,.18);
   border-radius:12px;
-  background:#05090ebd;
+  background:rgba(5,9,14,.76);
+  backdrop-filter:blur(6px);
 }
 
 .stage strong{
   display:block;
   margin-bottom:4px;
   color:#ffe1ce;
-  font-size:18px;
+  font-size:19px;
 }
 
 .stage span{
   color:#c7d6e1;
   font-size:13px;
-  line-height:1.4;
+  line-height:1.42;
 }
 
-.data{
-  min-width:185px;
+.data-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:5px 13px;
 }
 
-.data div{
-  display:flex;
-  justify-content:space-between;
-  gap:16px;
-  margin:3px 0;
-  color:#a5bac9;
-  font-size:12px;
+.data-item{
+  min-width:0;
 }
 
-.data strong{
+.data-item span{
+  display:block;
+  color:#94acbd;
+  font-size:10px;
+  font-weight:800;
+  text-transform:uppercase;
+}
+
+.data-item strong{
+  display:block;
+  margin-top:2px;
+  overflow-wrap:anywhere;
   color:#fff;
+  font-size:14px;
 }
 
 .arrival-foot{
@@ -573,13 +531,7 @@ footer{
 .bar div{
   width:0;
   height:100%;
-  background:
-    linear-gradient(
-      90deg,
-      #3da5ff,
-      #ffd35a,
-      #df754b
-    );
+  background:linear-gradient(90deg,#3da5ff,#ffd35a,#e56a3c);
 }
 
 .arrival-controls{
@@ -619,7 +571,7 @@ footer{
   border:1px solid #8e6a32;
   border-radius:13px;
   color:#fff1c3;
-  background:#2a1d09f2;
+  background:rgba(42,29,9,.95);
   text-align:center;
   font-weight:900;
   transition:.35s;
@@ -630,22 +582,23 @@ footer{
   transform:translate(-50%,0);
 }
 
+footer{
+  padding:24px 16px;
+  text-align:center;
+  color:#9eb7c9;
+}
+
 @media(max-width:840px){
+  .grid-two{grid-template-columns:1fr}
+  .viewer{min-height:440px}
+}
 
-  .grid-two{
-    grid-template-columns:1fr;
-  }
-
-  .viewer{
-    min-height:440px;
-  }
+@media(max-width:760px){
+  .arrival-bottom{grid-template-columns:1fr}
 }
 
 @media(max-width:700px){
-
-  main{
-    padding:11px;
-  }
+  main{padding:11px}
 
   .brand{
     position:static;
@@ -653,13 +606,9 @@ footer{
     margin-bottom:10px;
   }
 
-  .grid-three{
-    grid-template-columns:1fr;
-  }
+  .grid-three{grid-template-columns:1fr}
 
-  .arrival{
-    padding:0;
-  }
+  .arrival{padding:0}
 
   .arrival-card{
     min-height:100vh;
@@ -668,28 +617,17 @@ footer{
     border-radius:0;
   }
 
-  .arrival-view{
-    min-height:59vh;
-  }
+  .arrival-view{min-height:61vh}
 
-  .arrival-bottom{
-    grid-template-columns:1fr;
-  }
+  .flight-tape{display:none}
 
-  .data{
-    min-width:0;
-  }
+  .arrival-foot{padding:12px}
 }
 
 @media(max-width:470px){
-
-  .viewer{
-    min-height:390px;
-  }
-
-  .readouts{
-    grid-template-columns:1fr;
-  }
+  .viewer{min-height:390px}
+  .readouts{grid-template-columns:1fr}
+  .data-grid{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
@@ -697,3096 +635,1387 @@ footer{
 <body>
 
 <header>
+  <div class="brand">
+    DONCO
+    <small>UNIVERSE EXPLORER</small>
+  </div>
 
-<div class="brand">
-DONCO
-<small>UNIVERSE EXPLORER</small>
-</div>
+  <h1>Mars Arrival & Surface Explorer</h1>
 
-<h1>Mars Arrival & Surface Explorer</h1>
-
-<p>
-Continue the Earth-to-Mars journey through approach,
-atmospheric entry, powered descent, touchdown,
-and an interactive view from the Martian surface.
-</p>
-
+  <p>
+    Continue the Earth-to-Mars journey through a physics-inspired Mars entry,
+    descent, touchdown, and an interactive Martian surface experience.
+  </p>
 </header>
 
+<div id="arrival" class="arrival">
 
-<div
-  id="arrival"
-  class="arrival">
+  <div class="arrival-card">
 
-<div class="arrival-card">
+    <div class="arrival-head">
+      <h2>Mars Entry, Descent & Landing</h2>
 
-<div class="arrival-head">
+      <p>
+        This sequence uses realistic-looking Mars arrival phases rather than a
+        simple zoom: orbital approach, atmospheric entry, peak heating,
+        supersonic braking, powered descent, and touchdown.
+      </p>
+    </div>
 
-<h2>Mars Arrival</h2>
+    <div id="arrivalView" class="arrival-view">
 
-<p>
-The cruise phase is over. Watch Mars grow in the window,
-enter the thin atmosphere, descend toward the landing area,
-and transition directly to the surface.
-</p>
+      <canvas id="arrivalCanvas"></canvas>
 
-</div>
+      <div class="arrival-hud">
 
+        <div class="arrival-top">
+          <div class="arrival-chip">FORWARD LANDING CAMERA</div>
+          <div id="arrivalPct" class="arrival-chip">0%</div>
+        </div>
 
-<div
-  id="arrivalView"
-  class="arrival-view">
+        <div class="arrival-cross"></div>
 
-<canvas id="arrivalCanvas"></canvas>
+        <div class="flight-tape">
+          ENTRY GUIDANCE<br>
+          TARGET: <b>JEZERO REGION</b><br>
+          ATTITUDE: <b id="attitude">STABLE</b><br>
+          HEAT SHIELD: <b id="shieldState">NOMINAL</b>
+        </div>
 
-<div class="arrival-hud">
+        <div class="arrival-bottom">
 
-<div class="arrival-top">
+          <div class="stage">
+            <strong id="stageTitle">Orbital Approach</strong>
+            <span id="stageText">
+              Mars fills more of the forward view as the vehicle lines up for
+              entry into the upper atmosphere.
+            </span>
+          </div>
 
-<div class="arrival-chip">
-FORWARD LANDING VIEW
-</div>
+          <div class="data">
+            <div class="data-grid">
 
-<div
-  id="arrivalPct"
-  class="arrival-chip">
-0%
-</div>
+              <div class="data-item">
+                <span>Altitude</span>
+                <strong id="altitude">10,000 km</strong>
+              </div>
 
-</div>
+              <div class="data-item">
+                <span>Speed</span>
+                <strong id="speed">4.2 km/s</strong>
+              </div>
 
+              <div class="data-item">
+                <span>Vertical Speed</span>
+                <strong id="verticalSpeed">−0.2 km/s</strong>
+              </div>
 
-<div class="arrival-cross"></div>
+              <div class="data-item">
+                <span>G Load</span>
+                <strong id="gLoad">0.1 g</strong>
+              </div>
 
+              <div class="data-item">
+                <span>Heating</span>
+                <strong id="heating">Low</strong>
+              </div>
 
-<div class="arrival-bottom">
+              <div class="data-item">
+                <span>Phase</span>
+                <strong id="phase">Approach</strong>
+              </div>
 
-<div class="stage">
+            </div>
+          </div>
 
-<strong id="stageTitle">
-Mars Approach
-</strong>
+        </div>
 
-<span id="stageText">
-Mars is growing in the forward view as the spacecraft
-lines up for atmospheric entry.
-</span>
+      </div>
 
-</div>
+    </div>
 
+    <div class="arrival-foot">
 
-<div class="data">
+      <div class="bar">
+        <div id="arrivalBar"></div>
+      </div>
 
-<div>
-<span>Altitude</span>
-<strong id="altitude">
-10,000 km
-</strong>
-</div>
+      <div class="arrival-controls">
+        <button id="pauseArrival">Pause</button>
+        <button id="restartArrival">Restart Arrival</button>
+        <button id="skipArrival" class="primary">Skip to Surface</button>
+      </div>
 
-<div>
-<span>Speed</span>
-<strong id="speed">
-4.0 km/s
-</strong>
-</div>
+      <div class="arrival-note">
+        Physics-inspired educational simulation. The exact vehicle and landing
+        system are generic, so the sequence should be read as representative of
+        Mars entry and powered descent rather than one specific mission design.
+      </div>
 
-<div>
-<span>Phase</span>
-<strong id="phase">
-Approach
-</strong>
-</div>
+    </div>
 
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="arrival-foot">
-
-<div class="bar">
-<div id="arrivalBar"></div>
-</div>
-
-
-<div class="arrival-controls">
-
-<button id="pauseArrival">
-Pause
-</button>
-
-<button id="restartArrival">
-Restart Arrival
-</button>
-
-<button
-  id="skipArrival"
-  class="primary">
-Skip to Surface
-</button>
+  </div>
 
 </div>
 
-
-<div class="arrival-note">
-
-Educational visualization. The values and landing sequence
-are simplified examples, not a prediction of one specific
-future crewed Mars vehicle.
-
+<div id="touchdown" class="touchdown">
+  TOUCHDOWN — Welcome to Mars
 </div>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div
-  id="touchdown"
-  class="touchdown">
-
-TOUCHDOWN — Welcome to Mars
-
-</div>
-
 
 <main>
 
+<section class="panel">
+
+  <h2>Choose Your Detail Level</h2>
+
+  <p class="lead">
+    Beginner keeps the experience simple. Technical adds entry and planetary
+    science. Advanced adds deeper atmospheric, geological, and mission details.
+  </p>
+
+  <div class="level-buttons">
+    <button class="active" data-level="1">Beginner</button>
+    <button data-level="2">Technical</button>
+    <button data-level="3">Advanced</button>
+  </div>
+
+  <div id="levelStatus" class="status">
+    Beginner — explore the surface and the most important facts first.
+  </div>
+
+</section>
 
 <section class="panel">
 
-<h2>Choose Your Detail Level</h2>
+  <div class="grid-two">
 
-<p class="lead">
+    <div>
 
-Beginner keeps the experience simple.
-Technical adds planetary science.
-Advanced adds deeper atmospheric,
-geological, and mission details.
+      <h2>Stand on Mars</h2>
 
-</p>
+      <p class="lead">
+        After touchdown, drag the landscape left or right with your mouse or
+        finger, or use the controls below.
+      </p>
 
+      <div id="viewer" class="viewer">
 
-<div class="level-buttons">
+        <canvas id="surfaceCanvas"></canvas>
 
-<button
-  class="active"
-  data-level="1">
-Beginner
-</button>
+        <div class="hud">
 
-<button data-level="2">
-Technical
-</button>
+          <div class="chip left">
+            MARS SURFACE VIEW
+          </div>
 
-<button data-level="3">
-Advanced
-</button>
+          <div class="chip right">
+            <small style="color:#a9c1d3">LOOKING</small><br>
+            <span id="heading">NORTH · 0°</span>
+          </div>
 
-</div>
+          <div class="reticle"></div>
 
+          <div class="hud-bottom">
+            <strong id="locationName">Jezero Crater Region</strong>
+            <span id="locationSubtitle">
+              Ancient lake environment explored by Perseverance
+            </span>
+          </div>
 
-<div
-  id="levelStatus"
-  class="status">
+        </div>
 
-Beginner — explore the surface and the most important facts first.
+      </div>
 
-</div>
+      <div class="controls" style="margin-top:11px">
+        <button id="lookLeft">◀ Look Left</button>
+        <button id="centerView" class="primary">Center View</button>
+        <button id="lookRight">Look Right ▶</button>
+        <button id="walk">🚶 Move Forward</button>
+        <button id="replay" class="mars-btn">🛬 Replay Landing</button>
+      </div>
+
+    </div>
+
+    <div>
+
+      <h3>Surface Conditions</h3>
+
+      <div class="readouts">
+
+        <div class="readout">
+          <span>Gravity</span>
+          <strong>0.38 g</strong>
+        </div>
+
+        <div class="readout">
+          <span>Atmosphere</span>
+          <strong>Mostly CO₂</strong>
+        </div>
+
+        <div class="readout">
+          <span>Surface Pressure</span>
+          <strong>~0.6% of Earth</strong>
+        </div>
+
+        <div class="readout">
+          <span>Day Length</span>
+          <strong>24 h 39 m</strong>
+        </div>
+
+        <div class="readout">
+          <span>Average Temperature</span>
+          <strong>About −63°C</strong>
+        </div>
+
+        <div class="readout">
+          <span>Breathable?</span>
+          <strong>No</strong>
+        </div>
+
+      </div>
+
+      <div id="siteInfo" class="info">
+        <strong>Jezero Crater</strong><br>
+        Jezero contains an ancient river delta and evidence that a lake existed
+        here billions of years ago. NASA's Perseverance rover landed here in
+        2021 to study geology and ancient habitable environments.
+      </div>
+
+      <div class="warning">
+        The surface landscape is generated for education. It is not a
+        photographic reconstruction or a navigational map.
+      </div>
+
+    </div>
+
+  </div>
 
 </section>
-
 
 <section class="panel">
 
-<div class="grid-two">
+  <h2>Visit Famous Locations</h2>
 
-<div>
-
-<h2>Stand on Mars</h2>
-
-<p class="lead">
-
-You have completed the arrival.
-Drag the landscape left or right with your mouse or finger,
-or use the controls below.
-
-</p>
-
-
-<div
-  id="viewer"
-  class="viewer">
-
-<canvas id="surfaceCanvas"></canvas>
-
-
-<div class="hud">
-
-<div class="chip left">
-MARS SURFACE VIEW
-</div>
-
-
-<div class="chip right">
-
-<small style="color:#a9c1d3">
-LOOKING
-</small>
-
-<br>
-
-<span id="heading">
-NORTH · 0°
-</span>
-
-</div>
-
-
-<div class="reticle"></div>
-
-
-<div class="hud-bottom">
-
-<strong id="locationName">
-Jezero Crater Region
-</strong>
-
-<span id="locationSubtitle">
-
-Ancient lake environment explored by Perseverance
-
-</span>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div
-  class="controls"
-  style="margin-top:11px">
-
-<button id="lookLeft">
-◀ Look Left
-</button>
-
-<button
-  id="centerView"
-  class="primary">
-Center View
-</button>
-
-<button id="lookRight">
-Look Right ▶
-</button>
-
-<button id="walk">
-🚶 Move Forward
-</button>
-
-<button
-  id="replay"
-  class="mars-btn">
-🛬 Replay Landing
-</button>
-
-</div>
-
-</div>
-
-
-<div>
-
-<h3>Surface Conditions</h3>
-
-
-<div class="readouts">
-
-<div class="readout">
-<span>Gravity</span>
-<strong>0.38 g</strong>
-</div>
-
-<div class="readout">
-<span>Atmosphere</span>
-<strong>Mostly CO₂</strong>
-</div>
-
-<div class="readout">
-<span>Surface Pressure</span>
-<strong>~0.6% of Earth</strong>
-</div>
-
-<div class="readout">
-<span>Day Length</span>
-<strong>24 h 39 m</strong>
-</div>
-
-<div class="readout">
-<span>Average Temperature</span>
-<strong>About −63°C</strong>
-</div>
-
-<div class="readout">
-<span>Breathable?</span>
-<strong>No</strong>
-</div>
-
-</div>
-
-
-<div
-  id="siteInfo"
-  class="info">
-
-<strong>Jezero Crater</strong>
-<br>
-
-Jezero contains an ancient river delta and evidence that
-a lake existed here billions of years ago.
-NASA's Perseverance rover landed here in 2021 to study
-the geology and search for signs of ancient habitable environments.
-
-</div>
-
-
-<div class="warning">
-
-The landscape is generated for education.
-It is not a photographic reconstruction or a navigational map
-of the selected location.
-
-</div>
-
-</div>
-
-</div>
+  <div class="site-buttons">
+    <button class="active" data-site="jezero">Jezero Crater</button>
+    <button data-site="gale">Gale Crater</button>
+    <button data-site="olympus">Olympus Mons</button>
+    <button data-site="valles">Valles Marineris</button>
+    <button data-site="polar">North Polar Region</button>
+    <button data-site="plain">Open Martian Plain</button>
+  </div>
 
 </section>
-
 
 <section class="panel">
 
-<h2>Visit Famous Locations</h2>
+  <h2>What Would It Feel Like?</h2>
 
+  <div class="grid-three">
 
-<div class="site-buttons">
+    <div class="card">
+      <strong>You Would Feel Lighter</strong>
+      <p>
+        Mars has about 38% of Earth's surface gravity. A person who weighs
+        180 pounds on Earth would press on the ground with roughly the same
+        force as about 68 pounds on Mars.
+      </p>
+    </div>
 
-<button
-  class="active"
-  data-site="jezero">
-Jezero Crater
-</button>
+    <div class="card">
+      <strong>You Could Not Breathe</strong>
+      <p>
+        The atmosphere is extremely thin and mostly carbon dioxide. A human
+        explorer would need a pressurized suit and life support.
+      </p>
+    </div>
 
-<button data-site="gale">
-Gale Crater
-</button>
+    <div class="card">
+      <strong>The Sky Looks Different</strong>
+      <p>
+        Fine dust gives much of the daytime sky a dusty tan or reddish look.
+        Near sunset, the region around the Sun can appear bluish.
+      </p>
+    </div>
 
-<button data-site="olympus">
-Olympus Mons
-</button>
+    <div class="card">
+      <strong>Dust Is Everywhere</strong>
+      <p>
+        Very fine iron-rich dust coats much of the surface and can affect
+        mechanisms, solar panels, visibility, and thermal control.
+      </p>
+    </div>
 
-<button data-site="valles">
-Valles Marineris
-</button>
+    <div class="card">
+      <strong>Temperatures Swing</strong>
+      <p>
+        Temperature changes greatly with season, location, elevation, weather,
+        and time of day. Mars is generally far colder than Earth.
+      </p>
+    </div>
 
-<button data-site="polar">
-North Polar Region
-</button>
+    <div class="card">
+      <strong>Water Is Mostly Ice</strong>
+      <p>
+        Liquid water is generally unstable on the present-day surface, but
+        Mars contains large quantities of water ice.
+      </p>
+    </div>
 
-<button data-site="plain">
-Open Martian Plain
-</button>
-
-</div>
+  </div>
 
 </section>
 
+<section class="panel" data-min="2" hidden>
+
+  <h2>Technical — Mars Entry & Environment</h2>
+
+  <div class="tech">
+
+    <strong>Why entry is difficult</strong>
+
+    <p>
+      Mars has enough atmosphere to create extreme heating and strong
+      aerodynamic forces at several kilometers per second, but not enough
+      atmosphere to slow a heavy vehicle safely all the way to the ground.
+      That is why a realistic landing sequence still needs additional braking.
+    </p>
+
+    <strong>Thin atmosphere</strong>
+
+    <p>
+      The atmosphere is dominated by carbon dioxide, with smaller amounts of
+      nitrogen and argon plus trace gases.
+    </p>
+
+    <strong>Surface geology</strong>
+
+    <p>
+      Mars contains volcanic plains, impact craters, sedimentary deposits,
+      ancient river valleys, giant volcanoes, canyon systems, dunes, and
+      polar ice.
+    </p>
+
+  </div>
+
+</section>
+
+<section class="panel" data-min="3" hidden>
+
+  <h2>Advanced — What the Simulation Is Showing</h2>
+
+  <div class="advanced">
+
+    <strong>Entry corridor</strong>
+
+    <p>
+      The arriving vehicle must enter the atmosphere at the correct angle.
+      Too shallow and it may skip back out; too steep and heating and
+      deceleration become much more severe.
+    </p>
+
+    <strong>Peak heating and peak deceleration</strong>
+
+    <p>
+      Heating and G-load do not peak at the same instant. The simulation
+      separates the bright plasma phase from the strongest braking phase to
+      make that distinction visible.
+    </p>
+
+    <strong>Powered descent</strong>
+
+    <p>
+      Near the ground, rocket thrust becomes the dominant control in this
+      generic heavy-lander sequence. The dust cloud grows rapidly because
+      exhaust interacts with the loose Martian regolith.
+    </p>
+
+    <strong>Radiation</strong>
+
+    <p>
+      Mars lacks Earth's thick atmosphere and strong global magnetic field.
+      Long-duration human missions would require substantial radiation
+      protection.
+    </p>
+
+  </div>
+
+</section>
 
 <section class="panel">
 
-<h2>What Would It Feel Like?</h2>
-
-
-<div class="grid-three">
-
-<div class="card">
-
-<strong>
-You Would Feel Lighter
-</strong>
-
-<p>
-Mars has about 38% of Earth's surface gravity.
-A person who weighs 180 pounds on Earth would press
-on the ground with roughly the same force as about
-68 pounds on Mars.
-</p>
-
-</div>
-
-
-<div class="card">
-
-<strong>
-You Could Not Breathe
-</strong>
-
-<p>
-The atmosphere is extremely thin and mostly carbon dioxide.
-A human explorer would need a pressurized suit
-and life-support system.
-</p>
-
-</div>
-
-
-<div class="card">
-
-<strong>
-The Sky Looks Different
-</strong>
-
-<p>
-Fine dust gives much of the daytime sky a dusty tan
-or reddish look.
-Near sunset, the region around the Sun can appear bluish.
-</p>
-
-</div>
-
-
-<div class="card">
-
-<strong>
-Dust Is Everywhere
-</strong>
-
-<p>
-Very fine iron-rich dust coats much of the surface
-and can affect mechanisms, solar panels,
-visibility, and thermal control.
-</p>
-
-</div>
-
-
-<div class="card">
-
-<strong>
-Temperatures Swing
-</strong>
-
-<p>
-Temperature changes greatly with season, location,
-elevation, weather, and time of day.
-Mars is generally far colder than Earth.
-</p>
-
-</div>
-
-
-<div class="card">
-
-<strong>
-Water Is Mostly Ice
-</strong>
-
-<p>
-Liquid water is generally unstable on the present-day surface,
-but Mars contains large quantities of water ice.
-</p>
-
-</div>
-
-</div>
-
-</section>
-
-
-<section
-  class="panel"
-  data-min="2"
-  hidden>
-
-<h2>
-Technical — Martian Environment
-</h2>
-
-
-<div class="tech">
-
-<strong>
-Atmospheric Entry
-</strong>
-
-<p>
-
-Mars has enough atmosphere to create severe heating
-and aerodynamic drag during high-speed entry,
-but it is much too thin to make landing easy.
-A landing system must still remove a large amount
-of velocity near the surface.
-
-</p>
-
-
-<strong>
-Atmosphere
-</strong>
-
-<p>
-
-The atmosphere is dominated by carbon dioxide,
-with smaller amounts of nitrogen and argon
-plus trace gases.
-
-</p>
-
-
-<strong>
-Geology
-</strong>
-
-<p>
-
-Mars contains basaltic volcanic terrain,
-impact craters, sedimentary deposits,
-ancient river valleys, enormous volcanoes,
-canyon systems, dunes, and polar ice deposits.
-
-</p>
-
-</div>
-
-</section>
-
-
-<section
-  class="panel"
-  data-min="3"
-  hidden>
-
-<h2>
-Advanced — Why Mars Looks This Way
-</h2>
-
-
-<div class="advanced">
-
-<strong>
-Iron Oxides
-</strong>
-
-<p>
-
-The reddish color comes largely from iron-bearing minerals
-oxidized and mixed into fine surface dust.
-
-</p>
-
-
-<strong>
-Atmospheric Loss
-</strong>
-
-<p>
-
-Mars once had a thicker atmosphere.
-Over geological time it lost much of that atmosphere
-through several escape processes and interaction
-with the solar wind.
-
-</p>
-
-
-<strong>
-Radiation
-</strong>
-
-<p>
-
-Mars lacks Earth's thick atmosphere and strong global magnetic field.
-Long-duration human missions would require substantial
-radiation protection.
-
-</p>
-
-
-<strong>
-Ancient Water
-</strong>
-
-<p>
-
-Orbital observations and landed missions show abundant evidence
-that liquid water shaped ancient Mars,
-including valleys, deltas, lake deposits,
-and water-altered minerals.
-
-</p>
-
-</div>
-
-</section>
-
-
-<section class="panel">
-
-<h2>Continue the Journey</h2>
-
-
-<div class="grid-three">
-
-<div class="card">
-
-<strong>
-Return to Earth → Mars Flight
-</strong>
-
-<p>
-
-<a
-  href="index.html"
-  style="color:#7fc8ff;font-weight:900">
-
-Open Earth → Mars
-
-</a>
-
-</p>
-
-</div>
-
-
-<div class="card">
-
-<strong>
-Replay the Arrival
-</strong>
-
-<p>
-
-Use the Replay Landing button above
-to watch approach, atmospheric entry,
-powered descent, and touchdown again.
-
-</p>
-
-</div>
-
-
-<div class="card">
-
-<strong>
-Future Expansion
-</strong>
-
-<p>
-
-This page is ready for future flyovers of Olympus Mons,
-Valles Marineris, rover routes,
-or a habitat exploration mode.
-
-</p>
-
-</div>
-
-</div>
+  <h2>Continue the Journey</h2>
+
+  <div class="grid-three">
+
+    <div class="card">
+      <strong>Return to Earth → Mars Flight</strong>
+      <p>
+        <a href="index.html" style="color:#7fc8ff;font-weight:900">
+          Open Earth → Mars
+        </a>
+      </p>
+    </div>
+
+    <div class="card">
+      <strong>Replay Entry & Landing</strong>
+      <p>
+        Use Replay Landing above to watch the complete approach, entry,
+        braking, descent, and touchdown again.
+      </p>
+    </div>
+
+    <div class="card">
+      <strong>Future Expansion</strong>
+      <p>
+        This page is ready for rover routes, Olympus Mons flyovers, canyon
+        exploration, or a habitat mode.
+      </p>
+    </div>
+
+  </div>
 
 </section>
 
 </main>
 
-
 <footer>
-
-A DONCO-BAYCITY™ App
-
+  A DONCO-BAYCITY™ App
 </footer>
-
 
 <script>
 (() => {
-
 "use strict";
 
+const $ = id => document.getElementById(id);
 
-const $ =
-  id =>
-    document.getElementById(id);
+const clamp = (v,min,max) => Math.max(min,Math.min(max,v));
+const mix = (a,b,t) => a+(b-a)*t;
 
+function smooth(t){
+  t=clamp(t,0,1);
+  return t*t*(3-2*t);
+}
 
-const clamp =
-  (value,min,max) =>
-    Math.max(
-      min,
-      Math.min(
-        max,
-        value
-      )
-    );
+function smoother(t){
+  t=clamp(t,0,1);
+  return t*t*t*(t*(t*6-15)+10);
+}
 
+/* =====================================================
+   ARRIVAL STATE
+===================================================== */
 
-const mix =
-  (a,b,t) =>
-    a +
-    (b-a) *
-    t;
+const arrival=$("arrival");
+const arrivalView=$("arrivalView");
+const arrivalCanvas=$("arrivalCanvas");
+const actx=arrivalCanvas.getContext("2d");
 
+const stageTitle=$("stageTitle");
+const stageText=$("stageText");
+const altitude=$("altitude");
+const speed=$("speed");
+const verticalSpeed=$("verticalSpeed");
+const gLoad=$("gLoad");
+const heating=$("heating");
+const phase=$("phase");
+const arrivalPct=$("arrivalPct");
+const arrivalBar=$("arrivalBar");
+const attitude=$("attitude");
+const shieldState=$("shieldState");
+const touchdown=$("touchdown");
 
-const ease =
-  t =>
-    t < .5
-    ?
-    2 * t * t
-    :
-    1 -
-    Math.pow(
-      -2 * t + 2,
-      2
-    ) / 2;
+let arrivalProgress=0;
+let arrivalPlaying=false;
+let arrivalLast=0;
+let arrivalFrame=0;
 
+const ARRIVAL_SECONDS=27;
 
-/* ======================================
-   ARRIVAL
-====================================== */
+/* =====================================================
+   PHYSICS-INSPIRED FLIGHT PROFILE
+===================================================== */
 
-const arrival =
-  $("arrival");
+function phaseData(p){
 
+  if(p<.15){
+    const t=smoother(p/.15);
 
-const arrivalView =
-  $("arrivalView");
+    return{
+      phase:"Approach",
+      title:"Orbital Approach",
+      text:"Mars grows rapidly in the forward view. Guidance aligns the vehicle with a narrow atmospheric entry corridor.",
+      altitude:mix(10000,125,t),
+      speed:mix(4.2,5.5,smooth(t)),
+      vertical:mix(-.2,-1.2,t),
+      g:mix(.1,.3,t),
+      heat:mix(.02,.08,t),
+      shake:.02,
+      attitude:"STABLE",
+      shield:"NOMINAL",
+      terrain:0,
+      curvature:t,
+      plasma:0,
+      dust:0,
+      engine:0
+    };
+  }
 
+  if(p<.29){
+    const t=smoother((p-.15)/.14);
 
-const arrivalCanvas =
-  $("arrivalCanvas");
+    return{
+      phase:"Entry",
+      title:"Atmospheric Entry",
+      text:"The heat shield meets the upper atmosphere at hypersonic speed. Compression ahead of the vehicle raises gas temperature dramatically.",
+      altitude:mix(125,50,t),
+      speed:mix(5.5,4.9,t),
+      vertical:mix(-1.2,-1.6,t),
+      g:mix(.3,2.3,smooth(t)),
+      heat:mix(.08,1,t),
+      shake:mix(.04,.19,t),
+      attitude:"ENTRY ATTITUDE",
+      shield:"HEATING",
+      terrain:mix(0,.08,t),
+      curvature:1,
+      plasma:smooth(t),
+      dust:0,
+      engine:0
+    };
+  }
 
+  if(p<.43){
+    const t=smoother((p-.29)/.14);
 
-const a =
-  arrivalCanvas.getContext(
-    "2d"
-  );
+    return{
+      phase:"Peak Heating",
+      title:"Peak Heating",
+      text:"A bright plasma sheath surrounds the forward view while aerodynamic drag rapidly removes orbital energy.",
+      altitude:mix(50,28,t),
+      speed:mix(4.9,3.0,t),
+      vertical:mix(-1.6,-1.1,t),
+      g:mix(2.3,6.2,Math.sin(t*Math.PI*.72)),
+      heat:mix(1,.55,t),
+      shake:mix(.2,.27,Math.sin(t*Math.PI)),
+      attitude:"GUIDED ENTRY",
+      shield:"MAX HEATING",
+      terrain:mix(.08,.25,t),
+      curvature:1,
+      plasma:mix(1,.62,t),
+      dust:0,
+      engine:0
+    };
+  }
 
+  if(p<.58){
+    const t=smoother((p-.43)/.15);
 
-const stageTitle =
-  $("stageTitle");
+    return{
+      phase:"Supersonic",
+      title:"Supersonic Braking",
+      text:"The atmosphere is now doing most of the braking. The horizon flattens and surface detail begins to emerge below.",
+      altitude:mix(28,9,t),
+      speed:mix(3.0,.65,t),
+      vertical:mix(-1.1,-.42,t),
+      g:mix(6.2,1.5,t),
+      heat:mix(.55,.12,t),
+      shake:mix(.22,.10,t),
+      attitude:"GUIDANCE ACTIVE",
+      shield:"COOLING",
+      terrain:mix(.25,.63,t),
+      curvature:mix(1,.55,t),
+      plasma:mix(.62,.08,t),
+      dust:0,
+      engine:0
+    };
+  }
 
+  if(p<.72){
+    const t=smoother((p-.58)/.14);
 
-const stageText =
-  $("stageText");
+    return{
+      phase:"Terminal Descent",
+      title:"Terminal Descent",
+      text:"The vehicle is now low enough for terrain-relative guidance. Speed is still too high for touchdown, so the powered phase is about to begin.",
+      altitude:mix(9,1.6,t),
+      speed:mix(.65,.16,t),
+      vertical:mix(-.42,-.12,t),
+      g:mix(1.5,.8,t),
+      heat:mix(.12,.03,t),
+      shake:mix(.10,.055,t),
+      attitude:"TARGET LOCK",
+      shield:"SEPARATED",
+      terrain:mix(.63,.9,t),
+      curvature:mix(.55,.15,t),
+      plasma:mix(.08,0,t),
+      dust:0,
+      engine:0
+    };
+  }
 
+  if(p<.93){
+    const t=smoother((p-.72)/.21);
 
-const altitude =
-  $("altitude");
+    return{
+      phase:"Powered Descent",
+      title:"Powered Descent",
+      text:"Landing engines throttle continuously to cancel the remaining vertical and horizontal velocity while the vehicle descends toward the target.",
+      altitude:mix(1.6,.025,t),
+      speed:mix(.16,.012,t),
+      vertical:mix(-.12,-.006,t),
+      g:mix(.8,1.05,smooth(t)),
+      heat:.01,
+      shake:mix(.06,.035,t),
+      attitude:"VERTICAL HOLD",
+      shield:"AWAY",
+      terrain:mix(.9,1,t),
+      curvature:mix(.15,0,t),
+      plasma:0,
+      dust:mix(.03,.72,smoother(t)),
+      engine:mix(.35,1,smooth(t))
+    };
+  }
 
+  const t=smoother((p-.93)/.07);
 
-const speed =
-  $("speed");
+  return{
+    phase:"Landing",
+    title:"Final Landing",
+    text:"The vehicle descends the final few meters at walking speed. Engine thrust drops as the landing gear takes the load.",
+    altitude:mix(.025,0,t),
+    speed:mix(.012,0,t),
+    vertical:mix(-.006,0,t),
+    g:mix(1.05,1,t),
+    heat:0,
+    shake:mix(.035,0,t),
+    attitude:"VERTICAL",
+    shield:"AWAY",
+    terrain:1,
+    curvature:0,
+    plasma:0,
+    dust:mix(.72,.95,Math.sin(t*Math.PI)),
+    engine:mix(1,.1,t)
+  };
+}
 
+function heatLabel(v){
+  if(v>.82)return "Extreme";
+  if(v>.55)return "Very High";
+  if(v>.28)return "High";
+  if(v>.10)return "Moderate";
+  if(v>.03)return "Low";
+  return "Minimal";
+}
 
-const phase =
-  $("phase");
+function formatAltitude(km){
+  if(km>=1000)return Math.round(km).toLocaleString()+" km";
+  if(km>=10)return km.toFixed(0)+" km";
+  if(km>=1)return km.toFixed(1)+" km";
+  return Math.max(0,Math.round(km*1000))+" m";
+}
 
-
-const arrivalPct =
-  $("arrivalPct");
-
-
-const arrivalBar =
-  $("arrivalBar");
-
-
-const touchdown =
-  $("touchdown");
-
-
-let progress = 0;
-
-let playing = false;
-
-let last = 0;
-
-let frame = 0;
-
-
-const DURATION = 20;
-
+function formatSpeed(kmps){
+  if(kmps>=1)return kmps.toFixed(2)+" km/s";
+  return Math.max(0,Math.round(kmps*1000))+" m/s";
+}
 
 function resizeArrival(){
+  const rect=arrivalView.getBoundingClientRect();
+  const ratio=Math.min(window.devicePixelRatio||1,2);
 
-  const rect =
-    arrivalView.getBoundingClientRect();
+  arrivalCanvas.width=Math.max(1,Math.floor(rect.width*ratio));
+  arrivalCanvas.height=Math.max(1,Math.floor(rect.height*ratio));
+  arrivalCanvas.style.width=rect.width+"px";
+  arrivalCanvas.style.height=rect.height+"px";
 
-
-  const ratio =
-    Math.min(
-      window.devicePixelRatio || 1,
-      2
-    );
-
-
-  arrivalCanvas.width =
-    Math.max(
-      1,
-      Math.floor(
-        rect.width *
-        ratio
-      )
-    );
-
-
-  arrivalCanvas.height =
-    Math.max(
-      1,
-      Math.floor(
-        rect.height *
-        ratio
-      )
-    );
-
-
-  arrivalCanvas.style.width =
-    rect.width +
-    "px";
-
-
-  arrivalCanvas.style.height =
-    rect.height +
-    "px";
-
-
-  a.setTransform(
-    ratio,
-    0,
-    0,
-    ratio,
-    0,
-    0
-  );
-
+  actx.setTransform(ratio,0,0,ratio,0,0);
 
   drawArrival();
-
 }
 
+function drawStars(w,h,alpha){
+  for(let i=0;i<120;i++){
+    const x=(i*137.3)%w;
+    const y=(i*83.7)%Math.max(1,h*.78);
+    const r=(i%9===0)?1.35:.65;
 
-function stageFor(p){
-
-  if(p < .18){
-
-    return [
-      "Approach",
-      "Mars Approach",
-      "Mars grows in the forward view as the spacecraft lines up for atmospheric entry."
-    ];
-
+    actx.fillStyle="rgba(255,255,255,"+alpha+")";
+    actx.beginPath();
+    actx.arc(x,y,r,0,Math.PI*2);
+    actx.fill();
   }
-
-
-  if(p < .34){
-
-    return [
-      "Entry",
-      "Atmospheric Entry",
-      "The spacecraft reaches the upper atmosphere. Even Mars' thin air creates strong heating and drag at high speed."
-    ];
-
-  }
-
-
-  if(p < .52){
-
-    return [
-      "Braking",
-      "Aerodynamic Braking",
-      "Drag removes a large amount of speed while the vehicle descends through the dusty carbon-dioxide atmosphere."
-    ];
-
-  }
-
-
-  if(p < .72){
-
-    return [
-      "Descent",
-      "Controlled Descent",
-      "The landing region becomes distinct below. Guidance keeps the vehicle aimed toward a safe touchdown area."
-    ];
-
-  }
-
-
-  if(p < .94){
-
-    return [
-      "Powered",
-      "Powered Descent",
-      "Rocket thrust handles the final descent because the Martian atmosphere is too thin to provide Earth-like braking by itself."
-    ];
-
-  }
-
-
-  return [
-    "Landing",
-    "Final Landing",
-    "The spacecraft slows to walking speed, settles vertically, and prepares for contact with the surface."
-  ];
-
 }
 
+function drawPlanetApproach(w,h,d){
+  const approach=clamp(arrivalProgress/.18,0,1);
 
-function flightData(p){
-
-  let height;
-  let velocity;
-  let t;
-
-
-  if(p < .18){
-
-    t =
-      p /
-      .18;
-
-
-    height =
-      mix(
-        10000,
-        125,
-        ease(t)
-      );
-
-
-    velocity =
-      mix(
-        4,
-        5.5,
-        t
-      );
-
-  }
-
-
-  else if(p < .52){
-
-    t =
-      (
-        p -
-        .18
-      ) /
-      .34;
-
-
-    height =
-      mix(
-        125,
-        15,
-        ease(t)
-      );
-
-
-    velocity =
-      mix(
-        5.5,
-        1.1,
-        ease(t)
-      );
-
-  }
-
-
-  else if(p < .72){
-
-    t =
-      (
-        p -
-        .52
-      ) /
-      .20;
-
-
-    height =
-      mix(
-        15,
-        2,
-        ease(t)
-      );
-
-
-    velocity =
-      mix(
-        1.1,
-        .15,
-        ease(t)
-      );
-
-  }
-
-
-  else{
-
-    t =
-      (
-        p -
-        .72
-      ) /
-      .28;
-
-
-    height =
-      mix(
-        2,
-        0,
-        ease(t)
-      );
-
-
-    velocity =
-      mix(
-        .15,
-        0,
-        ease(t)
-      );
-
-  }
-
-
-  return [
-    Math.max(
-      0,
-      height
-    ),
-    Math.max(
-      0,
-      velocity
-    )
-  ];
-
-}
-
-
-function formatAltitude(height){
-
-  if(height >= 1000){
-
-    return (
-      Math.round(
-        height
-      )
-      .toLocaleString() +
-      " km"
-    );
-
-  }
-
-
-  if(height >= 10){
-
-    return (
-      height.toFixed(0) +
-      " km"
-    );
-
-  }
-
-
-  if(height >= 1){
-
-    return (
-      height.toFixed(1) +
-      " km"
-    );
-
-  }
-
-
-  return (
-    Math.round(
-      height *
-      1000
-    ) +
-    " m"
+  const radius=mix(
+    36,
+    Math.max(w,h)*.78,
+    smoother(approach)
   );
 
-}
-
-
-function formatSpeed(velocity){
-
-  if(velocity >= 1){
-
-    return (
-      velocity.toFixed(1) +
-      " km/s"
-    );
-
-  }
-
-
-  return (
-    Math.round(
-      velocity *
-      1000
-    ) +
-    " m/s"
-  );
-
-}
-
-
-function drawArrival(){
-
-  const rect =
-    arrivalView.getBoundingClientRect();
-
-
-  const w =
-    rect.width;
-
-
-  const h =
-    rect.height;
-
-
-  if(
-    !w ||
-    !h
-  ){
-
-    return;
-
-  }
-
-
-  const bg =
-    a.createLinearGradient(
-      0,
-      0,
-      0,
-      h
-    );
-
-
-  bg.addColorStop(
-    0,
-    "#02060d"
-  );
-
-
-  bg.addColorStop(
-    1,
-    "#0a1119"
-  );
-
-
-  a.fillStyle =
-    bg;
-
-
-  a.fillRect(
-    0,
-    0,
-    w,
-    h
-  );
-
-
-  /* stars */
-
-  for(
-    let i=0;
-    i<105;
-    i++
-  ){
-
-    const x =
-      (
-        i *
-        137.3
-      ) %
-      w;
-
-
-    const y =
-      (
-        i *
-        83.7
-      ) %
-      Math.max(
-        1,
-        h *
-        .72
-      );
-
-
-    const alpha =
-      clamp(
-        .75 -
-        progress *
-        1.25,
-        0,
-        .78
-      );
-
-
-    a.fillStyle =
-      "rgba(255,255,255," +
-      alpha +
-      ")";
-
-
-    a.beginPath();
-
-
-    a.arc(
-      x,
-      y,
-      i % 7 ?
-      .7 :
-      1.35,
-      0,
-      Math.PI *
-      2
-    );
-
-
-    a.fill();
-
-  }
-
-
-  /* Mars */
-
-  const approach =
-    clamp(
-      progress /
-      .31,
-      0,
-      1
-    );
-
-
-  const radius =
-    mix(
-      34,
-      Math.max(
-        w,
-        h
-      ) *
-      .68,
-      ease(
-        approach
-      )
-    );
-
-
-  const cx =
-    w *
-    .5;
-
-
-  const cy =
-    mix(
-      h *
-      .45,
-      h *
-      .67,
-      approach
-    );
-
-
-  const planet =
-    a.createRadialGradient(
-      cx -
-      radius *
-      .24,
-
-      cy -
-      radius *
-      .31,
-
-      radius *
-      .08,
-
-      cx,
-      cy,
-      radius
-    );
-
-
-  planet.addColorStop(
-    0,
-    "#f4b17c"
-  );
-
-
-  planet.addColorStop(
-    .28,
-    "#c96843"
-  );
-
-
-  planet.addColorStop(
-    .72,
-    "#8d3e2c"
-  );
-
-
-  planet.addColorStop(
-    1,
-    "#401916"
-  );
-
-
-  a.fillStyle =
-    planet;
-
-
-  a.beginPath();
-
-
-  a.arc(
+  const cx=w*.5;
+  const cy=mix(h*.46,h*.74,smoother(approach));
+
+  const g=actx.createRadialGradient(
+    cx-radius*.23,
+    cy-radius*.30,
+    radius*.08,
     cx,
     cy,
-    radius,
-    0,
-    Math.PI *
-    2
+    radius
   );
 
+  g.addColorStop(0,"#f2ad77");
+  g.addColorStop(.26,"#c86843");
+  g.addColorStop(.66,"#8a3d2c");
+  g.addColorStop(1,"#3b1714");
 
-  a.fill();
+  actx.fillStyle=g;
+  actx.beginPath();
+  actx.arc(cx,cy,radius,0,Math.PI*2);
+  actx.fill();
 
+  actx.globalAlpha=.34;
 
-  /* surface appears */
+  for(let i=0;i<17;i++){
+    const ang=i*1.52;
+    const rr=radius*(.08+(i%6)*.045);
+    const x=cx+Math.cos(ang)*radius*.52;
+    const y=cy+Math.sin(ang*1.13)*radius*.36;
 
-  if(progress > .31){
-
-    const surface =
-      clamp(
-        (
-          progress -
-          .31
-        ) /
-        .69,
-        0,
-        1
-      );
-
-
-    const horizon =
-      mix(
-        h *
-        .93,
-        h *
-        .48,
-        ease(
-          surface
-        )
-      );
-
-
-    const sky =
-      a.createLinearGradient(
-        0,
-        0,
-        0,
-        horizon
-      );
-
-
-    sky.addColorStop(
-      0,
-      "rgba(132,66,50," +
-      (
-        .05 +
-        surface *
-        .64
-      ) +
-      ")"
-    );
-
-
-    sky.addColorStop(
-      1,
-      "rgba(225,146,103," +
-      (
-        .18 +
-        surface *
-        .77
-      ) +
-      ")"
-    );
-
-
-    a.fillStyle =
-      sky;
-
-
-    a.fillRect(
-      0,
-      0,
-      w,
-      horizon
-    );
-
-
-    a.beginPath();
-
-
-    a.moveTo(
-      0,
-      horizon
-    );
-
-
-    for(
-      let x=0;
-      x<=w;
-      x+=8
-    ){
-
-      a.lineTo(
-
-        x,
-
-        horizon -
-        Math.sin(
-          x *
-          .015
-        ) *
-        8 *
-        surface -
-
-        Math.sin(
-          x *
-          .006 +
-          1.8
-        ) *
-        18 *
-        surface
-
-      );
-
-    }
-
-
-    a.lineTo(
-      w,
-      h
-    );
-
-
-    a.lineTo(
-      0,
-      h
-    );
-
-
-    a.closePath();
-
-
-    const ground =
-      a.createLinearGradient(
-        0,
-        horizon,
-        0,
-        h
-      );
-
-
-    ground.addColorStop(
-      0,
-      "#a95436"
-    );
-
-
-    ground.addColorStop(
-      1,
-      "#4b1d18"
-    );
-
-
-    a.fillStyle =
-      ground;
-
-
-    a.fill();
-
+    actx.fillStyle=i%2?"#6a2a20":"#9e4b34";
+    actx.beginPath();
+    actx.ellipse(x,y,rr*1.6,rr*.52,ang*.1,0,Math.PI*2);
+    actx.fill();
   }
 
+  actx.globalAlpha=1;
 
-  /* entry glow */
-
-  if(
-    progress > .18 &&
-    progress < .52
-  ){
-
-    const local =
-      (
-        progress -
-        .18
-      ) /
-      .34;
-
-
-    const intensity =
-      Math.sin(
-        local *
-        Math.PI
-      );
-
-
-    const glow =
-      a.createRadialGradient(
-        w *
-        .5,
-
-        h *
-        .72,
-
-        20,
-
-        w *
-        .5,
-
-        h *
-        .72,
-
-        Math.max(
-          w,
-          h
-        ) *
-        .7
-      );
-
-
-    glow.addColorStop(
-      0,
-      "rgba(255,216,118," +
-      (
-        .27 *
-        intensity
-      ) +
-      ")"
-    );
-
-
-    glow.addColorStop(
-      .45,
-      "rgba(255,90,28," +
-      (
-        .21 *
-        intensity
-      ) +
-      ")"
-    );
-
-
-    glow.addColorStop(
-      1,
-      "rgba(255,50,20,0)"
-    );
-
-
-    a.fillStyle =
-      glow;
-
-
-    a.fillRect(
-      0,
-      0,
-      w,
-      h
-    );
-
+  if(d.curvature>.01){
+    actx.strokeStyle="rgba(242,155,106,"+(d.curvature*.22)+")";
+    actx.lineWidth=7;
+    actx.beginPath();
+    actx.arc(cx,cy,radius+5,Math.PI*1.08,Math.PI*1.92);
+    actx.stroke();
   }
-
-
-  /* landing dust */
-
-  if(progress > .72){
-
-    const local =
-      (
-        progress -
-        .72
-      ) /
-      .28;
-
-
-    const alpha =
-      Math.pow(
-        local,
-        1.6
-      ) *
-      .35;
-
-
-    for(
-      let i=0;
-      i<24;
-      i++
-    ){
-
-      const x =
-        w *
-        .5 +
-
-        Math.sin(
-          i *
-          2.13
-        ) *
-
-        (
-          30 +
-          local *
-          w *
-          .35
-        );
-
-
-      const y =
-        h *
-        .88 -
-
-        (
-          i %
-          6
-        ) *
-        7 +
-
-        local *
-        30;
-
-
-      const radius =
-        12 +
-
-        (
-          i %
-          7
-        ) *
-        4 +
-
-        local *
-        19;
-
-
-      a.fillStyle =
-        "rgba(205,126,82," +
-        alpha +
-        ")";
-
-
-      a.beginPath();
-
-
-      a.arc(
-        x,
-        y,
-        radius,
-        0,
-        Math.PI *
-        2
-      );
-
-
-      a.fill();
-
-    }
-
-  }
-
 }
 
+function drawAtmosphereAndTerrain(w,h,d){
+  if(d.terrain<=0)return;
+
+  const terrain=d.terrain;
+  const horizon=mix(h*.92,h*.48,smoother(terrain));
+
+  const sky=actx.createLinearGradient(0,0,0,horizon);
+  sky.addColorStop(0,"rgba(118,64,52,"+(.10+terrain*.60)+")");
+  sky.addColorStop(.72,"rgba(201,116,82,"+(.18+terrain*.74)+")");
+  sky.addColorStop(1,"rgba(230,159,112,"+(.24+terrain*.70)+")");
+
+  actx.fillStyle=sky;
+  actx.fillRect(0,0,w,horizon);
+
+  const ridgeBase=horizon+5;
+
+  actx.beginPath();
+  actx.moveTo(0,ridgeBase);
+
+  for(let x=0;x<=w;x+=6){
+    const y=
+      ridgeBase
+      -Math.sin(x*.012+arrivalProgress*3.2)*10*terrain
+      -Math.sin(x*.0047+1.1)*24*terrain
+      -Math.sin(x*.027)*4*terrain;
+
+    actx.lineTo(x,y);
+  }
+
+  actx.lineTo(w,h);
+  actx.lineTo(0,h);
+  actx.closePath();
+
+  const ground=actx.createLinearGradient(0,horizon,0,h);
+  ground.addColorStop(0,"#9e5037");
+  ground.addColorStop(.48,"#753526");
+  ground.addColorStop(1,"#391713");
+
+  actx.fillStyle=ground;
+  actx.fill();
+
+  for(let i=0;i<44;i++){
+    const depth=((i*31)%100)/100;
+    const x=((i*173)%(w+160))-80;
+    const y=horizon+Math.pow(depth,1.65)*(h-horizon);
+    const size=(2+depth*22)*(.25+terrain*.86);
+
+    actx.fillStyle="rgba(45,19,15,.74)";
+    actx.beginPath();
+    actx.ellipse(x,y,size,size*.34,0,0,Math.PI*2);
+    actx.fill();
+  }
+}
+
+function drawPlasma(w,h,d){
+  if(d.plasma<=.01)return;
+
+  const intensity=d.plasma;
+
+  const g=actx.createRadialGradient(
+    w*.5,h*.58,20,
+    w*.5,h*.62,
+    Math.max(w,h)*.82
+  );
+
+  g.addColorStop(0,"rgba(255,244,182,"+(intensity*.28)+")");
+  g.addColorStop(.22,"rgba(255,161,64,"+(intensity*.30)+")");
+  g.addColorStop(.48,"rgba(255,73,22,"+(intensity*.30)+")");
+  g.addColorStop(1,"rgba(255,40,10,0)");
+
+  actx.fillStyle=g;
+  actx.fillRect(0,0,w,h);
+
+  for(let i=0;i<28;i++){
+    const y=(i*41)%h;
+    const len=40+(i%7)*13;
+    const x=w*.5+Math.sin(i*2.7)*w*.36;
+
+    actx.strokeStyle="rgba(255,192,92,"+(intensity*.16)+")";
+    actx.lineWidth=1.2;
+    actx.beginPath();
+    actx.moveTo(x,y);
+    actx.lineTo(x+Math.sin(i)*len,y+len*.3);
+    actx.stroke();
+  }
+}
+
+function drawEnginePlumes(w,h,d){
+  if(d.engine<=.01)return;
+
+  const e=d.engine;
+  const centerX=w*.5;
+  const startY=h*.74;
+
+  for(let side=-1;side<=1;side+=2){
+    const x=centerX+side*45;
+
+    const g=actx.createLinearGradient(x,startY,x,h);
+    g.addColorStop(0,"rgba(255,248,205,"+(e*.84)+")");
+    g.addColorStop(.22,"rgba(255,194,84,"+(e*.62)+")");
+    g.addColorStop(.66,"rgba(255,92,33,"+(e*.22)+")");
+    g.addColorStop(1,"rgba(255,90,30,0)");
+
+    actx.fillStyle=g;
+    actx.beginPath();
+    actx.moveTo(x-9,startY);
+    actx.quadraticCurveTo(x-24,h*.88,x-30,h);
+    actx.lineTo(x+30,h);
+    actx.quadraticCurveTo(x+24,h*.88,x+9,startY);
+    actx.closePath();
+    actx.fill();
+  }
+}
+
+function drawDust(w,h,d){
+  if(d.dust<=.01)return;
+
+  const strength=d.dust;
+
+  for(let i=0;i<38;i++){
+    const x=w*.5+Math.sin(i*2.31)*(40+strength*w*.44);
+    const y=h*.88-(i%6)*8+strength*38;
+    const r=12+(i%8)*5+strength*22;
+
+    actx.fillStyle="rgba(202,125,83,"+(strength*.26)+")";
+    actx.beginPath();
+    actx.arc(x,y,r,0,Math.PI*2);
+    actx.fill();
+  }
+}
+
+function drawArrival(){
+  const rect=arrivalView.getBoundingClientRect();
+  const w=rect.width;
+  const h=rect.height;
+
+  if(!w||!h)return;
+
+  const d=phaseData(arrivalProgress);
+
+  const shake=d.shake;
+  const dx=Math.sin(arrivalProgress*330)*shake*7;
+  const dy=Math.cos(arrivalProgress*287)*shake*5;
+
+  actx.save();
+  actx.translate(dx,dy);
+
+  const bg=actx.createLinearGradient(0,0,0,h);
+  bg.addColorStop(0,"#02060d");
+  bg.addColorStop(1,"#081018");
+
+  actx.fillStyle=bg;
+  actx.fillRect(-20,-20,w+40,h+40);
+
+  const starAlpha=clamp(1-d.terrain*1.7-d.plasma*.7,.02,.8);
+  drawStars(w,h,starAlpha);
+
+  drawPlanetApproach(w,h,d);
+  drawAtmosphereAndTerrain(w,h,d);
+  drawPlasma(w,h,d);
+  drawEnginePlumes(w,h,d);
+  drawDust(w,h,d);
+
+  actx.restore();
+
+  if(d.phase==="Peak Heating"){
+    const flicker=.04+.03*Math.sin(performance.now()*.03);
+    actx.fillStyle="rgba(255,130,50,"+flicker+")";
+    actx.fillRect(0,0,w,h);
+  }
+}
 
 function updateArrival(){
+  const d=phaseData(arrivalProgress);
 
-  const stage =
-    stageFor(
-      progress
-    );
+  phase.textContent=d.phase;
+  stageTitle.textContent=d.title;
+  stageText.textContent=d.text;
 
+  altitude.textContent=formatAltitude(d.altitude);
+  speed.textContent=formatSpeed(d.speed);
+  verticalSpeed.textContent=(d.vertical<0?"−":"")+formatSpeed(Math.abs(d.vertical));
+  gLoad.textContent=d.g.toFixed(1)+" g";
+  heating.textContent=heatLabel(d.heat);
 
-  const data =
-    flightData(
-      progress
-    );
+  attitude.textContent=d.attitude;
+  shieldState.textContent=d.shield;
 
-
-  phase.textContent =
-    stage[0];
-
-
-  stageTitle.textContent =
-    stage[1];
-
-
-  stageText.textContent =
-    stage[2];
-
-
-  altitude.textContent =
-    formatAltitude(
-      data[0]
-    );
-
-
-  speed.textContent =
-    formatSpeed(
-      data[1]
-    );
-
-
-  arrivalPct.textContent =
-    (
-      progress *
-      100
-    ).toFixed(0) +
-    "%";
-
-
-  arrivalBar.style.width =
-    (
-      progress *
-      100
-    ).toFixed(1) +
-    "%";
-
+  arrivalPct.textContent=(arrivalProgress*100).toFixed(0)+"%";
+  arrivalBar.style.width=(arrivalProgress*100).toFixed(1)+"%";
 
   drawArrival();
-
 }
-
 
 function finishLanding(){
-
-  playing =
-    false;
-
-
-  progress =
-    1;
-
-
+  arrivalPlaying=false;
+  arrivalProgress=1;
   updateArrival();
 
+  stageTitle.textContent="Touchdown";
+  stageText.textContent=
+    "Landing complete. Engine thrust falls away as the landing gear takes the load and the exterior camera transitions to the Martian surface.";
 
-  stageTitle.textContent =
-    "Touchdown";
+  phase.textContent="Touchdown";
+  altitude.textContent="0 m";
+  speed.textContent="0 m/s";
+  verticalSpeed.textContent="0 m/s";
+  gLoad.textContent="1.0 g";
+  heating.textContent="Minimal";
+  attitude.textContent="LANDED";
 
+  setTimeout(()=>{
+    arrival.classList.add("hidden");
+    touchdown.classList.add("show");
 
-  stageText.textContent =
-    "Landing complete. The forward view now transitions directly into the Mars surface explorer.";
+    setTimeout(()=>{
+      touchdown.classList.remove("show");
+    },2300);
 
-
-  phase.textContent =
-    "Touchdown";
-
-
-  altitude.textContent =
-    "0 m";
-
-
-  speed.textContent =
-    "0 m/s";
-
-
-  setTimeout(
-    () => {
-
-      arrival.classList.add(
-        "hidden"
-      );
-
-
-      touchdown.classList.add(
-        "show"
-      );
-
-
-      setTimeout(
-        () => {
-
-          touchdown.classList.remove(
-            "show"
-          );
-
-        },
-        2300
-      );
-
-    },
-    850
-  );
-
+  },950);
 }
-
 
 function arrivalLoop(time){
+  if(!arrivalLast)arrivalLast=time;
 
-  if(!last){
+  const dt=Math.min(100,time-arrivalLast);
+  arrivalLast=time;
 
-    last =
-      time;
+  if(arrivalPlaying){
+    arrivalProgress+=dt/1000/ARRIVAL_SECONDS;
 
-  }
-
-
-  const dt =
-    Math.min(
-      100,
-      time -
-      last
-    );
-
-
-  last =
-    time;
-
-
-  if(playing){
-
-    progress +=
-
-      dt /
-      1000 /
-      DURATION;
-
-
-    if(progress >= 1){
-
+    if(arrivalProgress>=1){
       finishLanding();
-
       return;
-
     }
 
-
     updateArrival();
-
   }
 
-
-  frame =
-    requestAnimationFrame(
-      arrivalLoop
-    );
-
+  arrivalFrame=requestAnimationFrame(arrivalLoop);
 }
-
 
 function startArrival(){
+  arrival.classList.remove("hidden");
 
-  arrival.classList.remove(
-    "hidden"
-  );
+  arrivalProgress=0;
+  arrivalPlaying=true;
+  arrivalLast=0;
 
-
-  progress =
-    0;
-
-
-  playing =
-    true;
-
-
-  last =
-    0;
-
-
-  $("pauseArrival").textContent =
-    "Pause";
-
+  $("pauseArrival").textContent="Pause";
 
   resizeArrival();
-
-
   updateArrival();
 
+  if(arrivalFrame)cancelAnimationFrame(arrivalFrame);
 
-  if(frame){
-
-    cancelAnimationFrame(
-      frame
-    );
-
-  }
-
-
-  frame =
-    requestAnimationFrame(
-      arrivalLoop
-    );
-
+  arrivalFrame=requestAnimationFrame(arrivalLoop);
 }
 
-
-$("pauseArrival").onclick =
-  () => {
-
-    playing =
-      !playing;
-
-
-    $("pauseArrival").textContent =
-      playing
-      ?
-      "Pause"
-      :
-      "Resume";
-
-  };
-
-
-$("restartArrival").onclick =
-  startArrival;
-
-
-$("skipArrival").onclick =
-  () => {
-
-    playing =
-      false;
-
-
-    progress =
-      1;
-
-
-    updateArrival();
-
-
-    arrival.classList.add(
-      "hidden"
-    );
-
-  };
-
-
-$("replay").onclick =
-  () => {
-
-    window.scrollTo({
-      top:0,
-      behavior:"smooth"
-    });
-
-
-    startArrival();
-
-  };
-
-
-/* ======================================
-   SURFACE
-====================================== */
-
-const viewer =
-  $("viewer");
-
-
-const surfaceCanvas =
-  $("surfaceCanvas");
-
-
-const s =
-  surfaceCanvas.getContext(
-    "2d"
-  );
-
-
-const heading =
-  $("heading");
-
-
-const locationName =
-  $("locationName");
-
-
-const locationSubtitle =
-  $("locationSubtitle");
-
-
-const siteInfo =
-  $("siteInfo");
-
-
-let viewAngle =
-  0;
-
-
-let steps =
-  0;
-
-
-let site =
-  "jezero";
-
-
-let dragging =
-  false;
-
-
-let dragStartX =
-  0;
-
-
-let dragStartAngle =
-  0;
-
-
-const rocks =
-  [];
-
-
-const sites = {
-
-  jezero:{
-
-    name:
-      "Jezero Crater Region",
-
-    subtitle:
-      "Ancient lake environment explored by Perseverance",
-
-    info:
-      "<strong>Jezero Crater</strong><br>" +
-      "Jezero contains an ancient river delta and evidence that a lake existed here billions of years ago. " +
-      "NASA's Perseverance rover landed here in 2021 to study the geology and search for signs of ancient habitable environments.",
-
-    sky:
-      "#b86f52",
-
-    sky2:
-      "#df9b74",
-
-    horizon:
-      "#82412f",
-
-    ground:
-      "#a95637",
-
-    ridge:
-      "#6c3026",
-
-    rock:
-      "#5b2a22",
-
-    roughness:
-      1
-
-  },
-
-
-  gale:{
-
-    name:
-      "Gale Crater",
-
-    subtitle:
-      "Curiosity rover territory near Mount Sharp",
-
-    info:
-      "<strong>Gale Crater</strong><br>" +
-      "NASA's Curiosity rover landed in Gale Crater in 2012. " +
-      "At its center rises Mount Sharp, a layered mountain whose rocks preserve a long record of Martian environmental change.",
-
-    sky:
-      "#b67056",
-
-    sky2:
-      "#dfa17d",
-
-    horizon:
-      "#7f4a38",
-
-    ground:
-      "#9b6044",
-
-    ridge:
-      "#673b2f",
-
-    rock:
-      "#563027",
-
-    roughness:
-      1.25
-
-  },
-
-
-  olympus:{
-
-    name:
-      "Olympus Mons Region",
-
-    subtitle:
-      "Near the largest volcano in the Solar System",
-
-    info:
-      "<strong>Olympus Mons</strong><br>" +
-      "Olympus Mons is an enormous shield volcano roughly 600 km across. " +
-      "Its summit rises more than 20 km above the surrounding plains.",
-
-    sky:
-      "#b77559",
-
-    sky2:
-      "#dfa27d",
-
-    horizon:
-      "#713a2d",
-
-    ground:
-      "#965039",
-
-    ridge:
-      "#572820",
-
-    rock:
-      "#51261f",
-
-    roughness:
-      .65
-
-  },
-
-
-  valles:{
-
-    name:
-      "Valles Marineris",
-
-    subtitle:
-      "At the edge of a gigantic canyon system",
-
-    info:
-      "<strong>Valles Marineris</strong><br>" +
-      "This enormous canyon system extends for roughly 4,000 km across Mars. " +
-      "Some sections are hundreds of kilometers wide and several kilometers deep.",
-
-    sky:
-      "#b86e50",
-
-    sky2:
-      "#df9870",
-
-    horizon:
-      "#6c3328",
-
-    ground:
-      "#994b35",
-
-    ridge:
-      "#4c211b",
-
-    rock:
-      "#472019",
-
-    roughness:
-      1.7
-
-  },
-
-
-  polar:{
-
-    name:
-      "North Polar Region",
-
-    subtitle:
-      "Water ice, dust, and seasonal carbon-dioxide frost",
-
-    info:
-      "<strong>Martian Polar Region</strong><br>" +
-      "Mars has permanent polar caps containing large quantities of water ice. " +
-      "Seasonal carbon-dioxide frost also forms and retreats as the seasons change.",
-
-    sky:
-      "#a98271",
-
-    sky2:
-      "#d4b0a0",
-
-    horizon:
-      "#7f7069",
-
-    ground:
-      "#aa9a91",
-
-    ridge:
-      "#72665f",
-
-    rock:
-      "#625650",
-
-    roughness:
-      .8
-
-  },
-
-
-  plain:{
-
-    name:
-      "Open Martian Plain",
-
-    subtitle:
-      "A broad dusty landscape stretching toward the horizon",
-
-    info:
-      "<strong>Martian Plains</strong><br>" +
-      "Large regions of Mars consist of broad volcanic, sedimentary, or impact-modified plains covered with dust, sand, rocks, and small craters.",
-
-    sky:
-      "#b97556",
-
-    sky2:
-      "#e0a07a",
-
-    horizon:
-      "#874934",
-
-    ground:
-      "#a75738",
-
-    ridge:
-      "#733629",
-
-    rock:
-      "#5b2b23",
-
-    roughness:
-      .88
-
-  }
-
+$("pauseArrival").onclick=()=>{
+  arrivalPlaying=!arrivalPlaying;
+
+  $("pauseArrival").textContent=
+    arrivalPlaying?"Pause":"Resume";
 };
 
+$("restartArrival").onclick=startArrival;
+
+$("skipArrival").onclick=()=>{
+  arrivalPlaying=false;
+  arrivalProgress=1;
+  updateArrival();
+  arrival.classList.add("hidden");
+};
+
+$("replay").onclick=()=>{
+  window.scrollTo({top:0,behavior:"smooth"});
+  startArrival();
+};
+
+/* =====================================================
+   SURFACE EXPLORER
+===================================================== */
+
+const viewer=$("viewer");
+const surfaceCanvas=$("surfaceCanvas");
+const sctx=surfaceCanvas.getContext("2d");
+
+const heading=$("heading");
+const locationName=$("locationName");
+const locationSubtitle=$("locationSubtitle");
+const siteInfo=$("siteInfo");
+
+let viewAngle=0;
+let steps=0;
+let site="jezero";
+
+let dragging=false;
+let dragStartX=0;
+let dragStartAngle=0;
+
+const rocks=[];
+
+const sites={
+  jezero:{
+    name:"Jezero Crater Region",
+    subtitle:"Ancient lake environment explored by Perseverance",
+    info:
+      "<strong>Jezero Crater</strong><br>"+
+      "Jezero contains an ancient river delta and evidence that a lake existed here billions of years ago. "+
+      "NASA's Perseverance rover landed here in 2021 to study geology and ancient habitable environments.",
+    sky:"#b86f52",
+    sky2:"#df9b74",
+    horizon:"#82412f",
+    ground:"#a95637",
+    ridge:"#6c3026",
+    rock:"#5b2a22",
+    roughness:1
+  },
+
+  gale:{
+    name:"Gale Crater",
+    subtitle:"Curiosity rover territory near Mount Sharp",
+    info:
+      "<strong>Gale Crater</strong><br>"+
+      "NASA's Curiosity rover landed in Gale Crater in 2012. At its center rises Mount Sharp, a layered mountain whose rocks preserve a long record of Martian environmental change.",
+    sky:"#b67056",
+    sky2:"#dfa17d",
+    horizon:"#7f4a38",
+    ground:"#9b6044",
+    ridge:"#673b2f",
+    rock:"#563027",
+    roughness:1.25
+  },
+
+  olympus:{
+    name:"Olympus Mons Region",
+    subtitle:"Near the largest volcano in the Solar System",
+    info:
+      "<strong>Olympus Mons</strong><br>"+
+      "Olympus Mons is an enormous shield volcano roughly 600 km across. Its summit rises more than 20 km above the surrounding plains.",
+    sky:"#b77559",
+    sky2:"#dfa27d",
+    horizon:"#713a2d",
+    ground:"#965039",
+    ridge:"#572820",
+    rock:"#51261f",
+    roughness:.65
+  },
+
+  valles:{
+    name:"Valles Marineris",
+    subtitle:"At the edge of a gigantic canyon system",
+    info:
+      "<strong>Valles Marineris</strong><br>"+
+      "This enormous canyon system extends for roughly 4,000 km across Mars. Some sections are hundreds of kilometers wide and several kilometers deep.",
+    sky:"#b86e50",
+    sky2:"#df9870",
+    horizon:"#6c3328",
+    ground:"#994b35",
+    ridge:"#4c211b",
+    rock:"#472019",
+    roughness:1.7
+  },
+
+  polar:{
+    name:"North Polar Region",
+    subtitle:"Water ice, dust, and seasonal carbon-dioxide frost",
+    info:
+      "<strong>Martian Polar Region</strong><br>"+
+      "Mars has permanent polar caps containing large quantities of water ice. Seasonal carbon-dioxide frost also forms and retreats as the seasons change.",
+    sky:"#a98271",
+    sky2:"#d4b0a0",
+    horizon:"#7f7069",
+    ground:"#aa9a91",
+    ridge:"#72665f",
+    rock:"#625650",
+    roughness:.8
+  },
+
+  plain:{
+    name:"Open Martian Plain",
+    subtitle:"A broad dusty landscape stretching toward the horizon",
+    info:
+      "<strong>Martian Plains</strong><br>"+
+      "Large regions of Mars consist of broad volcanic, sedimentary, or impact-modified plains covered with dust, sand, rocks, and small craters.",
+    sky:"#b97556",
+    sky2:"#e0a07a",
+    horizon:"#874934",
+    ground:"#a75738",
+    ridge:"#733629",
+    rock:"#5b2b23",
+    roughness:.88
+  }
+};
 
 function seedLandscape(){
+  rocks.length=0;
 
-  rocks.length =
-    0;
-
-
-  for(
-    let i=0;
-    i<80;
-    i++
-  ){
-
+  for(let i=0;i<90;i++){
     rocks.push({
-
-      x:
-        Math.random() *
-        3000 -
-        1500,
-
-      depth:
-        Math.random(),
-
-      size:
-        Math.random() *
-        18 +
-        3
-
+      x:Math.random()*3200-1600,
+      depth:Math.random(),
+      size:Math.random()*18+3
     });
-
   }
-
 }
-
 
 function resizeSurface(){
+  const rect=viewer.getBoundingClientRect();
+  const ratio=Math.min(window.devicePixelRatio||1,2);
 
-  const rect =
-    viewer.getBoundingClientRect();
+  surfaceCanvas.width=Math.max(1,Math.floor(rect.width*ratio));
+  surfaceCanvas.height=Math.max(1,Math.floor(rect.height*ratio));
 
+  surfaceCanvas.style.width=rect.width+"px";
+  surfaceCanvas.style.height=rect.height+"px";
 
-  const ratio =
-    Math.min(
-      window.devicePixelRatio || 1,
-      2
-    );
-
-
-  surfaceCanvas.width =
-    Math.max(
-      1,
-      Math.floor(
-        rect.width *
-        ratio
-      )
-    );
-
-
-  surfaceCanvas.height =
-    Math.max(
-      1,
-      Math.floor(
-        rect.height *
-        ratio
-      )
-    );
-
-
-  surfaceCanvas.style.width =
-    rect.width +
-    "px";
-
-
-  surfaceCanvas.style.height =
-    rect.height +
-    "px";
-
-
-  s.setTransform(
-    ratio,
-    0,
-    0,
-    ratio,
-    0,
-    0
-  );
-
+  sctx.setTransform(ratio,0,0,ratio,0,0);
 
   drawSurface();
-
 }
 
-
-function terrainHeight(
-  x,
-  data
-){
-
-  return (
-
-    Math.sin(
-      x *
-      .0042
-    ) *
-    17 +
-
-    Math.sin(
-      x *
-      .0093 +
-      1.1
-    ) *
-    9 +
-
-    Math.sin(
-      x *
-      .0018 +
-      3
-    ) *
-    22
-
-  ) *
-  data.roughness;
-
+function terrainHeight(x,data){
+  return(
+    Math.sin(x*.0042)*17+
+    Math.sin(x*.0093+1.1)*9+
+    Math.sin(x*.0018+3)*22
+  )*data.roughness;
 }
-
 
 function drawSurface(){
+  const rect=viewer.getBoundingClientRect();
+  const w=rect.width;
+  const h=rect.height;
+  const data=sites[site];
 
-  const rect =
-    viewer.getBoundingClientRect();
+  if(!w||!h)return;
 
+  sctx.clearRect(0,0,w,h);
 
-  const w =
-    rect.width;
+  let gradient=sctx.createLinearGradient(0,0,0,h*.7);
+  gradient.addColorStop(0,data.sky);
+  gradient.addColorStop(.58,data.sky2);
+  gradient.addColorStop(1,"#e5aa83");
 
+  sctx.fillStyle=gradient;
+  sctx.fillRect(0,0,w,h);
 
-  const h =
-    rect.height;
+  const sunX=w*.77-viewAngle*.35;
+  const sunY=h*.18;
 
-
-  const data =
-    sites[site];
-
-
-  if(
-    !w ||
-    !h
-  ){
-
-    return;
-
-  }
-
-
-  s.clearRect(
-    0,
-    0,
-    w,
-    h
+  const glow=sctx.createRadialGradient(
+    sunX,sunY,2,
+    sunX,sunY,58
   );
 
+  glow.addColorStop(0,"rgba(255,248,218,.95)");
+  glow.addColorStop(.14,"rgba(255,232,175,.75)");
+  glow.addColorStop(1,"rgba(255,210,160,0)");
 
-  /* sky */
+  sctx.fillStyle=glow;
+  sctx.beginPath();
+  sctx.arc(sunX,sunY,60,0,Math.PI*2);
+  sctx.fill();
 
-  let gradient =
-    s.createLinearGradient(
-      0,
-      0,
-      0,
-      h *
-      .7
-    );
+  sctx.fillStyle="#fff2cf";
+  sctx.beginPath();
+  sctx.arc(sunX,sunY,7,0,Math.PI*2);
+  sctx.fill();
 
+  const horizon=h*.52;
 
-  gradient.addColorStop(
-    0,
-    data.sky
-  );
+  sctx.beginPath();
+  sctx.moveTo(0,horizon);
 
-
-  gradient.addColorStop(
-    .58,
-    data.sky2
-  );
-
-
-  gradient.addColorStop(
-    1,
-    "#e5aa83"
-  );
-
-
-  s.fillStyle =
-    gradient;
-
-
-  s.fillRect(
-    0,
-    0,
-    w,
-    h
-  );
-
-
-  /* Sun */
-
-  const sunX =
-    w *
-    .77 -
-    viewAngle *
-    .35;
-
-
-  const sunY =
-    h *
-    .18;
-
-
-  const glow =
-    s.createRadialGradient(
-      sunX,
-      sunY,
-      2,
-      sunX,
-      sunY,
-      58
-    );
-
-
-  glow.addColorStop(
-    0,
-    "rgba(255,248,218,.95)"
-  );
-
-
-  glow.addColorStop(
-    .14,
-    "rgba(255,232,175,.75)"
-  );
-
-
-  glow.addColorStop(
-    1,
-    "rgba(255,210,160,0)"
-  );
-
-
-  s.fillStyle =
-    glow;
-
-
-  s.beginPath();
-
-
-  s.arc(
-    sunX,
-    sunY,
-    60,
-    0,
-    Math.PI *
-    2
-  );
-
-
-  s.fill();
-
-
-  s.fillStyle =
-    "#fff2cf";
-
-
-  s.beginPath();
-
-
-  s.arc(
-    sunX,
-    sunY,
-    7,
-    0,
-    Math.PI *
-    2
-  );
-
-
-  s.fill();
-
-
-  /* distant ridge */
-
-  const horizon =
-    h *
-    .52;
-
-
-  s.beginPath();
-
-
-  s.moveTo(
-    0,
-    horizon
-  );
-
-
-  for(
-    let x=0;
-    x<=w;
-    x+=7
-  ){
-
-    s.lineTo(
-
+  for(let x=0;x<=w;x+=7){
+    sctx.lineTo(
       x,
-
-      horizon -
-      terrainHeight(
-        x +
-        viewAngle *
-        5,
-        data
-      )
-
+      horizon-terrainHeight(x+viewAngle*5,data)
     );
-
   }
 
+  sctx.lineTo(w,h);
+  sctx.lineTo(0,h);
+  sctx.closePath();
 
-  s.lineTo(
-    w,
-    h
-  );
+  sctx.fillStyle=data.horizon;
+  sctx.fill();
 
+  sctx.beginPath();
+  sctx.moveTo(0,horizon+25);
 
-  s.lineTo(
-    0,
-    h
-  );
-
-
-  s.closePath();
-
-
-  s.fillStyle =
-    data.horizon;
-
-
-  s.fill();
-
-
-  /* second ridge */
-
-  s.beginPath();
-
-
-  s.moveTo(
-    0,
-    horizon +
-    25
-  );
-
-
-  for(
-    let x=0;
-    x<=w;
-    x+=7
-  ){
-
-    s.lineTo(
-
+  for(let x=0;x<=w;x+=7){
+    sctx.lineTo(
       x,
-
-      horizon +
-      18 -
-
-      terrainHeight(
-        x +
-        viewAngle *
-        7 +
-        500,
-        data
-      ) *
-      .62
-
+      horizon+18-terrainHeight(x+viewAngle*7+500,data)*.62
     );
-
   }
 
+  sctx.lineTo(w,h);
+  sctx.lineTo(0,h);
+  sctx.closePath();
 
-  s.lineTo(
-    w,
-    h
-  );
+  sctx.fillStyle=data.ridge;
+  sctx.fill();
 
+  const groundY=h*.55;
 
-  s.lineTo(
-    0,
-    h
-  );
+  gradient=sctx.createLinearGradient(0,groundY,0,h);
+  gradient.addColorStop(0,data.ground);
+  gradient.addColorStop(.56,"#84402f");
+  gradient.addColorStop(1,"#4d211a");
 
+  sctx.fillStyle=gradient;
+  sctx.fillRect(0,groundY,w,h-groundY);
 
-  s.closePath();
+  if(site==="olympus"){
+    const center=w*.5-viewAngle*.7;
 
-
-  s.fillStyle =
-    data.ridge;
-
-
-  s.fill();
-
-
-  /* ground */
-
-  const groundY =
-    h *
-    .55;
-
-
-  gradient =
-    s.createLinearGradient(
-      0,
-      groundY,
-      0,
-      h
-    );
-
-
-  gradient.addColorStop(
-    0,
-    data.ground
-  );
-
-
-  gradient.addColorStop(
-    .56,
-    "#84402f"
-  );
-
-
-  gradient.addColorStop(
-    1,
-    "#4d211a"
-  );
-
-
-  s.fillStyle =
-    gradient;
-
-
-  s.fillRect(
-    0,
-    groundY,
-    w,
-    h -
-    groundY
-  );
-
-
-  /* Olympus Mons */
-
-  if(site === "olympus"){
-
-    const center =
-      w *
-      .5 -
-      viewAngle *
-      .7;
-
-
-    s.fillStyle =
-      "#441b16cc";
-
-
-    s.beginPath();
-
-
-    s.moveTo(
-      center -
-      340,
-      horizon +
-      18
-    );
-
-
-    s.quadraticCurveTo(
-      center -
-      190,
-      horizon -
-      35,
-      center,
-      horizon -
-      86
-    );
-
-
-    s.quadraticCurveTo(
-      center +
-      190,
-      horizon -
-      35,
-      center +
-      340,
-      horizon +
-      18
-    );
-
-
-    s.closePath();
-
-
-    s.fill();
-
+    sctx.fillStyle="rgba(68,27,22,.80)";
+    sctx.beginPath();
+    sctx.moveTo(center-340,horizon+18);
+    sctx.quadraticCurveTo(center-190,horizon-35,center,horizon-86);
+    sctx.quadraticCurveTo(center+190,horizon-35,center+340,horizon+18);
+    sctx.closePath();
+    sctx.fill();
   }
 
+  if(site==="valles"){
+    const center=w*.55-viewAngle*.5;
 
-  /* Valles Marineris */
-
-  if(site === "valles"){
-
-    const center =
-      w *
-      .55 -
-      viewAngle *
-      .5;
-
-
-    s.fillStyle =
-      "#301210b3";
-
-
-    s.beginPath();
-
-
-    s.moveTo(
-      center -
-      230,
-      horizon +
-      12
-    );
-
-
-    s.lineTo(
-      center -
-      85,
-      horizon +
-      150
-    );
-
-
-    s.lineTo(
-      center +
-      105,
-      horizon +
-      168
-    );
-
-
-    s.lineTo(
-      center +
-      245,
-      horizon +
-      14
-    );
-
-
-    s.closePath();
-
-
-    s.fill();
-
+    sctx.fillStyle="rgba(48,18,16,.70)";
+    sctx.beginPath();
+    sctx.moveTo(center-230,horizon+12);
+    sctx.lineTo(center-85,horizon+150);
+    sctx.lineTo(center+105,horizon+168);
+    sctx.lineTo(center+245,horizon+14);
+    sctx.closePath();
+    sctx.fill();
   }
 
+  if(site==="polar"){
+    sctx.fillStyle="rgba(231,221,214,.68)";
 
-  /* polar ice */
+    for(let i=0;i<10;i++){
+      let x=(i*145-viewAngle*.7)%(w+190);
+      if(x<0)x+=w+190;
 
-  if(site === "polar"){
-
-    s.fillStyle =
-      "#e7ddd6ad";
-
-
-    for(
-      let i=0;
-      i<10;
-      i++
-    ){
-
-      let x =
-        (
-          i *
-          145 -
-          viewAngle *
-          .7
-        ) %
-        (
-          w +
-          190
-        );
-
-
-      if(x < 0){
-
-        x +=
-          w +
-          190;
-
-      }
-
-
-      s.beginPath();
-
-
-      s.ellipse(
-        x -
-        60,
-        horizon +
-        48 +
-        i *
-        8,
+      sctx.beginPath();
+      sctx.ellipse(
+        x-60,
+        horizon+48+i*8,
         86,
         14,
         -.05,
         0,
-        Math.PI *
-        2
+        Math.PI*2
       );
-
-
-      s.fill();
-
+      sctx.fill();
     }
-
   }
 
+  const sorted=[...rocks].sort((a,b)=>a.depth-b.depth);
 
-  /* rocks */
+  for(const rock of sorted){
+    const perspective=.12+rock.depth*1.25;
 
-  const sorted =
-    [...rocks]
-    .sort(
-      (a,b) =>
-        a.depth -
-        b.depth
+    let x=
+      w/2+
+      (rock.x-viewAngle*7)*
+      perspective;
+
+    while(x<-220)x+=3200*perspective;
+    while(x>w+220)x-=3200*perspective;
+
+    const y=
+      groundY+
+      Math.pow(rock.depth,1.55)*
+      (h-groundY);
+
+    const size=
+      rock.size*
+      (.35+rock.depth*1.8);
+
+    sctx.fillStyle="rgba(29,12,9,.22)";
+    sctx.beginPath();
+    sctx.ellipse(
+      x+size*.18,
+      y+size*.45,
+      size*.82,
+      size*.23,
+      0,
+      0,
+      Math.PI*2
     );
+    sctx.fill();
 
-
-  sorted.forEach(
-    rock => {
-
-      const perspective =
-        .12 +
-        rock.depth *
-        1.25;
-
-
-      let x =
-        w /
-        2 +
-
-        (
-          rock.x -
-          viewAngle *
-          7
-        ) *
-        perspective;
-
-
-      while(x < -220){
-
-        x +=
-          3000 *
-          perspective;
-
-      }
-
-
-      while(x > w + 220){
-
-        x -=
-          3000 *
-          perspective;
-
-      }
-
-
-      const y =
-        groundY +
-
-        Math.pow(
-          rock.depth,
-          1.55
-        ) *
-
-        (
-          h -
-          groundY
-        );
-
-
-      const size =
-        rock.size *
-
-        (
-          .35 +
-          rock.depth *
-          1.8
-        );
-
-
-      s.fillStyle =
-        "#1d0c0938";
-
-
-      s.beginPath();
-
-
-      s.ellipse(
-        x +
-        size *
-        .18,
-        y +
-        size *
-        .45,
-        size *
-        .82,
-        size *
-        .23,
-        0,
-        0,
-        Math.PI *
-        2
-      );
-
-
-      s.fill();
-
-
-      s.fillStyle =
-        data.rock;
-
-
-      s.beginPath();
-
-
-      s.moveTo(
-        x -
-        size *
-        .62,
-        y
-      );
-
-
-      s.lineTo(
-        x -
-        size *
-        .18,
-        y -
-        size *
-        .72
-      );
-
-
-      s.lineTo(
-        x +
-        size *
-        .44,
-        y -
-        size *
-        .5
-      );
-
-
-      s.lineTo(
-        x +
-        size *
-        .69,
-        y
-      );
-
-
-      s.closePath();
-
-
-      s.fill();
-
-    }
-  );
-
+    sctx.fillStyle=data.rock;
+    sctx.beginPath();
+    sctx.moveTo(x-size*.62,y);
+    sctx.lineTo(x-size*.18,y-size*.72);
+    sctx.lineTo(x+size*.44,y-size*.5);
+    sctx.lineTo(x+size*.69,y);
+    sctx.closePath();
+    sctx.fill();
+  }
 }
 
-
 function updateHeading(){
+  let degrees=(viewAngle*.22)%360;
+  if(degrees<0)degrees+=360;
 
-  let degrees =
-    (
-      viewAngle *
-      .22
-    ) %
-    360;
-
-
-  if(degrees < 0){
-
-    degrees +=
-      360;
-
-  }
-
-
-  const directions = [
+  const directions=[
     "NORTH",
     "NORTHEAST",
     "EAST",
@@ -3797,359 +2026,126 @@ function updateHeading(){
     "NORTHWEST"
   ];
 
-
-  heading.textContent =
-
-    directions[
-      Math.round(
-        degrees /
-        45
-      ) %
-      8
-    ] +
-
-    " · " +
-
-    Math.round(
-      degrees
-    ) +
-
+  heading.textContent=
+    directions[Math.round(degrees/45)%8]+
+    " · "+
+    Math.round(degrees)+
     "°";
-
 }
 
-
-function look(
-  amount
-){
-
-  viewAngle +=
-    amount;
-
-
+function look(amount){
+  viewAngle+=amount;
   updateHeading();
+  drawSurface();
+}
 
+$("lookLeft").onclick=()=>look(-40);
+$("lookRight").onclick=()=>look(40);
+
+$("centerView").onclick=()=>{
+  viewAngle=0;
+  updateHeading();
+  drawSurface();
+};
+
+$("walk").onclick=()=>{
+  steps++;
+
+  for(const rock of rocks){
+    rock.depth+=.055;
+
+    if(rock.depth>1.05){
+      rock.depth=Math.random()*.15;
+      rock.x=Math.random()*3200-1600;
+    }
+  }
+
+  $("walk").textContent=
+    "🚶 Moved "+
+    steps+
+    (steps===1?" Step":" Steps");
 
   drawSurface();
+};
 
-}
+viewer.onpointerdown=event=>{
+  dragging=true;
+  dragStartX=event.clientX;
+  dragStartAngle=viewAngle;
+  viewer.setPointerCapture(event.pointerId);
+};
 
+viewer.onpointermove=event=>{
+  if(!dragging)return;
 
-$("lookLeft").onclick =
-  () =>
-    look(-40);
+  viewAngle=
+    dragStartAngle-
+    (event.clientX-dragStartX)*.65;
 
+  updateHeading();
+  drawSurface();
+};
 
-$("lookRight").onclick =
-  () =>
-    look(40);
+viewer.onpointerup=
+viewer.onpointercancel=
+()=>{dragging=false};
 
+document.querySelectorAll("[data-site]").forEach(button=>{
+  button.onclick=()=>{
+    site=button.dataset.site;
 
-$("centerView").onclick =
-  () => {
+    document.querySelectorAll("[data-site]").forEach(other=>{
+      other.classList.toggle("active",other===button);
+    });
 
-    viewAngle =
-      0;
+    const data=sites[site];
 
+    locationName.textContent=data.name;
+    locationSubtitle.textContent=data.subtitle;
+    siteInfo.innerHTML=data.info;
 
+    viewAngle=0;
+    steps=0;
+    $("walk").textContent="🚶 Move Forward";
+
+    seedLandscape();
     updateHeading();
-
-
     drawSurface();
-
   };
+});
 
+document.querySelectorAll("[data-level]").forEach(button=>{
+  button.onclick=()=>{
+    const level=Number(button.dataset.level);
 
-$("walk").onclick =
-  () => {
+    document.querySelectorAll("[data-level]").forEach(other=>{
+      other.classList.toggle("active",other===button);
+    });
 
-    steps++;
+    document.querySelectorAll("[data-min]").forEach(section=>{
+      section.hidden=Number(section.dataset.min)>level;
+    });
 
+    const messages={
+      1:"Beginner — explore the surface and the most important facts first.",
+      2:"Technical — adds atmospheric entry, planetary science, and landing context.",
+      3:"Advanced — adds entry-corridor, heating, deceleration, powered-descent, radiation, and geology details."
+    };
 
-    rocks.forEach(
-      rock => {
-
-        rock.depth +=
-          .055;
-
-
-        if(rock.depth > 1.05){
-
-          rock.depth =
-            Math.random() *
-            .15;
-
-
-          rock.x =
-            Math.random() *
-            3000 -
-            1500;
-
-        }
-
-      }
-    );
-
-
-    $("walk").textContent =
-
-      "🚶 Moved " +
-
-      steps +
-
-      (
-        steps === 1
-        ?
-        " Step"
-        :
-        " Steps"
-      );
-
-
-    drawSurface();
-
+    $("levelStatus").textContent=messages[level];
   };
-
-
-/* mouse / touch */
-
-viewer.onpointerdown =
-  event => {
-
-    dragging =
-      true;
-
-
-    dragStartX =
-      event.clientX;
-
-
-    dragStartAngle =
-      viewAngle;
-
-
-    viewer.setPointerCapture(
-      event.pointerId
-    );
-
-  };
-
-
-viewer.onpointermove =
-  event => {
-
-    if(!dragging){
-
-      return;
-
-    }
-
-
-    viewAngle =
-
-      dragStartAngle -
-
-      (
-        event.clientX -
-        dragStartX
-      ) *
-      .65;
-
-
-    updateHeading();
-
-
-    drawSurface();
-
-  };
-
-
-viewer.onpointerup =
-viewer.onpointercancel =
-  () => {
-
-    dragging =
-      false;
-
-  };
-
-
-/* locations */
-
-document
-.querySelectorAll(
-  "[data-site]"
-)
-.forEach(
-  button => {
-
-    button.onclick =
-      () => {
-
-        site =
-          button.dataset.site;
-
-
-        document
-        .querySelectorAll(
-          "[data-site]"
-        )
-        .forEach(
-          other => {
-
-            other.classList.toggle(
-              "active",
-              other === button
-            );
-
-          }
-        );
-
-
-        const data =
-          sites[site];
-
-
-        locationName.textContent =
-          data.name;
-
-
-        locationSubtitle.textContent =
-          data.subtitle;
-
-
-        siteInfo.innerHTML =
-          data.info;
-
-
-        viewAngle =
-          0;
-
-
-        steps =
-          0;
-
-
-        $("walk").textContent =
-          "🚶 Move Forward";
-
-
-        seedLandscape();
-
-
-        updateHeading();
-
-
-        drawSurface();
-
-      };
-
-  }
-);
-
-
-/* learning levels */
-
-document
-.querySelectorAll(
-  "[data-level]"
-)
-.forEach(
-  button => {
-
-    button.onclick =
-      () => {
-
-        const level =
-          Number(
-            button.dataset.level
-          );
-
-
-        document
-        .querySelectorAll(
-          "[data-level]"
-        )
-        .forEach(
-          other => {
-
-            other.classList.toggle(
-              "active",
-              other === button
-            );
-
-          }
-        );
-
-
-        document
-        .querySelectorAll(
-          "[data-min]"
-        )
-        .forEach(
-          section => {
-
-            section.hidden =
-              Number(
-                section.dataset.min
-              ) >
-              level;
-
-          }
-        );
-
-
-        const messages = {
-
-          1:
-            "Beginner — explore the surface and the most important facts first.",
-
-          2:
-            "Technical — adds atmospheric entry, planetary science, and landing context.",
-
-          3:
-            "Advanced — adds deeper atmospheric, geological, radiation, and water-history details."
-
-        };
-
-
-        $("levelStatus").textContent =
-          messages[level];
-
-      };
-
-  }
-);
-
-
-/* startup */
-
-window.addEventListener(
-  "resize",
-  () => {
-
-    resizeArrival();
-
-
-    resizeSurface();
-
-  }
-);
-
+});
+
+window.addEventListener("resize",()=>{
+  resizeArrival();
+  resizeSurface();
+});
 
 seedLandscape();
-
-
 resizeSurface();
-
-
 updateHeading();
 
-
-setTimeout(
-  startArrival,
-  450
-);
+setTimeout(startArrival,450);
 
 })();
 </script>
