@@ -1,0 +1,3092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07111f">
+
+<title>Universe Explorer — Earth to Mars</title>
+
+<style>
+:root{
+  --space:#050b16;
+  --space2:#0b1830;
+  --panel:#0e1d31;
+  --panel2:#142842;
+  --line:#29435f;
+  --blue:#3da5ff;
+  --blue2:#1776d2;
+  --yellow:#ffd35a;
+  --orange:#e98143;
+  --red:#d6534d;
+  --green:#43b581;
+  --text:#eef7ff;
+  --muted:#a9bfd2;
+  --white:#ffffff;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Arial,
+    sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 50% 0%, #163454 0, #09162a 36%, #050b16 75%);
+}
+
+button,
+select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+button:focus-visible,
+select:focus-visible{
+  outline:3px solid var(--yellow);
+  outline-offset:3px;
+}
+
+header{
+  position:relative;
+  text-align:center;
+  padding:28px 18px 24px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(6,19,37,.96),
+      rgba(15,65,109,.96)
+    );
+  border-bottom:1px solid #2b5476;
+}
+
+header h1{
+  margin:0;
+  font-size:clamp(30px,6vw,48px);
+}
+
+header p{
+  margin:7px auto 0;
+  max-width:760px;
+  line-height:1.5;
+  color:#d8ebfb;
+}
+
+.brand{
+  position:absolute;
+  right:18px;
+  top:14px;
+  min-width:94px;
+  padding:8px 10px;
+  border:1px solid rgba(255,255,255,.25);
+  border-radius:12px;
+  background:rgba(255,255,255,.09);
+  font-weight:900;
+  letter-spacing:.12em;
+}
+
+.brand small{
+  display:block;
+  margin-top:2px;
+  font-size:9px;
+  letter-spacing:.05em;
+  color:#c9def0;
+}
+
+main{
+  width:min(1180px,100%);
+  margin:auto;
+  padding:18px;
+}
+
+.panel{
+  margin-bottom:16px;
+  padding:17px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(18,40,66,.96),
+      rgba(9,23,40,.97)
+    );
+  box-shadow:0 12px 32px rgba(0,0,0,.16);
+}
+
+h2{
+  margin:0 0 8px;
+  padding-left:10px;
+  border-left:5px solid var(--yellow);
+  font-size:22px;
+}
+
+h3{
+  margin:0 0 8px;
+}
+
+.lead{
+  color:var(--muted);
+  line-height:1.55;
+}
+
+.level-buttons,
+.mode-buttons,
+.play-buttons,
+.view-buttons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.level-buttons button,
+.mode-buttons button,
+.play-buttons button,
+.view-buttons button{
+  min-height:46px;
+  padding:9px 13px;
+  border:1px solid #3f668a;
+  border-radius:11px;
+  color:var(--text);
+  background:#132b47;
+  font-weight:800;
+}
+
+button.active{
+  color:#07111f;
+  border-color:#f3c63d;
+  background:var(--yellow);
+}
+
+button.primary{
+  color:#07111f;
+  border-color:#f3c63d;
+  background:var(--yellow);
+}
+
+button.danger{
+  color:white;
+  border-color:#90443d;
+  background:#6c2d2a;
+}
+
+.status-bar{
+  margin-top:10px;
+  padding:9px 11px;
+  border:1px solid #315170;
+  border-radius:10px;
+  background:#0b1b2e;
+  color:#cde4f6;
+  font-size:13px;
+  font-weight:700;
+}
+
+.grid-two{
+  display:grid;
+  grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);
+  gap:15px;
+}
+
+.grid-three{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:11px;
+}
+
+.viewer{
+  position:relative;
+  min-height:470px;
+  overflow:hidden;
+  border:1px solid #355a7a;
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 50% 55%, #14233d 0, #07101d 45%, #02060d 100%);
+}
+
+#starCanvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+
+.viewer-overlay{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+
+.view-label{
+  position:absolute;
+  left:14px;
+  top:13px;
+  padding:6px 9px;
+  border-radius:8px;
+  background:rgba(2,8,16,.72);
+  border:1px solid rgba(255,255,255,.17);
+  color:#cce6fa;
+  font-size:12px;
+  font-weight:800;
+}
+
+.mars{
+  position:absolute;
+  left:50%;
+  top:42%;
+  width:20px;
+  height:20px;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 34% 27%, #f4b178 0 8%, #c45e37 25%, #8e3527 68%, #501c1d 100%);
+  box-shadow:
+    inset -10px -8px 20px rgba(48,9,8,.45),
+    0 0 18px rgba(230,108,61,.22);
+}
+
+.mars::after{
+  content:"MARS";
+  position:absolute;
+  left:50%;
+  top:calc(100% + 10px);
+  transform:translateX(-50%);
+  color:#ffc0a5;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.12em;
+  white-space:nowrap;
+}
+
+.rear-monitor{
+  position:absolute;
+  right:14px;
+  bottom:14px;
+  width:150px;
+  height:118px;
+  padding:9px;
+  overflow:hidden;
+  border:1px solid #456985;
+  border-radius:12px;
+  background:rgba(1,8,17,.78);
+}
+
+.rear-title{
+  font-size:10px;
+  font-weight:900;
+  color:#9fc8e5;
+  letter-spacing:.1em;
+}
+
+.earth{
+  position:absolute;
+  left:50%;
+  top:58%;
+  width:64px;
+  height:64px;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 38% 25%, #8be1ff 0 4%, transparent 5%),
+    radial-gradient(circle at 35% 45%, #44a66c 0 17%, transparent 18%),
+    radial-gradient(circle at 63% 62%, #63ad6f 0 12%, transparent 13%),
+    radial-gradient(circle at 45% 45%, #2d91d2 0 50%, #17649c 71%, #0e3e6b 100%);
+  box-shadow:
+    inset -12px -8px 18px rgba(3,19,39,.42),
+    0 0 12px rgba(75,180,255,.28);
+}
+
+.cockpit-bottom{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:74px;
+  background:
+    linear-gradient(
+      180deg,
+      transparent 0,
+      rgba(0,0,0,.38) 34%,
+      rgba(2,8,14,.95) 100%
+    );
+}
+
+.crosshair{
+  position:absolute;
+  left:50%;
+  top:42%;
+  width:58px;
+  height:58px;
+  transform:translate(-50%,-50%);
+  border:1px solid rgba(129,206,255,.32);
+  border-radius:50%;
+}
+
+.crosshair::before,
+.crosshair::after{
+  content:"";
+  position:absolute;
+  background:rgba(129,206,255,.35);
+}
+
+.crosshair::before{
+  left:-18px;
+  right:-18px;
+  top:50%;
+  height:1px;
+}
+
+.crosshair::after{
+  top:-18px;
+  bottom:-18px;
+  left:50%;
+  width:1px;
+}
+
+.readouts{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+.readout{
+  min-width:0;
+  padding:11px;
+  border:1px solid #315372;
+  border-radius:12px;
+  background:#0a1a2d;
+}
+
+.readout span{
+  display:block;
+  margin-bottom:4px;
+  color:#86a7bf;
+  font-size:11px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+}
+
+.readout strong{
+  display:block;
+  overflow-wrap:anywhere;
+  color:white;
+  font-size:18px;
+}
+
+.control-block{
+  margin-top:12px;
+}
+
+.control-block label{
+  display:block;
+  margin-bottom:6px;
+  font-size:13px;
+  font-weight:800;
+  color:#cde2f3;
+}
+
+select{
+  width:100%;
+  min-height:46px;
+  padding:8px 10px;
+  border:1px solid #45647f;
+  border-radius:10px;
+  color:white;
+  background:#0b1c30;
+}
+
+.progress-wrap{
+  margin-top:13px;
+}
+
+.progress-label{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  color:#bcd5e7;
+  font-size:12px;
+  font-weight:800;
+}
+
+.progress{
+  height:12px;
+  margin-top:6px;
+  overflow:hidden;
+  border:1px solid #325572;
+  border-radius:999px;
+  background:#06111f;
+}
+
+.progress > div{
+  width:0;
+  height:100%;
+  border-radius:inherit;
+  background:
+    linear-gradient(
+      90deg,
+      #2d91e8,
+      #5bc5ff,
+      #ffd35a
+    );
+}
+
+.note{
+  margin-top:12px;
+  padding:11px 12px;
+  border:1px solid #41627b;
+  border-radius:11px;
+  color:#d8eaf7;
+  background:#0a1a2b;
+  line-height:1.5;
+}
+
+.warning{
+  margin-top:12px;
+  padding:11px 12px;
+  border:1px solid #9a7430;
+  border-radius:11px;
+  color:#ffe7a2;
+  background:#362a0d;
+  line-height:1.5;
+}
+
+.tech{
+  margin-top:12px;
+  padding:13px;
+  border:1px solid #355e80;
+  border-radius:12px;
+  background:#0d2239;
+}
+
+.advanced{
+  margin-top:12px;
+  padding:13px;
+  border:1px solid #66548c;
+  border-radius:12px;
+  background:#201b35;
+}
+
+.formula{
+  margin-top:8px;
+  padding:9px 10px;
+  border-radius:9px;
+  background:rgba(255,255,255,.06);
+  font-family:
+    "SFMono-Regular",
+    Consolas,
+    monospace;
+  color:#e8f4ff;
+  overflow-wrap:anywhere;
+}
+
+.map-wrap{
+  position:relative;
+  overflow:hidden;
+  margin-top:12px;
+  border:1px solid #32536d;
+  border-radius:16px;
+  background:#050d19;
+}
+
+#orbitSvg{
+  display:block;
+  width:100%;
+  height:auto;
+}
+
+.map-caption{
+  padding:9px 12px;
+  border-top:1px solid #29435f;
+  color:#9fbad0;
+  font-size:12px;
+}
+
+.fact{
+  padding:13px;
+  border:1px solid #31516d;
+  border-radius:12px;
+  background:#0a1b2e;
+}
+
+.fact strong{
+  display:block;
+  margin-bottom:5px;
+  color:white;
+}
+
+.fact p{
+  margin:0;
+  color:#b8d0e1;
+  font-size:14px;
+  line-height:1.48;
+}
+
+footer{
+  padding:25px 16px;
+  text-align:center;
+  color:#9eb8cb;
+  font-size:13px;
+}
+
+@media(max-width:850px){
+  .grid-two{
+    grid-template-columns:1fr;
+  }
+
+  .viewer{
+    min-height:430px;
+  }
+}
+
+@media(max-width:620px){
+  main{
+    padding:11px;
+  }
+
+  header{
+    padding-top:18px;
+  }
+
+  .brand{
+    position:static;
+    display:inline-block;
+    margin-bottom:11px;
+  }
+
+  .grid-three{
+    grid-template-columns:1fr;
+  }
+
+  .viewer{
+    min-height:390px;
+  }
+
+  .readouts{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .rear-monitor{
+    width:120px;
+    height:98px;
+  }
+}
+
+@media(max-width:420px){
+  .readouts{
+    grid-template-columns:1fr;
+  }
+
+  .viewer{
+    min-height:360px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  *{
+    scroll-behavior:auto !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">
+    DONCO
+    <small>UNIVERSE EXPLORER</small>
+  </div>
+
+  <h1>Earth → Mars</h1>
+
+  <p>
+    Experience a simplified journey from Earth to Mars.
+    Compare a realistic orbital transfer with hypothetical
+    near-light-speed travel.
+  </p>
+</header>
+
+<main>
+
+<section class="panel">
+  <h2>Choose Your Learning Level</h2>
+
+  <p class="lead">
+    Start simple, then reveal the physics behind the journey.
+  </p>
+
+  <div class="level-buttons">
+    <button
+      type="button"
+      class="active"
+      data-level="1">
+      Beginner
+    </button>
+
+    <button
+      type="button"
+      data-level="2">
+      Technical
+    </button>
+
+    <button
+      type="button"
+      data-level="3">
+      Advanced
+    </button>
+  </div>
+
+  <div
+    id="levelStatus"
+    class="status-bar">
+    Beginner — see the journey and the important ideas first.
+  </div>
+</section>
+
+
+<section class="panel">
+  <h2>Choose the Journey</h2>
+
+  <div class="mode-buttons">
+
+    <button
+      type="button"
+      class="active"
+      data-mode="transfer">
+      Real Mars Transfer
+    </button>
+
+    <button
+      type="button"
+      data-mode="05">
+      0.5c
+    </button>
+
+    <button
+      type="button"
+      data-mode="09">
+      0.9c
+    </button>
+
+    <button
+      type="button"
+      data-mode="099">
+      0.99c
+    </button>
+
+    <button
+      type="button"
+      data-mode="0999">
+      0.999c
+    </button>
+
+    <button
+      type="button"
+      data-mode="light">
+      Follow a Light Beam
+    </button>
+
+  </div>
+
+  <div class="warning">
+    The near-light-speed modes are educational thought experiments.
+    No spacecraft with mass can travel at the speed of light, and
+    present-day spacecraft cannot approach the relativistic speeds
+    shown here.
+  </div>
+</section>
+
+
+<section class="panel">
+
+<div class="grid-two">
+
+  <div>
+
+    <div
+      id="viewer"
+      class="viewer">
+
+      <canvas id="starCanvas"></canvas>
+
+      <div class="viewer-overlay">
+
+        <div class="view-label">
+          FORWARD TRAVELER VIEW · VISUAL SCALE NOT REAL
+        </div>
+
+        <div
+          id="marsDisc"
+          class="mars">
+        </div>
+
+        <div class="crosshair"></div>
+
+        <div class="rear-monitor">
+          <div class="rear-title">
+            REAR VIEW — EARTH
+          </div>
+
+          <div
+            id="earthDisc"
+            class="earth">
+          </div>
+        </div>
+
+        <div class="cockpit-bottom"></div>
+
+      </div>
+
+    </div>
+
+    <div class="play-buttons" style="margin-top:11px">
+
+      <button
+        id="launchBtn"
+        type="button"
+        class="primary">
+        🚀 Launch From Earth
+      </button>
+
+      <button
+        id="pauseBtn"
+        type="button">
+        Pause
+      </button>
+
+      <button
+        id="skipBtn"
+        type="button">
+        +10% Journey
+      </button>
+
+      <button
+        id="resetBtn"
+        type="button"
+        class="danger">
+        Reset
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div>
+
+    <h3>Flight Instruments</h3>
+
+    <div class="readouts">
+
+      <div class="readout">
+        <span>Mode</span>
+        <strong id="modeReadout">
+          Mars Transfer
+        </strong>
+      </div>
+
+      <div class="readout">
+        <span>Mission Progress</span>
+        <strong id="progressReadout">
+          0.0%
+        </strong>
+      </div>
+
+      <div class="readout">
+        <span>Earth-Frame Time</span>
+        <strong id="earthTime">
+          0 days
+        </strong>
+      </div>
+
+      <div class="readout">
+        <span>Traveler Time</span>
+        <strong id="travelerTime">
+          0 days
+        </strong>
+      </div>
+
+      <div class="readout">
+        <span>Distance Traveled</span>
+        <strong id="distanceReadout">
+          0 km
+        </strong>
+      </div>
+
+      <div class="readout">
+        <span>Distance Remaining</span>
+        <strong id="remainingReadout">
+          —
+        </strong>
+      </div>
+
+      <div class="readout">
+        <span>Speed</span>
+        <strong id="speedReadout">
+          —
+        </strong>
+      </div>
+
+      <div class="readout">
+        <span>Lorentz Factor γ</span>
+        <strong id="gammaReadout">
+          1.000
+        </strong>
+      </div>
+
+    </div>
+
+
+    <div class="control-block">
+
+      <label for="playbackSelect">
+        Simulation Playback Speed
+      </label>
+
+      <select id="playbackSelect">
+        <option value="1">1×</option>
+        <option value="3">3×</option>
+        <option value="10">10×</option>
+        <option value="25">25×</option>
+      </select>
+
+    </div>
+
+
+    <div
+      id="distanceBlock"
+      class="control-block"
+      hidden>
+
+      <label for="distanceSelect">
+        Hypothetical Earth–Mars Separation
+      </label>
+
+      <select id="distanceSelect">
+        <option value="54600000">
+          Close — 54.6 million km
+        </option>
+
+        <option
+          value="225000000"
+          selected>
+          Typical Example — 225 million km
+        </option>
+
+        <option value="401000000">
+          Far — 401 million km
+        </option>
+      </select>
+
+    </div>
+
+
+    <div class="progress-wrap">
+
+      <div class="progress-label">
+        <span>Earth</span>
+        <span id="progressText">0%</span>
+        <span>Mars</span>
+      </div>
+
+      <div class="progress">
+        <div id="progressBar"></div>
+      </div>
+
+    </div>
+
+
+    <div
+      id="missionNote"
+      class="note">
+      Mars must be in the correct place when the spacecraft arrives.
+      A real Mars mission does not simply aim straight at Mars.
+    </div>
+
+  </div>
+
+</div>
+
+</section>
+
+
+<section class="panel">
+
+  <h2>Solar System Map</h2>
+
+  <p class="lead">
+    Watch Earth, Mars, and the spacecraft move during the realistic
+    transfer.
+  </p>
+
+  <div class="map-wrap">
+
+    <svg
+      id="orbitSvg"
+      viewBox="0 0 640 430"
+      role="img"
+      aria-label="Simplified Earth to Mars orbital map">
+
+      <rect
+        width="640"
+        height="430"
+        fill="#040b15">
+      </rect>
+
+
+      <g id="realOrbitGroup">
+
+        <circle
+          cx="320"
+          cy="215"
+          r="116"
+          fill="none"
+          stroke="#244766"
+          stroke-width="2">
+        </circle>
+
+        <circle
+          cx="320"
+          cy="215"
+          r="177"
+          fill="none"
+          stroke="#55372f"
+          stroke-width="2">
+        </circle>
+
+
+        <path
+          id="transferPath"
+          fill="none"
+          stroke="#ffd35a"
+          stroke-width="3"
+          stroke-dasharray="7 6">
+        </path>
+
+
+        <circle
+          cx="320"
+          cy="215"
+          r="19"
+          fill="#ffd35a">
+        </circle>
+
+        <text
+          x="320"
+          y="219"
+          text-anchor="middle"
+          font-size="9"
+          font-weight="900"
+          fill="#4a3300">
+          SUN
+        </text>
+
+
+        <circle
+          id="earthMarker"
+          r="8"
+          fill="#3da5ff">
+        </circle>
+
+        <circle
+          id="marsMarker"
+          r="8"
+          fill="#d96b43">
+        </circle>
+
+        <circle
+          id="shipMarker"
+          r="6"
+          fill="#ffffff"
+          stroke="#ffd35a"
+          stroke-width="3">
+        </circle>
+
+
+        <text
+          id="earthLabel"
+          font-size="12"
+          font-weight="800"
+          fill="#8fd1ff">
+          Earth
+        </text>
+
+        <text
+          id="marsLabel"
+          font-size="12"
+          font-weight="800"
+          fill="#ffad8a">
+          Mars
+        </text>
+
+      </g>
+
+
+      <g
+        id="directGroup"
+        hidden>
+
+        <text
+          x="320"
+          y="70"
+          text-anchor="middle"
+          fill="#a9bfd2"
+          font-size="15"
+          font-weight="800">
+          DIRECT-LINE RELATIVITY THOUGHT EXPERIMENT
+        </text>
+
+        <line
+          x1="100"
+          y1="215"
+          x2="540"
+          y2="215"
+          stroke="#426887"
+          stroke-width="5">
+        </line>
+
+        <line
+          x1="100"
+          y1="215"
+          x2="540"
+          y2="215"
+          stroke="#ffd35a"
+          stroke-width="2"
+          stroke-dasharray="8 8">
+        </line>
+
+        <circle
+          cx="100"
+          cy="215"
+          r="24"
+          fill="#287fc3">
+        </circle>
+
+        <circle
+          cx="540"
+          cy="215"
+          r="20"
+          fill="#ba5435">
+        </circle>
+
+        <circle
+          id="directShip"
+          cx="100"
+          cy="215"
+          r="7"
+          fill="white"
+          stroke="#ffd35a"
+          stroke-width="4">
+        </circle>
+
+        <text
+          x="100"
+          y="260"
+          text-anchor="middle"
+          fill="#9bd8ff"
+          font-weight="900">
+          EARTH
+        </text>
+
+        <text
+          x="540"
+          y="260"
+          text-anchor="middle"
+          fill="#ffb093"
+          font-weight="900">
+          MARS
+        </text>
+
+      </g>
+
+    </svg>
+
+    <div
+      id="mapCaption"
+      class="map-caption">
+
+      Simplified Hohmann transfer geometry.
+      Planet sizes and orbital distances are visually compressed.
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section
+  class="panel"
+  data-min="2"
+  hidden>
+
+  <h2>Technical View</h2>
+
+  <div class="grid-three">
+
+    <div class="fact">
+      <strong>Transfer Orbit</strong>
+
+      <p>
+        A conventional efficient Mars mission can use an elliptical
+        heliocentric transfer orbit rather than flying directly from
+        Earth to Mars.
+      </p>
+    </div>
+
+
+    <div class="fact">
+      <strong>Launch Geometry</strong>
+
+      <p>
+        In this simplified Hohmann model, Mars is about 44° ahead of
+        Earth at departure so that spacecraft and planet reach the
+        same point at arrival.
+      </p>
+    </div>
+
+
+    <div class="fact">
+      <strong>Travel Time</strong>
+
+      <p>
+        The idealized Earth-to-Mars Hohmann transfer takes about
+        259 days. Actual missions vary because real trajectories
+        include launch conditions, navigation, corrections and
+        mission requirements.
+      </p>
+    </div>
+
+  </div>
+
+
+  <div class="tech">
+
+    <strong>Transfer-orbit approximation</strong>
+
+    <div class="formula">
+      a = (rEarth + rMars) / 2
+    </div>
+
+    <div class="formula">
+      Transfer time ≈ ½ × orbital period of the transfer ellipse
+    </div>
+
+    <div class="formula">
+      v = √[ μSun × (2/r − 1/a) ]
+    </div>
+
+    <p class="lead">
+      The last expression is the vis-viva equation used here to
+      estimate the spacecraft's heliocentric speed along the transfer
+      ellipse.
+    </p>
+
+  </div>
+
+</section>
+
+
+<section
+  class="panel"
+  data-min="3"
+  hidden>
+
+  <h2>Advanced Relativity</h2>
+
+  <div class="grid-three">
+
+    <div class="fact">
+      <strong>Time Dilation</strong>
+
+      <p>
+        A traveler moving at relativistic speed accumulates less
+        proper time than an observer in the Earth frame.
+      </p>
+    </div>
+
+    <div class="fact">
+      <strong>Length Contraction</strong>
+
+      <p>
+        In the traveler's inertial frame, the distance along the
+        direction of motion is shorter than the corresponding
+        Earth-frame distance.
+      </p>
+    </div>
+
+    <div class="fact">
+      <strong>No Photon Rest Frame</strong>
+
+      <p>
+        The app does not calculate a traveler's elapsed time at
+        exactly c. Special relativity does not define a valid rest
+        frame for a photon.
+      </p>
+    </div>
+
+  </div>
+
+
+  <div class="advanced">
+
+    <strong>Special-relativity equations</strong>
+
+    <div class="formula">
+      γ = 1 / √(1 − v²/c²)
+    </div>
+
+    <div class="formula">
+      Δτ = Δt / γ
+    </div>
+
+    <div class="formula">
+      Ltraveler = LEarth / γ
+    </div>
+
+    <p
+      id="advancedLive"
+      class="lead">
+      Choose a relativistic travel mode to see the equations applied.
+    </p>
+
+  </div>
+
+
+  <div class="warning">
+    The star-streak and visual approach effects are illustrative.
+    A fully accurate relativistic view requires ray tracing,
+    aberration, Doppler shifting and intensity transformations that
+    are beyond this first prototype.
+  </div>
+
+</section>
+
+
+<section class="panel">
+
+  <h2>What This Prototype Teaches</h2>
+
+  <div class="grid-three">
+
+    <div class="fact">
+
+      <strong>Mars Is Moving</strong>
+
+      <p>
+        Spaceflight is an interception problem. Earth, Mars and the
+        spacecraft all continue moving around the Sun.
+      </p>
+
+    </div>
+
+
+    <div class="fact">
+
+      <strong>Distance Is Enormous</strong>
+
+      <p>
+        Even neighboring planets can be tens or hundreds of millions
+        of kilometers apart.
+      </p>
+
+    </div>
+
+
+    <div class="fact">
+
+      <strong>Relativity Changes Time</strong>
+
+      <p>
+        As speed approaches the speed of light, the difference between
+        Earth-frame time and traveler proper time becomes dramatic.
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="panel">
+
+  <h2>Educational Simulation</h2>
+
+  <div class="warning">
+    Universe Explorer is an educational visualization, not a spacecraft
+    navigation or mission-planning system. Orbital geometry, travel
+    paths, planetary sizes and visual effects are simplified to make
+    the concepts understandable.
+  </div>
+
+</section>
+
+</main>
+
+
+<footer>
+  A DONCO-BAYCITY™ App
+</footer>
+
+
+<script>
+(() => {
+"use strict";
+
+
+/* =========================================================
+   CONSTANTS
+========================================================= */
+
+const C = 299792.458;          // km/s
+const AU = 149597870.7;        // km
+const DAY = 86400;             // seconds
+
+const EARTH_YEAR = 365.256;
+const MARS_YEAR = 686.98;
+
+const R_EARTH = 1.0;
+const R_MARS = 1.523679;
+
+const MU_SUN = 1.32712440018e11; // km^3/s^2
+
+const TRANSFER_A =
+  (R_EARTH + R_MARS) / 2;
+
+const TRANSFER_E =
+  (R_MARS - R_EARTH) /
+  (R_MARS + R_EARTH);
+
+const TRANSFER_DAYS =
+  0.5 *
+  EARTH_YEAR *
+  Math.pow(TRANSFER_A, 1.5);
+
+const MARS_PHASE_DEG =
+  180 -
+  360 *
+  TRANSFER_DAYS /
+  MARS_YEAR;
+
+const MARS_PHASE_RAD =
+  MARS_PHASE_DEG *
+  Math.PI /
+  180;
+
+
+/* =========================================================
+   DOM
+========================================================= */
+
+const modeButtons =
+  [...document.querySelectorAll("[data-mode]")];
+
+const levelButtons =
+  [...document.querySelectorAll("[data-level]")];
+
+const levelSections =
+  [...document.querySelectorAll("[data-min]")];
+
+const launchBtn =
+  document.getElementById("launchBtn");
+
+const pauseBtn =
+  document.getElementById("pauseBtn");
+
+const resetBtn =
+  document.getElementById("resetBtn");
+
+const skipBtn =
+  document.getElementById("skipBtn");
+
+const playbackSelect =
+  document.getElementById("playbackSelect");
+
+const distanceSelect =
+  document.getElementById("distanceSelect");
+
+const distanceBlock =
+  document.getElementById("distanceBlock");
+
+const progressBar =
+  document.getElementById("progressBar");
+
+const progressText =
+  document.getElementById("progressText");
+
+const progressReadout =
+  document.getElementById("progressReadout");
+
+const modeReadout =
+  document.getElementById("modeReadout");
+
+const earthTime =
+  document.getElementById("earthTime");
+
+const travelerTime =
+  document.getElementById("travelerTime");
+
+const distanceReadout =
+  document.getElementById("distanceReadout");
+
+const remainingReadout =
+  document.getElementById("remainingReadout");
+
+const speedReadout =
+  document.getElementById("speedReadout");
+
+const gammaReadout =
+  document.getElementById("gammaReadout");
+
+const missionNote =
+  document.getElementById("missionNote");
+
+const advancedLive =
+  document.getElementById("advancedLive");
+
+const levelStatus =
+  document.getElementById("levelStatus");
+
+const marsDisc =
+  document.getElementById("marsDisc");
+
+const earthDisc =
+  document.getElementById("earthDisc");
+
+const realOrbitGroup =
+  document.getElementById("realOrbitGroup");
+
+const directGroup =
+  document.getElementById("directGroup");
+
+const directShip =
+  document.getElementById("directShip");
+
+const earthMarker =
+  document.getElementById("earthMarker");
+
+const marsMarker =
+  document.getElementById("marsMarker");
+
+const shipMarker =
+  document.getElementById("shipMarker");
+
+const earthLabel =
+  document.getElementById("earthLabel");
+
+const marsLabel =
+  document.getElementById("marsLabel");
+
+const transferPath =
+  document.getElementById("transferPath");
+
+const mapCaption =
+  document.getElementById("mapCaption");
+
+const canvas =
+  document.getElementById("starCanvas");
+
+const ctx =
+  canvas.getContext("2d");
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let mode = "transfer";
+
+let level = 1;
+
+let progress = 0;
+
+let playing = false;
+
+let playback = 1;
+
+let lastFrame = performance.now();
+
+const ANIMATION_SECONDS = 45;
+
+
+/* =========================================================
+   MODE INFORMATION
+========================================================= */
+
+const modes = {
+
+  transfer:{
+    name:"Real Mars Transfer",
+    beta:null
+  },
+
+  "05":{
+    name:"0.5c",
+    beta:0.5
+  },
+
+  "09":{
+    name:"0.9c",
+    beta:0.9
+  },
+
+  "099":{
+    name:"0.99c",
+    beta:0.99
+  },
+
+  "0999":{
+    name:"0.999c",
+    beta:0.999
+  },
+
+  light:{
+    name:"Follow a Light Beam",
+    beta:1
+  }
+
+};
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function clamp(value,min,max){
+  return Math.max(
+    min,
+    Math.min(max,value)
+  );
+}
+
+
+function formatNumber(value){
+  return new Intl.NumberFormat(
+    "en-US",
+    {
+      maximumFractionDigits:1
+    }
+  ).format(value);
+}
+
+
+function formatDistance(km){
+
+  if(km >= 1e9){
+    return (
+      (km / 1e9).toFixed(2) +
+      " billion km"
+    );
+  }
+
+  if(km >= 1e6){
+    return (
+      (km / 1e6).toFixed(1) +
+      " million km"
+    );
+  }
+
+  if(km >= 1000){
+    return (
+      formatNumber(km) +
+      " km"
+    );
+  }
+
+  return km.toFixed(1) + " km";
+}
+
+
+function formatTime(seconds){
+
+  if(!Number.isFinite(seconds)){
+    return "Not defined";
+  }
+
+  if(seconds < 60){
+    return seconds.toFixed(1) + " sec";
+  }
+
+  if(seconds < 3600){
+
+    const m =
+      Math.floor(seconds / 60);
+
+    const s =
+      Math.floor(seconds % 60);
+
+    return m + " min " + s + " sec";
+  }
+
+  if(seconds < DAY){
+
+    const h =
+      Math.floor(seconds / 3600);
+
+    const m =
+      Math.floor(
+        (seconds % 3600) / 60
+      );
+
+    return h + " hr " + m + " min";
+  }
+
+  const days =
+    seconds / DAY;
+
+  if(days < 10){
+    return days.toFixed(2) + " days";
+  }
+
+  return days.toFixed(1) + " days";
+}
+
+
+function gammaFor(beta){
+
+  if(beta >= 1){
+    return Infinity;
+  }
+
+  return 1 /
+    Math.sqrt(
+      1 -
+      beta * beta
+    );
+}
+
+
+/* =========================================================
+   KEPLER TRANSFER
+========================================================= */
+
+function solveEccentricAnomaly(M,e){
+
+  let E = M;
+
+  for(let i=0;i<8;i++){
+
+    E =
+      E -
+      (
+        E -
+        e * Math.sin(E) -
+        M
+      ) /
+      (
+        1 -
+        e * Math.cos(E)
+      );
+
+  }
+
+  return E;
+}
+
+
+function transferPosition(p){
+
+  const M =
+    Math.PI * p;
+
+  const E =
+    solveEccentricAnomaly(
+      M,
+      TRANSFER_E
+    );
+
+  const b =
+    TRANSFER_A *
+    Math.sqrt(
+      1 -
+      TRANSFER_E *
+      TRANSFER_E
+    );
+
+  const x =
+    TRANSFER_A *
+    (
+      Math.cos(E) -
+      TRANSFER_E
+    );
+
+  const y =
+    b *
+    Math.sin(E);
+
+  const r =
+    TRANSFER_A *
+    (
+      1 -
+      TRANSFER_E *
+      Math.cos(E)
+    );
+
+  return {
+    E,
+    x,
+    y,
+    r
+  };
+}
+
+
+/* =========================================================
+   TRANSFER ARC LENGTH
+========================================================= */
+
+function arcIntegral(E){
+
+  const steps = 120;
+
+  if(E <= 0){
+    return 0;
+  }
+
+  let total = 0;
+
+  let prevE = 0;
+
+  let prev =
+    TRANSFER_A *
+    Math.sqrt(
+      1 -
+      TRANSFER_E *
+      TRANSFER_E *
+      Math.cos(prevE) *
+      Math.cos(prevE)
+    );
+
+  for(let i=1;i<=steps;i++){
+
+    const currE =
+      E *
+      i /
+      steps;
+
+    const curr =
+      TRANSFER_A *
+      Math.sqrt(
+        1 -
+        TRANSFER_E *
+        TRANSFER_E *
+        Math.cos(currE) *
+        Math.cos(currE)
+      );
+
+    total +=
+      0.5 *
+      (
+        prev +
+        curr
+      ) *
+      (
+        currE -
+        prevE
+      );
+
+    prevE = currE;
+    prev = curr;
+  }
+
+  return total;
+}
+
+
+const TOTAL_TRANSFER_AU =
+  arcIntegral(Math.PI);
+
+const TOTAL_TRANSFER_KM =
+  TOTAL_TRANSFER_AU * AU;
+
+
+/* =========================================================
+   STARFIELD
+========================================================= */
+
+let stars = [];
+
+function resizeCanvas(){
+
+  const rect =
+    canvas.getBoundingClientRect();
+
+  const ratio =
+    Math.min(
+      window.devicePixelRatio || 1,
+      2
+    );
+
+  canvas.width =
+    Math.max(
+      1,
+      Math.floor(
+        rect.width * ratio
+      )
+    );
+
+  canvas.height =
+    Math.max(
+      1,
+      Math.floor(
+        rect.height * ratio
+      )
+    );
+
+  ctx.setTransform(
+    ratio,
+    0,
+    0,
+    ratio,
+    0,
+    0
+  );
+}
+
+
+function makeStars(){
+
+  stars = [];
+
+  for(let i=0;i<150;i++){
+
+    stars.push({
+
+      x:
+        Math.random() * 2 - 1,
+
+      y:
+        Math.random() * 2 - 1,
+
+      z:
+        Math.random() * 0.96 + 0.04
+
+    });
+
+  }
+}
+
+
+function starIntensity(){
+
+  if(mode === "transfer"){
+    return 0.18;
+  }
+
+  if(mode === "05"){
+    return 0.45;
+  }
+
+  if(mode === "09"){
+    return 0.9;
+  }
+
+  if(mode === "099"){
+    return 1.6;
+  }
+
+  if(mode === "0999"){
+    return 2.4;
+  }
+
+  return 2.8;
+}
+
+
+function drawStars(dt){
+
+  const rect =
+    canvas.getBoundingClientRect();
+
+  const w = rect.width;
+  const h = rect.height;
+
+  ctx.clearRect(
+    0,
+    0,
+    w,
+    h
+  );
+
+  const cx = w / 2;
+  const cy = h * 0.42;
+
+  const intensity =
+    starIntensity();
+
+  for(const star of stars){
+
+    if(playing){
+
+      star.z -=
+        dt *
+        intensity *
+        0.00008 *
+        playback;
+
+    }
+
+    if(star.z <= 0.015){
+
+      star.x =
+        Math.random() * 2 - 1;
+
+      star.y =
+        Math.random() * 2 - 1;
+
+      star.z = 1;
+    }
+
+    const scale =
+      185 / star.z;
+
+    const x =
+      cx +
+      star.x *
+      scale;
+
+    const y =
+      cy +
+      star.y *
+      scale;
+
+    if(
+      x < -40 ||
+      x > w + 40 ||
+      y < -40 ||
+      y > h + 40
+    ){
+      star.z = 1;
+      continue;
+    }
+
+    const brightness =
+      clamp(
+        1.1 -
+        star.z,
+        .25,
+        1
+      );
+
+    const radius =
+      clamp(
+        1.6 / star.z,
+        .6,
+        3
+      );
+
+    ctx.beginPath();
+
+    ctx.arc(
+      x,
+      y,
+      radius,
+      0,
+      Math.PI * 2
+    );
+
+    if(
+      mode === "099" ||
+      mode === "0999" ||
+      mode === "light"
+    ){
+      ctx.fillStyle =
+        "rgba(170,215,255," +
+        brightness +
+        ")";
+    }
+    else{
+      ctx.fillStyle =
+        "rgba(255,255,255," +
+        brightness +
+        ")";
+    }
+
+    ctx.fill();
+
+
+    if(
+      playing &&
+      intensity > .7
+    ){
+
+      const streak =
+        clamp(
+          intensity * 6,
+          2,
+          16
+        );
+
+      const dx =
+        x - cx;
+
+      const dy =
+        y - cy;
+
+      const len =
+        Math.hypot(dx,dy) || 1;
+
+      ctx.beginPath();
+
+      ctx.moveTo(
+        x,
+        y
+      );
+
+      ctx.lineTo(
+        x +
+        dx / len * streak,
+        y +
+        dy / len * streak
+      );
+
+      ctx.strokeStyle =
+        "rgba(170,215,255,.28)";
+
+      ctx.lineWidth = 1;
+
+      ctx.stroke();
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   MAP
+========================================================= */
+
+const MAP_CX = 320;
+const MAP_CY = 215;
+const MAP_SCALE = 116;
+
+
+function mapPoint(
+  r,
+  angle
+){
+
+  return {
+
+    x:
+      MAP_CX +
+      Math.cos(angle) *
+      r *
+      MAP_SCALE,
+
+    y:
+      MAP_CY -
+      Math.sin(angle) *
+      r *
+      MAP_SCALE
+
+  };
+}
+
+
+function buildTransferPath(){
+
+  let d = "";
+
+  const points = 100;
+
+  const b =
+    TRANSFER_A *
+    Math.sqrt(
+      1 -
+      TRANSFER_E *
+      TRANSFER_E
+    );
+
+  for(let i=0;i<=points;i++){
+
+    const E =
+      Math.PI *
+      i /
+      points;
+
+    const x =
+      TRANSFER_A *
+      (
+        Math.cos(E) -
+        TRANSFER_E
+      );
+
+    const y =
+      b *
+      Math.sin(E);
+
+    const px =
+      MAP_CX +
+      x *
+      MAP_SCALE;
+
+    const py =
+      MAP_CY -
+      y *
+      MAP_SCALE;
+
+    d +=
+      (
+        i === 0 ?
+        "M" :
+        " L"
+      ) +
+      px.toFixed(1) +
+      " " +
+      py.toFixed(1);
+
+  }
+
+  transferPath.setAttribute(
+    "d",
+    d
+  );
+}
+
+
+function updateTransferMap(){
+
+  const elapsedDays =
+    TRANSFER_DAYS *
+    progress;
+
+  const earthAngle =
+    2 *
+    Math.PI *
+    elapsedDays /
+    EARTH_YEAR;
+
+  const marsAngle =
+    MARS_PHASE_RAD +
+    2 *
+    Math.PI *
+    elapsedDays /
+    MARS_YEAR;
+
+  const epos =
+    mapPoint(
+      R_EARTH,
+      earthAngle
+    );
+
+  const mpos =
+    mapPoint(
+      R_MARS,
+      marsAngle
+    );
+
+  const spos =
+    transferPosition(
+      progress
+    );
+
+  const sx =
+    MAP_CX +
+    spos.x *
+    MAP_SCALE;
+
+  const sy =
+    MAP_CY -
+    spos.y *
+    MAP_SCALE;
+
+
+  earthMarker.setAttribute(
+    "cx",
+    epos.x
+  );
+
+  earthMarker.setAttribute(
+    "cy",
+    epos.y
+  );
+
+
+  marsMarker.setAttribute(
+    "cx",
+    mpos.x
+  );
+
+  marsMarker.setAttribute(
+    "cy",
+    mpos.y
+  );
+
+
+  shipMarker.setAttribute(
+    "cx",
+    sx
+  );
+
+  shipMarker.setAttribute(
+    "cy",
+    sy
+  );
+
+
+  earthLabel.setAttribute(
+    "x",
+    epos.x + 11
+  );
+
+  earthLabel.setAttribute(
+    "y",
+    epos.y - 9
+  );
+
+
+  marsLabel.setAttribute(
+    "x",
+    mpos.x + 11
+  );
+
+  marsLabel.setAttribute(
+    "y",
+    mpos.y - 9
+  );
+
+}
+
+
+function updateDirectMap(){
+
+  const x =
+    100 +
+    440 *
+    progress;
+
+  directShip.setAttribute(
+    "cx",
+    x
+  );
+
+}
+
+
+/* =========================================================
+   READOUT DATA
+========================================================= */
+
+function transferData(){
+
+  const pos =
+    transferPosition(
+      progress
+    );
+
+  const elapsed =
+    TRANSFER_DAYS *
+    DAY *
+    progress;
+
+  const traveled =
+    arcIntegral(
+      pos.E
+    ) *
+    AU;
+
+  const remaining =
+    Math.max(
+      0,
+      TOTAL_TRANSFER_KM -
+      traveled
+    );
+
+  const rKm =
+    pos.r *
+    AU;
+
+  const aKm =
+    TRANSFER_A *
+    AU;
+
+  const speed =
+    Math.sqrt(
+      MU_SUN *
+      (
+        2 / rKm -
+        1 / aKm
+      )
+    );
+
+  return {
+
+    totalTime:
+      TRANSFER_DAYS * DAY,
+
+    earthElapsed:
+      elapsed,
+
+    travelerElapsed:
+      elapsed,
+
+    traveled,
+    remaining,
+    speed,
+    gamma:1
+
+  };
+
+}
+
+
+function relativisticData(){
+
+  const distance =
+    Number(
+      distanceSelect.value
+    );
+
+  const beta =
+    modes[mode].beta;
+
+  if(beta >= 1){
+
+    const total =
+      distance / C;
+
+    return {
+
+      totalTime:total,
+
+      earthElapsed:
+        total *
+        progress,
+
+      travelerElapsed:
+        Infinity,
+
+      traveled:
+        distance *
+        progress,
+
+      remaining:
+        distance *
+        (
+          1 -
+          progress
+        ),
+
+      speed:C,
+
+      gamma:Infinity
+
+    };
+
+  }
+
+
+  const velocity =
+    beta * C;
+
+  const total =
+    distance /
+    velocity;
+
+  const gamma =
+    gammaFor(beta);
+
+  return {
+
+    totalTime:total,
+
+    earthElapsed:
+      total *
+      progress,
+
+    travelerElapsed:
+      total *
+      progress /
+      gamma,
+
+    traveled:
+      distance *
+      progress,
+
+    remaining:
+      distance *
+      (
+        1 -
+        progress
+      ),
+
+    speed:velocity,
+
+    gamma
+
+  };
+
+}
+
+
+/* =========================================================
+   MISSION NOTES
+========================================================= */
+
+function updateMissionNote(){
+
+  if(mode === "transfer"){
+
+    if(progress < .03){
+
+      missionNote.innerHTML =
+        "<strong>Launch:</strong> Mars begins about " +
+        MARS_PHASE_DEG.toFixed(1) +
+        "° ahead of Earth in this simplified Hohmann-transfer model.";
+
+    }
+    else if(progress < .25){
+
+      missionNote.innerHTML =
+        "<strong>Leaving Earth:</strong> The spacecraft is not chasing Mars directly. It is entering a larger orbit around the Sun.";
+
+    }
+    else if(progress < .7){
+
+      missionNote.innerHTML =
+        "<strong>Interplanetary cruise:</strong> Earth continues around the Sun behind the spacecraft while Mars moves toward the interception point.";
+
+    }
+    else if(progress < .97){
+
+      missionNote.innerHTML =
+        "<strong>Mars approach:</strong> The spacecraft and Mars are converging on nearly the same heliocentric location.";
+
+    }
+    else{
+
+      missionNote.innerHTML =
+        "<strong>Arrival:</strong> Reaching Mars is only part of a real mission. Actual spacecraft must perform carefully designed arrival, capture, entry, descent or flyby operations.";
+
+    }
+
+    return;
+  }
+
+
+  if(mode === "light"){
+
+    missionNote.innerHTML =
+      "<strong>Light-beam mode:</strong> This follows the travel time of light in the Earth frame. We do not show a photon 'traveler clock' because a photon does not have a valid rest frame in special relativity.";
+
+    return;
+  }
+
+
+  const beta =
+    modes[mode].beta;
+
+  const gamma =
+    gammaFor(beta);
+
+  if(progress < .05){
+
+    missionNote.innerHTML =
+      "<strong>Relativity experiment:</strong> The spacecraft is hypothetically moving at " +
+      (beta * 100).toFixed(
+        beta >= .99 ? 1 : 0
+      ) +
+      "% of light speed.";
+
+  }
+  else if(progress < .7){
+
+    missionNote.innerHTML =
+      "<strong>Time dilation:</strong> Earth-frame time and traveler proper time are no longer equal. Current Lorentz factor γ = " +
+      gamma.toFixed(3) +
+      ".";
+
+  }
+  else{
+
+    missionNote.innerHTML =
+      "<strong>Mars approach:</strong> This direct-line flight is a relativity demonstration rather than an actual orbital mission profile.";
+
+  }
+
+}
+
+
+/* =========================================================
+   ADVANCED LIVE TEXT
+========================================================= */
+
+function updateAdvanced(data){
+
+  if(mode === "transfer"){
+
+    advancedLive.innerHTML =
+      "The realistic transfer uses ordinary orbital mechanics. " +
+      "Its speed is tiny compared with c, so relativistic time " +
+      "dilation is negligible for this educational model.";
+
+    return;
+  }
+
+
+  if(mode === "light"){
+
+    advancedLive.innerHTML =
+      "At exactly c, γ would diverge toward infinity. " +
+      "A massive traveler cannot reach this state, and special " +
+      "relativity does not define a photon rest frame.";
+
+    return;
+  }
+
+
+  const beta =
+    modes[mode].beta;
+
+  const gamma =
+    data.gamma;
+
+  const distance =
+    Number(
+      distanceSelect.value
+    );
+
+  const contracted =
+    distance /
+    gamma;
+
+  advancedLive.innerHTML =
+    "β = " +
+    beta.toFixed(3) +
+    " · γ = " +
+    gamma.toFixed(4) +
+    ". In the spacecraft inertial frame, this " +
+    formatDistance(distance) +
+    " Earth-frame separation would correspond to about " +
+    formatDistance(contracted) +
+    " along the direction of motion.";
+
+}
+
+
+/* =========================================================
+   PLANET VISUALS
+========================================================= */
+
+function updatePlanetVisuals(){
+
+  const marsSize =
+    18 +
+    115 *
+    Math.pow(
+      progress,
+      2.2
+    );
+
+  marsDisc.style.width =
+    marsSize + "px";
+
+  marsDisc.style.height =
+    marsSize + "px";
+
+
+  const earthSize =
+    Math.max(
+      8,
+      64 *
+      Math.pow(
+        1 -
+        progress,
+        .85
+      )
+    );
+
+  earthDisc.style.width =
+    earthSize + "px";
+
+  earthDisc.style.height =
+    earthSize + "px";
+
+}
+
+
+/* =========================================================
+   MAIN DISPLAY
+========================================================= */
+
+function updateDisplay(){
+
+  let data;
+
+  if(mode === "transfer"){
+    data = transferData();
+  }
+  else{
+    data = relativisticData();
+  }
+
+
+  const pct =
+    progress * 100;
+
+
+  progressBar.style.width =
+    pct.toFixed(2) + "%";
+
+  progressText.textContent =
+    pct.toFixed(0) + "%";
+
+  progressReadout.textContent =
+    pct.toFixed(1) + "%";
+
+
+  modeReadout.textContent =
+    modes[mode].name;
+
+
+  earthTime.textContent =
+    formatTime(
+      data.earthElapsed
+    );
+
+
+  if(mode === "light"){
+
+    travelerTime.textContent =
+      "Not defined";
+
+  }
+  else{
+
+    travelerTime.textContent =
+      formatTime(
+        data.travelerElapsed
+      );
+
+  }
+
+
+  distanceReadout.textContent =
+    formatDistance(
+      data.traveled
+    );
+
+
+  remainingReadout.textContent =
+    formatDistance(
+      data.remaining
+    );
+
+
+  if(mode === "transfer"){
+
+    speedReadout.textContent =
+      data.speed.toFixed(1) +
+      " km/s around Sun";
+
+  }
+  else if(mode === "light"){
+
+    speedReadout.textContent =
+      "c = 299,792 km/s";
+
+  }
+  else{
+
+    speedReadout.textContent =
+      modes[mode].beta +
+      "c · " +
+      formatNumber(
+        data.speed
+      ) +
+      " km/s";
+
+  }
+
+
+  if(Number.isFinite(data.gamma)){
+
+    gammaReadout.textContent =
+      data.gamma.toFixed(3);
+
+  }
+  else{
+
+    gammaReadout.textContent =
+      "∞ / undefined at c";
+
+  }
+
+
+  updateMissionNote();
+
+  updateAdvanced(data);
+
+  updatePlanetVisuals();
+
+
+  if(mode === "transfer"){
+
+    updateTransferMap();
+
+  }
+  else{
+
+    updateDirectMap();
+
+  }
+
+}
+
+
+/* =========================================================
+   MODE SELECTION
+========================================================= */
+
+function setMode(newMode){
+
+  mode = newMode;
+
+  modeButtons.forEach(btn => {
+
+    btn.classList.toggle(
+      "active",
+      btn.dataset.mode === mode
+    );
+
+  });
+
+
+  progress = 0;
+
+  playing = false;
+
+  launchBtn.textContent =
+    "🚀 Launch From Earth";
+
+  pauseBtn.textContent =
+    "Pause";
+
+
+  const isTransfer =
+    mode === "transfer";
+
+
+  distanceBlock.hidden =
+    isTransfer;
+
+
+  realOrbitGroup.hidden =
+    !isTransfer;
+
+  directGroup.hidden =
+    isTransfer;
+
+
+  if(isTransfer){
+
+    mapCaption.textContent =
+      "Simplified Hohmann transfer geometry. Planet sizes and orbital distances are visually compressed.";
+
+  }
+  else{
+
+    mapCaption.textContent =
+      "Direct-line relativity thought experiment. This is not an actual Earth-to-Mars orbital trajectory.";
+
+  }
+
+
+  makeStars();
+
+  updateDisplay();
+
+}
+
+
+/* =========================================================
+   LEARNING LEVEL
+========================================================= */
+
+function setLevel(newLevel){
+
+  level =
+    Number(newLevel);
+
+  levelButtons.forEach(btn => {
+
+    btn.classList.toggle(
+      "active",
+      Number(
+        btn.dataset.level
+      ) === level
+    );
+
+  });
+
+
+  levelSections.forEach(section => {
+
+    section.hidden =
+      Number(
+        section.dataset.min
+      ) > level;
+
+  });
+
+
+  const messages = {
+
+    1:
+      "Beginner — see the journey and the important ideas first.",
+
+    2:
+      "Technical — adds orbital geometry, transfer timing and spacecraft speed.",
+
+    3:
+      "Advanced — adds special relativity, Lorentz factor, proper time and length contraction."
+
+  };
+
+
+  levelStatus.textContent =
+    messages[level];
+
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+modeButtons.forEach(btn => {
+
+  btn.addEventListener(
+    "click",
+    () => {
+      setMode(
+        btn.dataset.mode
+      );
+    }
+  );
+
+});
+
+
+levelButtons.forEach(btn => {
+
+  btn.addEventListener(
+    "click",
+    () => {
+      setLevel(
+        btn.dataset.level
+      );
+    }
+  );
+
+});
+
+
+launchBtn.addEventListener(
+  "click",
+  () => {
+
+    if(progress >= 1){
+      progress = 0;
+    }
+
+    playing = true;
+
+    launchBtn.textContent =
+      "Journey Running";
+
+  }
+);
+
+
+pauseBtn.addEventListener(
+  "click",
+  () => {
+
+    playing =
+      !playing;
+
+    pauseBtn.textContent =
+      playing ?
+      "Pause" :
+      "Resume";
+
+  }
+);
+
+
+resetBtn.addEventListener(
+  "click",
+  () => {
+
+    progress = 0;
+
+    playing = false;
+
+    launchBtn.textContent =
+      "🚀 Launch From Earth";
+
+    pauseBtn.textContent =
+      "Pause";
+
+    updateDisplay();
+
+  }
+);
+
+
+skipBtn.addEventListener(
+  "click",
+  () => {
+
+    progress =
+      clamp(
+        progress + .10,
+        0,
+        1
+      );
+
+    updateDisplay();
+
+  }
+);
+
+
+playbackSelect.addEventListener(
+  "change",
+  () => {
+
+    playback =
+      Number(
+        playbackSelect.value
+      ) || 1;
+
+  }
+);
+
+
+distanceSelect.addEventListener(
+  "change",
+  () => {
+
+    progress = 0;
+
+    playing = false;
+
+    updateDisplay();
+
+  }
+);
+
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+function animate(now){
+
+  const dt =
+    Math.min(
+      100,
+      now - lastFrame
+    );
+
+  lastFrame = now;
+
+
+  if(playing){
+
+    progress +=
+      (
+        dt / 1000
+      ) /
+      ANIMATION_SECONDS *
+      playback;
+
+
+    if(progress >= 1){
+
+      progress = 1;
+
+      playing = false;
+
+      launchBtn.textContent =
+        "Journey Complete";
+
+      pauseBtn.textContent =
+        "Pause";
+
+    }
+
+    updateDisplay();
+
+  }
+
+
+  drawStars(dt);
+
+  requestAnimationFrame(
+    animate
+  );
+
+}
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+function handleResize(){
+
+  resizeCanvas();
+
+}
+
+
+window.addEventListener(
+  "resize",
+  handleResize
+);
+
+
+/* =========================================================
+   STARTUP
+========================================================= */
+
+buildTransferPath();
+
+makeStars();
+
+resizeCanvas();
+
+setLevel(1);
+
+setMode("transfer");
+
+requestAnimationFrame(
+  animate
+);
+
+})();
+</script>
+
+</body>
+</html>
