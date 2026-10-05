@@ -1,0 +1,2256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#3d160e">
+
+<title>Mars Surface Explorer</title>
+
+<style>
+:root{
+  --space:#07101b;
+  --mars-dark:#38150e;
+  --mars:#a84727;
+  --mars2:#cf6841;
+  --sand:#d98a5b;
+  --panel:#111d2b;
+  --panel2:#17293d;
+  --line:#39526a;
+  --yellow:#ffd35a;
+  --blue:#4aa8ff;
+  --text:#f4f8fb;
+  --muted:#aac0d2;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Arial,
+    sans-serif;
+  color:var(--text);
+  background:
+    linear-gradient(
+      180deg,
+      #07101b,
+      #0c1724
+    );
+}
+
+button{
+  font:inherit;
+}
+
+button:focus-visible{
+  outline:3px solid var(--yellow);
+  outline-offset:3px;
+}
+
+header{
+  position:relative;
+  padding:24px 18px;
+  text-align:center;
+  background:
+    linear-gradient(
+      135deg,
+      #32120d,
+      #7d2d1c 55%,
+      #bd5633
+    );
+  border-bottom:1px solid #7c3d2b;
+}
+
+header h1{
+  margin:0;
+  font-size:clamp(30px,6vw,48px);
+}
+
+header p{
+  margin:7px auto 0;
+  max-width:760px;
+  color:#ffe3d3;
+  line-height:1.5;
+}
+
+.donco-logo{
+  position:absolute;
+  top:14px;
+  right:18px;
+  width:105px;
+  max-height:52px;
+  object-fit:contain;
+}
+
+main{
+  width:min(1150px,100%);
+  margin:auto;
+  padding:18px;
+}
+
+.panel{
+  margin-bottom:16px;
+  padding:17px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(20,38,56,.97),
+      rgba(10,23,36,.98)
+    );
+}
+
+h2{
+  margin:0 0 8px;
+  padding-left:10px;
+  border-left:5px solid var(--yellow);
+}
+
+.lead{
+  color:var(--muted);
+  line-height:1.55;
+}
+
+.viewer{
+  position:relative;
+  overflow:hidden;
+  min-height:520px;
+  border:1px solid #663422;
+  border-radius:18px;
+  background:#b45b38;
+  touch-action:pan-y;
+  cursor:grab;
+}
+
+.viewer:active{
+  cursor:grabbing;
+}
+
+#marsCanvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+
+.hud{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+
+.hud-top{
+  position:absolute;
+  left:14px;
+  top:14px;
+  padding:7px 10px;
+  border:1px solid rgba(255,255,255,.25);
+  border-radius:9px;
+  background:rgba(9,14,20,.65);
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+
+.compass{
+  position:absolute;
+  right:14px;
+  top:14px;
+  min-width:120px;
+  padding:8px 10px;
+  text-align:center;
+  border:1px solid rgba(255,255,255,.24);
+  border-radius:9px;
+  background:rgba(9,14,20,.65);
+}
+
+.compass small{
+  display:block;
+  color:#aac7dc;
+  font-weight:700;
+}
+
+.compass strong{
+  font-size:20px;
+}
+
+.reticle{
+  position:absolute;
+  left:50%;
+  top:48%;
+  width:55px;
+  height:55px;
+  transform:translate(-50%,-50%);
+  border:1px solid rgba(255,255,255,.35);
+  border-radius:50%;
+}
+
+.reticle::before,
+.reticle::after{
+  content:"";
+  position:absolute;
+  background:rgba(255,255,255,.4);
+}
+
+.reticle::before{
+  left:-18px;
+  right:-18px;
+  top:50%;
+  height:1px;
+}
+
+.reticle::after{
+  top:-18px;
+  bottom:-18px;
+  left:50%;
+  width:1px;
+}
+
+.bottom-hud{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  padding:28px 15px 13px;
+  background:
+    linear-gradient(
+      180deg,
+      transparent,
+      rgba(5,9,13,.88)
+    );
+}
+
+.bottom-hud strong{
+  display:block;
+}
+
+.bottom-hud span{
+  color:#bcd0df;
+  font-size:13px;
+}
+
+.controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:12px;
+}
+
+.controls button{
+  min-height:46px;
+  padding:9px 14px;
+  border:1px solid #4f6e87;
+  border-radius:11px;
+  color:white;
+  background:#16314b;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.controls button.active,
+.controls button.primary{
+  color:#171004;
+  border-color:#dcae23;
+  background:var(--yellow);
+}
+
+.readouts{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  margin-top:14px;
+}
+
+.readout{
+  padding:12px;
+  border:1px solid #3c5870;
+  border-radius:12px;
+  background:#0c1c2b;
+}
+
+.readout span{
+  display:block;
+  margin-bottom:4px;
+  color:#8faabd;
+  font-size:11px;
+  font-weight:800;
+  text-transform:uppercase;
+}
+
+.readout strong{
+  font-size:18px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+}
+
+.card{
+  padding:14px;
+  border:1px solid #3a566e;
+  border-radius:13px;
+  background:#0b1c2c;
+}
+
+.card strong{
+  display:block;
+  margin-bottom:5px;
+  font-size:17px;
+}
+
+.card p{
+  margin:0;
+  color:#b5cbdc;
+  line-height:1.5;
+}
+
+.site-buttons{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:9px;
+}
+
+.site-buttons button{
+  min-height:55px;
+  padding:10px;
+  border:1px solid #4b657d;
+  border-radius:11px;
+  color:white;
+  background:#102840;
+  cursor:pointer;
+  font-weight:800;
+}
+
+.site-buttons button.active{
+  color:#160f04;
+  background:var(--yellow);
+  border-color:#e6b72f;
+}
+
+.info{
+  margin-top:12px;
+  padding:14px;
+  border:1px solid #576b7d;
+  border-radius:12px;
+  background:#101f2e;
+  line-height:1.55;
+}
+
+.info strong{
+  color:#ffd35a;
+}
+
+.warning{
+  margin-top:12px;
+  padding:12px;
+  border:1px solid #8a662b;
+  border-radius:11px;
+  color:#ffe6a3;
+  background:#34280e;
+  line-height:1.5;
+}
+
+.level-buttons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.level-buttons button{
+  min-height:46px;
+  padding:9px 14px;
+  border:1px solid #4d6b84;
+  border-radius:11px;
+  color:white;
+  background:#102840;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.level-buttons button.active{
+  color:#171004;
+  background:var(--yellow);
+}
+
+.tech,
+.advanced{
+  margin-top:12px;
+  padding:14px;
+  border-radius:12px;
+}
+
+.tech{
+  border:1px solid #315e81;
+  background:#0d273e;
+}
+
+.advanced{
+  border:1px solid #6e568f;
+  background:#211a35;
+}
+
+footer{
+  padding:25px 16px;
+  text-align:center;
+  color:#9db5c7;
+  font-size:13px;
+}
+
+@media(max-width:780px){
+
+  .viewer{
+    min-height:440px;
+  }
+
+  .readouts{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .grid,
+  .site-buttons{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:620px){
+
+  main{
+    padding:11px;
+  }
+
+  .donco-logo{
+    position:static;
+    display:block;
+    width:92px;
+    margin:0 auto 10px;
+  }
+
+  .viewer{
+    min-height:390px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<img
+  class="donco-logo"
+  src="/Garage-Sale-map/donco_logo_footer.png"
+  alt="DONCO-BAYCITY logo">
+
+<h1>Mars Surface Explorer</h1>
+
+<p>
+Stand on the Martian surface, look around the landscape,
+visit famous locations, and learn what conditions would be
+like for a human explorer.
+</p>
+
+</header>
+
+
+<main>
+
+<section class="panel">
+
+<h2>Choose Your Detail Level</h2>
+
+<p class="lead">
+Beginner gives you the important facts. Technical adds
+planetary science. Advanced adds deeper atmospheric,
+geological, and mission details.
+</p>
+
+<div class="level-buttons">
+
+<button
+  class="active"
+  type="button"
+  data-level="1">
+  Beginner
+</button>
+
+<button
+  type="button"
+  data-level="2">
+  Technical
+</button>
+
+<button
+  type="button"
+  data-level="3">
+  Advanced
+</button>
+
+</div>
+
+</section>
+
+
+<section class="panel">
+
+<h2>Stand on Mars</h2>
+
+<p class="lead">
+Drag the landscape left or right with your mouse or finger,
+or use the buttons below.
+</p>
+
+
+<div
+  id="viewer"
+  class="viewer">
+
+<canvas id="marsCanvas"></canvas>
+
+<div class="hud">
+
+<div class="hud-top">
+MARS SURFACE VIEW
+</div>
+
+<div class="compass">
+<small>LOOKING</small>
+<strong id="headingReadout">
+NORTH
+</strong>
+</div>
+
+<div class="reticle"></div>
+
+<div class="bottom-hud">
+
+<strong id="locationName">
+Jezero Crater Region
+</strong>
+
+<span id="locationSubtitle">
+Ancient lake environment explored by Perseverance
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="controls">
+
+<button
+  id="leftBtn"
+  type="button">
+  ◀ Look Left
+</button>
+
+<button
+  id="centerBtn"
+  class="primary"
+  type="button">
+  Center View
+</button>
+
+<button
+  id="rightBtn"
+  type="button">
+  Look Right ▶
+</button>
+
+<button
+  id="walkBtn"
+  type="button">
+  🚶 Move Forward
+</button>
+
+</div>
+
+
+<div class="readouts">
+
+<div class="readout">
+<span>Gravity</span>
+<strong>0.38 g</strong>
+</div>
+
+<div class="readout">
+<span>Air Pressure</span>
+<strong>~0.6% of Earth</strong>
+</div>
+
+<div class="readout">
+<span>Day Length</span>
+<strong>24 h 39 m</strong>
+</div>
+
+<div class="readout">
+<span>Average Temperature</span>
+<strong>About −63°C</strong>
+</div>
+
+</div>
+
+</section>
+
+
+<section class="panel">
+
+<h2>Visit Famous Locations</h2>
+
+<div class="site-buttons">
+
+<button
+  class="active"
+  type="button"
+  data-site="jezero">
+  Jezero Crater
+</button>
+
+<button
+  type="button"
+  data-site="gale">
+  Gale Crater
+</button>
+
+<button
+  type="button"
+  data-site="olympus">
+  Olympus Mons
+</button>
+
+<button
+  type="button"
+  data-site="valles">
+  Valles Marineris
+</button>
+
+<button
+  type="button"
+  data-site="polar">
+  North Polar Region
+</button>
+
+<button
+  type="button"
+  data-site="plain">
+  Open Martian Plain
+</button>
+
+</div>
+
+
+<div
+  id="siteInfo"
+  class="info">
+
+<strong>Jezero Crater</strong><br>
+
+Jezero contains an ancient river delta and evidence that a
+lake existed here billions of years ago. NASA's Perseverance
+rover landed in Jezero in 2021 to study its geology and search
+for signs of ancient habitable environments.
+
+</div>
+
+</section>
+
+
+<section class="panel">
+
+<h2>What Would It Feel Like?</h2>
+
+<div class="grid">
+
+<div class="card">
+
+<strong>You Would Feel Lighter</strong>
+
+<p>
+Mars has only about 38% of Earth's surface gravity.
+A person who weighs 180 pounds on Earth would press on
+the ground with roughly the same force as about 68 pounds
+on Mars.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<strong>You Could Not Breathe</strong>
+
+<p>
+The atmosphere is extremely thin and is mostly carbon dioxide.
+Humans would require a pressurized suit and life-support
+system.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<strong>The Sky Looks Different</strong>
+
+<p>
+Fine Martian dust changes the color of the sky.
+Daytime skies often appear dusty reddish or tan, while
+sunsets near the Sun can appear bluish.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<strong>Dust Is Everywhere</strong>
+
+<p>
+Very fine iron-rich dust coats much of the surface.
+Dust can affect solar panels, mechanisms, visibility,
+thermal control, and equipment.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<strong>Temperatures Swing</strong>
+
+<p>
+Temperatures vary greatly with location, season,
+time of day, elevation, and weather.
+Mars is generally far colder than Earth.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<strong>No Open Water</strong>
+
+<p>
+Liquid water is generally unstable on the present surface
+because of the low pressure and temperature, although Mars
+contains large quantities of water ice.
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+<section
+  class="panel"
+  data-min="2"
+  hidden>
+
+<h2>Technical — Martian Environment</h2>
+
+<div class="tech">
+
+<strong>Atmosphere</strong>
+
+<p class="lead">
+Mars has a thin atmosphere dominated by carbon dioxide,
+with smaller amounts of nitrogen, argon, oxygen, carbon
+monoxide and trace gases.
+</p>
+
+<strong>Pressure</strong>
+
+<p class="lead">
+Typical surface pressure is only a small fraction of Earth's
+sea-level atmospheric pressure and varies significantly with
+elevation and season.
+</p>
+
+<strong>Geology</strong>
+
+<p class="lead">
+Mars contains basaltic volcanic terrain, impact craters,
+sedimentary deposits, ancient river valleys, enormous
+volcanoes, canyon systems and polar ice deposits.
+</p>
+
+</div>
+
+</section>
+
+
+<section
+  class="panel"
+  data-min="3"
+  hidden>
+
+<h2>Advanced — Why Mars Looks This Way</h2>
+
+<div class="advanced">
+
+<strong>Iron Oxides</strong>
+
+<p class="lead">
+The reddish appearance of much of Mars comes from iron-bearing
+minerals that oxidized and became incorporated into fine
+surface dust.
+</p>
+
+
+<strong>Atmospheric Loss</strong>
+
+<p class="lead">
+Mars once had a thicker atmosphere. Over geological time,
+the planet lost much of it through several processes,
+including interaction with the solar wind and atmospheric
+escape.
+</p>
+
+
+<strong>Radiation</strong>
+
+<p class="lead">
+Mars lacks Earth's thick atmosphere and strong global
+magnetic field. Future human explorers would require
+significant protection from solar energetic particles and
+galactic cosmic radiation.
+</p>
+
+
+<strong>Ancient Water</strong>
+
+<p class="lead">
+Orbital observations and rover missions have found abundant
+evidence that liquid water shaped the ancient Martian
+surface, including valleys, deltas, lake deposits and
+water-altered minerals.
+</p>
+
+</div>
+
+</section>
+
+
+<section class="panel">
+
+<h2>Surface Safety</h2>
+
+<div class="warning">
+This is an educational simulation. The terrain is generated
+for visualization and is not a navigational map or an exact
+reconstruction of a particular rover photograph. Location
+information is based on real Martian features, while the
+interactive landscape is schematic.
+</div>
+
+</section>
+
+
+<section class="panel">
+
+<h2>Continue Exploring</h2>
+
+<div class="grid">
+
+<div class="card">
+
+<strong>Earth → Mars Journey</strong>
+
+<p>
+Return to the spacecraft simulation and experience the
+journey from Earth to Mars.
+</p>
+
+<p style="margin-top:10px">
+<a
+  href="index.html"
+  style="color:#7fc8ff;font-weight:800">
+  Open Earth → Mars
+</a>
+</p>
+
+</div>
+
+
+<div class="card">
+
+<strong>Next Idea: Olympus Mons Flyover</strong>
+
+<p>
+A future mode could let you fly toward the largest volcano
+in the Solar System and compare its enormous size with
+mountains on Earth.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<strong>Next Idea: Valles Marineris</strong>
+
+<p>
+Fly through the enormous canyon system and compare its
+length, width and depth with the Grand Canyon.
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+</main>
+
+
+<footer>
+A DONCO-BAYCITY™ App
+</footer>
+
+
+<script>
+(() => {
+"use strict";
+
+
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
+const canvas =
+  document.getElementById("marsCanvas");
+
+const ctx =
+  canvas.getContext("2d");
+
+const viewer =
+  document.getElementById("viewer");
+
+const headingReadout =
+  document.getElementById("headingReadout");
+
+const locationName =
+  document.getElementById("locationName");
+
+const locationSubtitle =
+  document.getElementById("locationSubtitle");
+
+const siteInfo =
+  document.getElementById("siteInfo");
+
+const leftBtn =
+  document.getElementById("leftBtn");
+
+const rightBtn =
+  document.getElementById("rightBtn");
+
+const centerBtn =
+  document.getElementById("centerBtn");
+
+const walkBtn =
+  document.getElementById("walkBtn");
+
+const levelButtons =
+  [...document.querySelectorAll("[data-level]")];
+
+const levelSections =
+  [...document.querySelectorAll("[data-min]")];
+
+const siteButtons =
+  [...document.querySelectorAll("[data-site]")];
+
+
+/* =====================================================
+   STATE
+===================================================== */
+
+let viewAngle = 0;
+
+let walkOffset = 0;
+
+let site = "jezero";
+
+let dragging = false;
+
+let dragStartX = 0;
+
+let dragStartAngle = 0;
+
+
+/* =====================================================
+   SITE DATA
+===================================================== */
+
+const sites = {
+
+jezero:{
+  name:"Jezero Crater Region",
+
+  subtitle:
+    "Ancient lake environment explored by Perseverance",
+
+  info:
+    "<strong>Jezero Crater</strong><br>" +
+    "Jezero contains an ancient river delta and evidence " +
+    "that a lake existed here billions of years ago. " +
+    "NASA's Perseverance rover landed in Jezero in 2021 " +
+    "to study its geology and search for signs of ancient " +
+    "habitable environments.",
+
+  sky:"#c87554",
+  horizon:"#8e452d",
+  ground:"#a95335",
+  ridge:"#6e3326",
+  rocks:"#663124",
+  roughness:1
+},
+
+gale:{
+  name:"Gale Crater",
+
+  subtitle:
+    "Curiosity rover territory near Mount Sharp",
+
+  info:
+    "<strong>Gale Crater</strong><br>" +
+    "NASA's Curiosity rover landed in Gale Crater in 2012. " +
+    "At its center rises Mount Sharp, a layered mountain " +
+    "whose rocks preserve a long record of Martian " +
+    "environmental change.",
+
+  sky:"#bb7155",
+  horizon:"#86503d",
+  ground:"#a46446",
+  ridge:"#734332",
+  rocks:"#603529",
+  roughness:1.3
+},
+
+olympus:{
+  name:"Olympus Mons Region",
+
+  subtitle:
+    "Approaching the largest volcano in the Solar System",
+
+  info:
+    "<strong>Olympus Mons</strong><br>" +
+    "Olympus Mons is an enormous shield volcano roughly " +
+    "600 km across. Its summit rises more than 20 km above " +
+    "the surrounding plains, although its gentle slopes " +
+    "would make its full height difficult to appreciate " +
+    "from nearby.",
+
+  sky:"#be7558",
+  horizon:"#7a3d2e",
+  ground:"#9d5239",
+  ridge:"#5d2c24",
+  rocks:"#5a2b24",
+  roughness:.65
+},
+
+valles:{
+  name:"Valles Marineris",
+
+  subtitle:
+    "At the edge of a gigantic Martian canyon system",
+
+  info:
+    "<strong>Valles Marineris</strong><br>" +
+    "This enormous canyon system stretches for roughly " +
+    "4,000 km across Mars. Some sections are hundreds of " +
+    "kilometers wide and several kilometers deep.",
+
+  sky:"#c47a5a",
+  horizon:"#713627",
+  ground:"#a45438",
+  ridge:"#52251e",
+  rocks:"#4d251d",
+  roughness:1.8
+},
+
+polar:{
+  name:"North Polar Region",
+
+  subtitle:
+    "Dust, water ice and seasonal carbon-dioxide frost",
+
+  info:
+    "<strong>Martian Polar Region</strong><br>" +
+    "Mars has permanent polar caps containing large " +
+    "quantities of water ice. Seasonal carbon-dioxide " +
+    "frost also forms and retreats as the seasons change.",
+
+  sky:"#b98a77",
+  horizon:"#8f7a70",
+  ground:"#b8a89d",
+  ridge:"#827870",
+  rocks:"#6e625d",
+  roughness:.8
+},
+
+plain:{
+  name:"Open Martian Plain",
+
+  subtitle:
+    "A broad dusty landscape stretching toward the horizon",
+
+  info:
+    "<strong>Martian Plains</strong><br>" +
+    "Large regions of Mars consist of broad volcanic, " +
+    "sedimentary or impact-modified plains covered with " +
+    "dust, sand, rocks and small craters.",
+
+  sky:"#c77b59",
+  horizon:"#965035",
+  ground:"#b05c3a",
+  ridge:"#7d3c2c",
+  rocks:"#693127",
+  roughness:.9
+}
+
+};
+
+
+/* =====================================================
+   RANDOM LANDSCAPE FEATURES
+===================================================== */
+
+const rocks = [];
+
+const distantFeatures = [];
+
+function seedLandscape(){
+
+  rocks.length = 0;
+  distantFeatures.length = 0;
+
+
+  for(let i=0;i<75;i++){
+
+    rocks.push({
+
+      x:
+        Math.random() * 2600 - 1300,
+
+      depth:
+        Math.random(),
+
+      size:
+        Math.random() * 18 + 3,
+
+      shape:
+        Math.random()
+
+    });
+
+  }
+
+
+  for(let i=0;i<15;i++){
+
+    distantFeatures.push({
+
+      x:
+        Math.random() * 2200 - 1100,
+
+      width:
+        Math.random() * 180 + 60,
+
+      height:
+        Math.random() * 65 + 15
+
+    });
+
+  }
+
+}
+
+
+/* =====================================================
+   CANVAS SIZE
+===================================================== */
+
+function resize(){
+
+  const rect =
+    viewer.getBoundingClientRect();
+
+  const ratio =
+    Math.min(
+      window.devicePixelRatio || 1,
+      2
+    );
+
+  canvas.width =
+    Math.max(
+      1,
+      Math.floor(
+        rect.width * ratio
+      )
+    );
+
+  canvas.height =
+    Math.max(
+      1,
+      Math.floor(
+        rect.height * ratio
+      )
+    );
+
+  canvas.style.width =
+    rect.width + "px";
+
+  canvas.style.height =
+    rect.height + "px";
+
+  ctx.setTransform(
+    ratio,
+    0,
+    0,
+    ratio,
+    0,
+    0
+  );
+
+  drawMars();
+
+}
+
+
+/* =====================================================
+   TERRAIN
+===================================================== */
+
+function terrainHeight(
+  x,
+  siteData
+){
+
+  const rough =
+    siteData.roughness;
+
+  return (
+    Math.sin(
+      x * .0042
+    ) * 17 * rough
+    +
+    Math.sin(
+      x * .0093 + 1.1
+    ) * 9 * rough
+    +
+    Math.sin(
+      x * .0018 + 3
+    ) * 22 * rough
+  );
+
+}
+
+
+/* =====================================================
+   DRAW SKY
+===================================================== */
+
+function drawSky(
+  w,
+  h,
+  data
+){
+
+  const gradient =
+    ctx.createLinearGradient(
+      0,
+      0,
+      0,
+      h * .7
+    );
+
+  gradient.addColorStop(
+    0,
+    data.sky
+  );
+
+  gradient.addColorStop(
+    .55,
+    "#cc8062"
+  );
+
+  gradient.addColorStop(
+    1,
+    "#e2a079"
+  );
+
+  ctx.fillStyle =
+    gradient;
+
+  ctx.fillRect(
+    0,
+    0,
+    w,
+    h
+  );
+
+
+  /* subtle dusty Sun */
+
+  const sunX =
+    w * .77 -
+    viewAngle * .35;
+
+  const sunY =
+    h * .19;
+
+  const glow =
+    ctx.createRadialGradient(
+      sunX,
+      sunY,
+      2,
+      sunX,
+      sunY,
+      55
+    );
+
+  glow.addColorStop(
+    0,
+    "rgba(255,248,215,.92)"
+  );
+
+  glow.addColorStop(
+    .12,
+    "rgba(255,231,170,.75)"
+  );
+
+  glow.addColorStop(
+    1,
+    "rgba(255,210,160,0)"
+  );
+
+  ctx.fillStyle =
+    glow;
+
+  ctx.beginPath();
+
+  ctx.arc(
+    sunX,
+    sunY,
+    58,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.fill();
+
+
+  ctx.fillStyle =
+    "#fff2cb";
+
+  ctx.beginPath();
+
+  ctx.arc(
+    sunX,
+    sunY,
+    7,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.fill();
+
+}
+
+
+/* =====================================================
+   DISTANT TERRAIN
+===================================================== */
+
+function drawDistant(
+  w,
+  h,
+  data
+){
+
+  const horizonY =
+    h * .53;
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    0,
+    horizonY
+  );
+
+
+  for(let x=0;x<=w;x+=8){
+
+    const worldX =
+      x +
+      viewAngle * 5;
+
+    const y =
+      horizonY -
+      terrainHeight(
+        worldX,
+        data
+      );
+
+    ctx.lineTo(
+      x,
+      y
+    );
+
+  }
+
+
+  ctx.lineTo(
+    w,
+    h
+  );
+
+  ctx.lineTo(
+    0,
+    h
+  );
+
+  ctx.closePath();
+
+  ctx.fillStyle =
+    data.horizon;
+
+  ctx.fill();
+
+
+  /* secondary ridge */
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    0,
+    horizonY + 25
+  );
+
+
+  for(let x=0;x<=w;x+=8){
+
+    const worldX =
+      x +
+      viewAngle * 7 +
+      500;
+
+    const y =
+      horizonY +
+      18 -
+      terrainHeight(
+        worldX,
+        data
+      ) * .65;
+
+    ctx.lineTo(
+      x,
+      y
+    );
+
+  }
+
+
+  ctx.lineTo(
+    w,
+    h
+  );
+
+  ctx.lineTo(
+    0,
+    h
+  );
+
+  ctx.closePath();
+
+  ctx.fillStyle =
+    data.ridge;
+
+  ctx.fill();
+
+}
+
+
+/* =====================================================
+   GROUND
+===================================================== */
+
+function drawGround(
+  w,
+  h,
+  data
+){
+
+  const horizon =
+    h * .56;
+
+
+  const gradient =
+    ctx.createLinearGradient(
+      0,
+      horizon,
+      0,
+      h
+    );
+
+  gradient.addColorStop(
+    0,
+    data.ground
+  );
+
+  gradient.addColorStop(
+    .55,
+    "#8c432f"
+  );
+
+  gradient.addColorStop(
+    1,
+    "#56251d"
+  );
+
+
+  ctx.fillStyle =
+    gradient;
+
+  ctx.fillRect(
+    0,
+    horizon,
+    w,
+    h - horizon
+  );
+
+
+  /* perspective surface streaks */
+
+  for(let i=0;i<42;i++){
+
+    const y =
+      horizon +
+      Math.pow(
+        i / 42,
+        1.8
+      ) *
+      (
+        h - horizon
+      );
+
+    ctx.strokeStyle =
+      "rgba(66,25,18," +
+      (
+        .03 +
+        i / 42 * .12
+      ) +
+      ")";
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      0,
+      y
+    );
+
+    ctx.lineTo(
+      w,
+      y +
+      Math.sin(
+        i + viewAngle * .01
+      ) * 3
+    );
+
+    ctx.stroke();
+
+  }
+
+}
+
+
+/* =====================================================
+   ROCKS
+===================================================== */
+
+function drawRocks(
+  w,
+  h,
+  data
+){
+
+  const horizon =
+    h * .55;
+
+
+  const sorted =
+    [...rocks]
+    .sort(
+      (a,b) =>
+        a.depth -
+        b.depth
+    );
+
+
+  for(const rock of sorted){
+
+    const perspective =
+      .12 +
+      rock.depth *
+      1.25;
+
+    let x =
+      w / 2 +
+      (
+        rock.x -
+        viewAngle * 7
+      ) *
+      perspective;
+
+
+    while(x < -200){
+      x += 2600 * perspective;
+    }
+
+    while(x > w + 200){
+      x -= 2600 * perspective;
+    }
+
+
+    const y =
+      horizon +
+      Math.pow(
+        rock.depth,
+        1.55
+      ) *
+      (
+        h - horizon
+      );
+
+
+    const size =
+      rock.size *
+      (
+        .35 +
+        rock.depth * 1.8
+      );
+
+
+    ctx.fillStyle =
+      "rgba(30,12,8,.22)";
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+      x + size * .2,
+      y + size * .45,
+      size * .8,
+      size * .23,
+      0,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    ctx.fillStyle =
+      data.rocks;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      x - size * .6,
+      y
+    );
+
+    ctx.lineTo(
+      x - size * .15,
+      y - size * .7
+    );
+
+    ctx.lineTo(
+      x + size * .45,
+      y - size * .48
+    );
+
+    ctx.lineTo(
+      x + size * .68,
+      y
+    );
+
+    ctx.closePath();
+
+    ctx.fill();
+
+  }
+
+}
+
+
+/* =====================================================
+   SPECIAL LOCATION FEATURES
+===================================================== */
+
+function drawSpecial(
+  w,
+  h
+){
+
+  const horizon =
+    h * .53;
+
+
+  if(site === "olympus"){
+
+    const center =
+      w * .48 -
+      viewAngle * .7;
+
+
+    ctx.fillStyle =
+      "rgba(72,30,24,.82)";
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      center - 330,
+      horizon + 18
+    );
+
+    ctx.quadraticCurveTo(
+      center - 180,
+      horizon - 35,
+      center,
+      horizon - 80
+    );
+
+    ctx.quadraticCurveTo(
+      center + 180,
+      horizon - 35,
+      center + 330,
+      horizon + 18
+    );
+
+    ctx.closePath();
+
+    ctx.fill();
+
+  }
+
+
+  if(site === "valles"){
+
+    const center =
+      w * .55 -
+      viewAngle * .5;
+
+
+    ctx.fillStyle =
+      "rgba(53,20,17,.72)";
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      center - 210,
+      horizon + 14
+    );
+
+    ctx.lineTo(
+      center - 70,
+      horizon + 145
+    );
+
+    ctx.lineTo(
+      center + 95,
+      horizon + 165
+    );
+
+    ctx.lineTo(
+      center + 235,
+      horizon + 15
+    );
+
+    ctx.closePath();
+
+    ctx.fill();
+
+  }
+
+
+  if(site === "polar"){
+
+    ctx.fillStyle =
+      "rgba(228,217,206,.65)";
+
+
+    for(let i=0;i<11;i++){
+
+      ctx.beginPath();
+
+      ctx.ellipse(
+        (
+          i * 140 -
+          viewAngle * .7
+        ) %
+        (
+          w + 180
+        ),
+        horizon + 50 + i * 8,
+        85,
+        14,
+        -.05,
+        0,
+        Math.PI * 2
+      );
+
+      ctx.fill();
+
+    }
+
+  }
+
+}
+
+
+/* =====================================================
+   DRAW WHOLE SCENE
+===================================================== */
+
+function drawMars(){
+
+  const rect =
+    viewer.getBoundingClientRect();
+
+  const w =
+    rect.width;
+
+  const h =
+    rect.height;
+
+  if(
+    w <= 0 ||
+    h <= 0
+  ){
+    return;
+  }
+
+
+  const data =
+    sites[site];
+
+
+  ctx.clearRect(
+    0,
+    0,
+    w,
+    h
+  );
+
+
+  drawSky(
+    w,
+    h,
+    data
+  );
+
+  drawDistant(
+    w,
+    h,
+    data
+  );
+
+  drawGround(
+    w,
+    h,
+    data
+  );
+
+  drawSpecial(
+    w,
+    h
+  );
+
+  drawRocks(
+    w,
+    h,
+    data
+  );
+
+}
+
+
+/* =====================================================
+   COMPASS
+===================================================== */
+
+function normalizeHeading(
+  value
+){
+
+  value %= 360;
+
+  if(value < 0){
+    value += 360;
+  }
+
+  return value;
+
+}
+
+
+function directionName(
+  degrees
+){
+
+  const directions = [
+    "NORTH",
+    "NORTHEAST",
+    "EAST",
+    "SOUTHEAST",
+    "SOUTH",
+    "SOUTHWEST",
+    "WEST",
+    "NORTHWEST"
+  ];
+
+
+  const index =
+    Math.round(
+      degrees / 45
+    ) % 8;
+
+
+  return directions[index];
+
+}
+
+
+function updateHeading(){
+
+  const degrees =
+    normalizeHeading(
+      viewAngle * .22
+    );
+
+
+  headingReadout.textContent =
+    directionName(degrees) +
+    " · " +
+    Math.round(degrees) +
+    "°";
+
+}
+
+
+/* =====================================================
+   LOOK CONTROLS
+===================================================== */
+
+function look(
+  amount
+){
+
+  viewAngle +=
+    amount;
+
+  updateHeading();
+
+  drawMars();
+
+}
+
+
+leftBtn.addEventListener(
+  "click",
+  () => {
+    look(-40);
+  }
+);
+
+
+rightBtn.addEventListener(
+  "click",
+  () => {
+    look(40);
+  }
+);
+
+
+centerBtn.addEventListener(
+  "click",
+  () => {
+
+    viewAngle = 0;
+
+    updateHeading();
+
+    drawMars();
+
+  }
+);
+
+
+/* =====================================================
+   MOVE FORWARD
+===================================================== */
+
+walkBtn.addEventListener(
+  "click",
+  () => {
+
+    walkOffset += 1;
+
+
+    rocks.forEach(
+      rock => {
+
+        rock.depth += .055;
+
+
+        if(
+          rock.depth > 1.05
+        ){
+
+          rock.depth =
+            Math.random() * .15;
+
+          rock.x =
+            Math.random() *
+            2600 -
+            1300;
+
+        }
+
+      }
+    );
+
+
+    walkBtn.textContent =
+      "🚶 Moved " +
+      walkOffset +
+      (
+        walkOffset === 1 ?
+        " Step" :
+        " Steps"
+      );
+
+
+    drawMars();
+
+  }
+);
+
+
+/* =====================================================
+   DRAG / TOUCH LOOK
+===================================================== */
+
+viewer.addEventListener(
+  "pointerdown",
+  event => {
+
+    dragging = true;
+
+    dragStartX =
+      event.clientX;
+
+    dragStartAngle =
+      viewAngle;
+
+    viewer.setPointerCapture(
+      event.pointerId
+    );
+
+  }
+);
+
+
+viewer.addEventListener(
+  "pointermove",
+  event => {
+
+    if(!dragging){
+      return;
+    }
+
+
+    const delta =
+      event.clientX -
+      dragStartX;
+
+
+    viewAngle =
+      dragStartAngle -
+      delta * .65;
+
+
+    updateHeading();
+
+    drawMars();
+
+  }
+);
+
+
+function stopDrag(){
+  dragging = false;
+}
+
+
+viewer.addEventListener(
+  "pointerup",
+  stopDrag
+);
+
+
+viewer.addEventListener(
+  "pointercancel",
+  stopDrag
+);
+
+
+/* =====================================================
+   LOCATION BUTTONS
+===================================================== */
+
+siteButtons.forEach(
+  button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        site =
+          button.dataset.site;
+
+
+        siteButtons.forEach(
+          other => {
+
+            other.classList.toggle(
+              "active",
+              other === button
+            );
+
+          }
+        );
+
+
+        const data =
+          sites[site];
+
+
+        locationName.textContent =
+          data.name;
+
+
+        locationSubtitle.textContent =
+          data.subtitle;
+
+
+        siteInfo.innerHTML =
+          data.info;
+
+
+        viewAngle = 0;
+
+        walkOffset = 0;
+
+        walkBtn.textContent =
+          "🚶 Move Forward";
+
+
+        seedLandscape();
+
+        updateHeading();
+
+        drawMars();
+
+      }
+    );
+
+  }
+);
+
+
+/* =====================================================
+   LEARNING LEVEL
+===================================================== */
+
+levelButtons.forEach(
+  button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        const level =
+          Number(
+            button.dataset.level
+          );
+
+
+        levelButtons.forEach(
+          other => {
+
+            other.classList.toggle(
+              "active",
+              other === button
+            );
+
+          }
+        );
+
+
+        levelSections.forEach(
+          section => {
+
+            section.hidden =
+              Number(
+                section.dataset.min
+              ) > level;
+
+          }
+        );
+
+      }
+    );
+
+  }
+);
+
+
+/* =====================================================
+   START
+===================================================== */
+
+window.addEventListener(
+  "resize",
+  resize
+);
+
+
+seedLandscape();
+
+resize();
+
+updateHeading();
+
+})();
+</script>
+
+</body>
+</html>
