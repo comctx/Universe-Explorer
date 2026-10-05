@@ -36,13 +36,7 @@ html{
 body{
   margin:0;
   min-height:100vh;
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Arial,
-    sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
   color:var(--text);
   background:
     radial-gradient(circle at 50% 0%, #163454 0, #09162a 36%, #050b16 75%);
@@ -147,8 +141,7 @@ h3{
 
 .level-buttons,
 .mode-buttons,
-.play-buttons,
-.view-buttons{
+.play-buttons{
   display:flex;
   flex-wrap:wrap;
   gap:8px;
@@ -156,8 +149,7 @@ h3{
 
 .level-buttons button,
 .mode-buttons button,
-.play-buttons button,
-.view-buttons button{
+.play-buttons button{
   min-height:46px;
   padding:9px 13px;
   border:1px solid #3f668a;
@@ -177,6 +169,12 @@ button.primary{
   color:#07111f;
   border-color:#f3c63d;
   background:var(--yellow);
+}
+
+button.mars-button{
+  color:white;
+  border-color:#b55e3e;
+  background:linear-gradient(135deg,#8f3824,#c75c37);
 }
 
 button.danger{
@@ -486,10 +484,7 @@ select{
   padding:9px 10px;
   border-radius:9px;
   background:rgba(255,255,255,.06);
-  font-family:
-    "SFMono-Regular",
-    Consolas,
-    monospace;
+  font-family:"SFMono-Regular",Consolas,monospace;
   color:#e8f4ff;
   overflow-wrap:anywhere;
 }
@@ -534,6 +529,43 @@ select{
   color:#b8d0e1;
   font-size:14px;
   line-height:1.48;
+}
+
+.surface-callout{
+  margin-top:14px;
+  padding:16px;
+  border:1px solid #9d573c;
+  border-radius:14px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(112,48,31,.8),
+      rgba(67,29,22,.75)
+    );
+}
+
+.surface-callout strong{
+  display:block;
+  margin-bottom:5px;
+  color:#ffd0b5;
+  font-size:18px;
+}
+
+.surface-callout p{
+  margin:0 0 10px;
+  color:#f4d7c7;
+  line-height:1.5;
+}
+
+.surface-callout a{
+  display:inline-block;
+  min-height:44px;
+  padding:11px 15px;
+  border-radius:10px;
+  color:#211008;
+  background:var(--yellow);
+  text-decoration:none;
+  font-weight:900;
 }
 
 footer{
@@ -607,108 +639,117 @@ footer{
 <body>
 
 <header>
-  <div class="brand">
-    DONCO
-    <small>UNIVERSE EXPLORER</small>
-  </div>
 
-  <h1>Earth → Mars</h1>
+<div class="brand">
+DONCO
+<small>UNIVERSE EXPLORER</small>
+</div>
 
-  <p>
-    Experience a simplified journey from Earth to Mars.
-    Compare a realistic orbital transfer with hypothetical
-    near-light-speed travel.
-  </p>
+<h1>Earth → Mars</h1>
+
+<p>
+Experience a simplified journey from Earth to Mars.
+Compare a realistic orbital transfer with hypothetical
+near-light-speed travel.
+</p>
+
 </header>
+
 
 <main>
 
 <section class="panel">
-  <h2>Choose Your Learning Level</h2>
 
-  <p class="lead">
-    Start simple, then reveal the physics behind the journey.
-  </p>
+<h2>Choose Your Learning Level</h2>
 
-  <div class="level-buttons">
-    <button
-      type="button"
-      class="active"
-      data-level="1">
-      Beginner
-    </button>
+<p class="lead">
+Start simple, then reveal the physics behind the journey.
+</p>
 
-    <button
-      type="button"
-      data-level="2">
-      Technical
-    </button>
+<div class="level-buttons">
 
-    <button
-      type="button"
-      data-level="3">
-      Advanced
-    </button>
-  </div>
+<button
+  type="button"
+  class="active"
+  data-level="1">
+  Beginner
+</button>
 
-  <div
-    id="levelStatus"
-    class="status-bar">
-    Beginner — see the journey and the important ideas first.
-  </div>
+<button
+  type="button"
+  data-level="2">
+  Technical
+</button>
+
+<button
+  type="button"
+  data-level="3">
+  Advanced
+</button>
+
+</div>
+
+<div
+  id="levelStatus"
+  class="status-bar">
+  Beginner — see the journey and the important ideas first.
+</div>
+
 </section>
 
 
 <section class="panel">
-  <h2>Choose the Journey</h2>
 
-  <div class="mode-buttons">
+<h2>Choose the Journey</h2>
 
-    <button
-      type="button"
-      class="active"
-      data-mode="transfer">
-      Real Mars Transfer
-    </button>
+<div class="mode-buttons">
 
-    <button
-      type="button"
-      data-mode="05">
-      0.5c
-    </button>
+<button
+  type="button"
+  class="active"
+  data-mode="transfer">
+  Real Mars Transfer
+</button>
 
-    <button
-      type="button"
-      data-mode="09">
-      0.9c
-    </button>
+<button
+  type="button"
+  data-mode="05">
+  0.5c
+</button>
 
-    <button
-      type="button"
-      data-mode="099">
-      0.99c
-    </button>
+<button
+  type="button"
+  data-mode="09">
+  0.9c
+</button>
 
-    <button
-      type="button"
-      data-mode="0999">
-      0.999c
-    </button>
+<button
+  type="button"
+  data-mode="099">
+  0.99c
+</button>
 
-    <button
-      type="button"
-      data-mode="light">
-      Follow a Light Beam
-    </button>
+<button
+  type="button"
+  data-mode="0999">
+  0.999c
+</button>
 
-  </div>
+<button
+  type="button"
+  data-mode="light">
+  Follow a Light Beam
+</button>
 
-  <div class="warning">
-    The near-light-speed modes are educational thought experiments.
-    No spacecraft with mass can travel at the speed of light, and
-    present-day spacecraft cannot approach the relativistic speeds
-    shown here.
-  </div>
+</div>
+
+<div class="warning">
+The near-light-speed modes are educational thought experiments.
+No spacecraft with mass can travel at the speed of light, and
+present-day spacecraft cannot approach the relativistic speeds
+shown here.
+</div>
+
 </section>
 
 
@@ -716,209 +757,225 @@ footer{
 
 <div class="grid-two">
 
-  <div>
+<div>
 
-    <div
-      id="viewer"
-      class="viewer">
+<div
+  id="viewer"
+  class="viewer">
 
-      <canvas id="starCanvas"></canvas>
+<canvas id="starCanvas"></canvas>
 
-      <div class="viewer-overlay">
+<div class="viewer-overlay">
 
-        <div class="view-label">
-          FORWARD TRAVELER VIEW · VISUAL SCALE NOT REAL
-        </div>
+<div class="view-label">
+FORWARD TRAVELER VIEW · VISUAL SCALE NOT REAL
+</div>
 
-        <div
-          id="marsDisc"
-          class="mars">
-        </div>
+<div
+  id="marsDisc"
+  class="mars">
+</div>
 
-        <div class="crosshair"></div>
+<div class="crosshair"></div>
 
-        <div class="rear-monitor">
-          <div class="rear-title">
-            REAR VIEW — EARTH
-          </div>
+<div class="rear-monitor">
 
-          <div
-            id="earthDisc"
-            class="earth">
-          </div>
-        </div>
+<div class="rear-title">
+REAR VIEW — EARTH
+</div>
 
-        <div class="cockpit-bottom"></div>
+<div
+  id="earthDisc"
+  class="earth">
+</div>
 
-      </div>
+</div>
 
-    </div>
+<div class="cockpit-bottom"></div>
 
-    <div class="play-buttons" style="margin-top:11px">
+</div>
 
-      <button
-        id="launchBtn"
-        type="button"
-        class="primary">
-        🚀 Launch From Earth
-      </button>
-
-      <button
-        id="pauseBtn"
-        type="button">
-        Pause
-      </button>
-
-      <button
-        id="skipBtn"
-        type="button">
-        +10% Journey
-      </button>
-
-      <button
-        id="resetBtn"
-        type="button"
-        class="danger">
-        Reset
-      </button>
-
-    </div>
-
-  </div>
+</div>
 
 
-  <div>
+<div
+  class="play-buttons"
+  style="margin-top:11px">
 
-    <h3>Flight Instruments</h3>
+<button
+  id="launchBtn"
+  type="button"
+  class="primary">
+  🚀 Launch From Earth
+</button>
 
-    <div class="readouts">
+<button
+  id="pauseBtn"
+  type="button">
+  Pause
+</button>
 
-      <div class="readout">
-        <span>Mode</span>
-        <strong id="modeReadout">
-          Mars Transfer
-        </strong>
-      </div>
+<button
+  id="skipBtn"
+  type="button">
+  +10% Journey
+</button>
 
-      <div class="readout">
-        <span>Mission Progress</span>
-        <strong id="progressReadout">
-          0.0%
-        </strong>
-      </div>
+<button
+  id="resetBtn"
+  type="button"
+  class="danger">
+  Reset
+</button>
 
-      <div class="readout">
-        <span>Earth-Frame Time</span>
-        <strong id="earthTime">
-          0 days
-        </strong>
-      </div>
+<button
+  id="surfaceBtn"
+  type="button"
+  class="mars-button">
+  🪐 Explore Mars Surface
+</button>
 
-      <div class="readout">
-        <span>Traveler Time</span>
-        <strong id="travelerTime">
-          0 days
-        </strong>
-      </div>
+</div>
 
-      <div class="readout">
-        <span>Distance Traveled</span>
-        <strong id="distanceReadout">
-          0 km
-        </strong>
-      </div>
-
-      <div class="readout">
-        <span>Distance Remaining</span>
-        <strong id="remainingReadout">
-          —
-        </strong>
-      </div>
-
-      <div class="readout">
-        <span>Speed</span>
-        <strong id="speedReadout">
-          —
-        </strong>
-      </div>
-
-      <div class="readout">
-        <span>Lorentz Factor γ</span>
-        <strong id="gammaReadout">
-          1.000
-        </strong>
-      </div>
-
-    </div>
+</div>
 
 
-    <div class="control-block">
+<div>
 
-      <label for="playbackSelect">
-        Simulation Playback Speed
-      </label>
+<h3>Flight Instruments</h3>
 
-      <select id="playbackSelect">
-        <option value="1">1×</option>
-        <option value="3">3×</option>
-        <option value="10">10×</option>
-        <option value="25">25×</option>
-      </select>
+<div class="readouts">
 
-    </div>
+<div class="readout">
+<span>Mode</span>
+<strong id="modeReadout">
+Mars Transfer
+</strong>
+</div>
+
+<div class="readout">
+<span>Mission Progress</span>
+<strong id="progressReadout">
+0.0%
+</strong>
+</div>
+
+<div class="readout">
+<span>Earth-Frame Time</span>
+<strong id="earthTime">
+0 days
+</strong>
+</div>
+
+<div class="readout">
+<span>Traveler Time</span>
+<strong id="travelerTime">
+0 days
+</strong>
+</div>
+
+<div class="readout">
+<span>Distance Traveled</span>
+<strong id="distanceReadout">
+0 km
+</strong>
+</div>
+
+<div class="readout">
+<span>Distance Remaining</span>
+<strong id="remainingReadout">
+—
+</strong>
+</div>
+
+<div class="readout">
+<span>Speed</span>
+<strong id="speedReadout">
+—
+</strong>
+</div>
+
+<div class="readout">
+<span>Lorentz Factor γ</span>
+<strong id="gammaReadout">
+1.000
+</strong>
+</div>
+
+</div>
 
 
-    <div
-      id="distanceBlock"
-      class="control-block"
-      hidden>
+<div class="control-block">
 
-      <label for="distanceSelect">
-        Hypothetical Earth–Mars Separation
-      </label>
+<label for="playbackSelect">
+Simulation Playback Speed
+</label>
 
-      <select id="distanceSelect">
-        <option value="54600000">
-          Close — 54.6 million km
-        </option>
+<select id="playbackSelect">
+<option value="1">1×</option>
+<option value="3">3×</option>
+<option value="10">10×</option>
+<option value="25">25×</option>
+</select>
 
-        <option
-          value="225000000"
-          selected>
-          Typical Example — 225 million km
-        </option>
-
-        <option value="401000000">
-          Far — 401 million km
-        </option>
-      </select>
-
-    </div>
+</div>
 
 
-    <div class="progress-wrap">
+<div
+  id="distanceBlock"
+  class="control-block"
+  hidden>
 
-      <div class="progress-label">
-        <span>Earth</span>
-        <span id="progressText">0%</span>
-        <span>Mars</span>
-      </div>
+<label for="distanceSelect">
+Hypothetical Earth–Mars Separation
+</label>
 
-      <div class="progress">
-        <div id="progressBar"></div>
-      </div>
+<select id="distanceSelect">
 
-    </div>
+<option value="54600000">
+Close — 54.6 million km
+</option>
+
+<option
+  value="225000000"
+  selected>
+Typical Example — 225 million km
+</option>
+
+<option value="401000000">
+Far — 401 million km
+</option>
+
+</select>
+
+</div>
 
 
-    <div
-      id="missionNote"
-      class="note">
-      Mars must be in the correct place when the spacecraft arrives.
-      A real Mars mission does not simply aim straight at Mars.
-    </div>
+<div class="progress-wrap">
 
-  </div>
+<div class="progress-label">
+<span>Earth</span>
+<span id="progressText">0%</span>
+<span>Mars</span>
+</div>
+
+<div class="progress">
+<div id="progressBar"></div>
+</div>
+
+</div>
+
+
+<div
+  id="missionNote"
+  class="note">
+
+Mars must be in the correct place when the spacecraft arrives.
+A real Mars mission does not simply aim straight at Mars.
+
+</div>
+
+</div>
 
 </div>
 
@@ -927,205 +984,206 @@ footer{
 
 <section class="panel">
 
-  <h2>Solar System Map</h2>
+<h2>Solar System Map</h2>
 
-  <p class="lead">
-    Watch Earth, Mars, and the spacecraft move during the realistic
-    transfer.
-  </p>
+<p class="lead">
+Watch Earth, Mars, and the spacecraft move during the realistic
+transfer.
+</p>
 
-  <div class="map-wrap">
+<div class="map-wrap">
 
-    <svg
-      id="orbitSvg"
-      viewBox="0 0 640 430"
-      role="img"
-      aria-label="Simplified Earth to Mars orbital map">
+<svg
+  id="orbitSvg"
+  viewBox="0 0 640 430"
+  role="img"
+  aria-label="Simplified Earth to Mars orbital map">
 
-      <rect
-        width="640"
-        height="430"
-        fill="#040b15">
-      </rect>
-
-
-      <g id="realOrbitGroup">
-
-        <circle
-          cx="320"
-          cy="215"
-          r="116"
-          fill="none"
-          stroke="#244766"
-          stroke-width="2">
-        </circle>
-
-        <circle
-          cx="320"
-          cy="215"
-          r="177"
-          fill="none"
-          stroke="#55372f"
-          stroke-width="2">
-        </circle>
+<rect
+  width="640"
+  height="430"
+  fill="#040b15">
+</rect>
 
 
-        <path
-          id="transferPath"
-          fill="none"
-          stroke="#ffd35a"
-          stroke-width="3"
-          stroke-dasharray="7 6">
-        </path>
+<g id="realOrbitGroup">
+
+<circle
+  cx="320"
+  cy="215"
+  r="116"
+  fill="none"
+  stroke="#244766"
+  stroke-width="2">
+</circle>
+
+<circle
+  cx="320"
+  cy="215"
+  r="177"
+  fill="none"
+  stroke="#55372f"
+  stroke-width="2">
+</circle>
 
 
-        <circle
-          cx="320"
-          cy="215"
-          r="19"
-          fill="#ffd35a">
-        </circle>
-
-        <text
-          x="320"
-          y="219"
-          text-anchor="middle"
-          font-size="9"
-          font-weight="900"
-          fill="#4a3300">
-          SUN
-        </text>
+<path
+  id="transferPath"
+  fill="none"
+  stroke="#ffd35a"
+  stroke-width="3"
+  stroke-dasharray="7 6">
+</path>
 
 
-        <circle
-          id="earthMarker"
-          r="8"
-          fill="#3da5ff">
-        </circle>
+<circle
+  cx="320"
+  cy="215"
+  r="19"
+  fill="#ffd35a">
+</circle>
 
-        <circle
-          id="marsMarker"
-          r="8"
-          fill="#d96b43">
-        </circle>
-
-        <circle
-          id="shipMarker"
-          r="6"
-          fill="#ffffff"
-          stroke="#ffd35a"
-          stroke-width="3">
-        </circle>
+<text
+  x="320"
+  y="219"
+  text-anchor="middle"
+  font-size="9"
+  font-weight="900"
+  fill="#4a3300">
+SUN
+</text>
 
 
-        <text
-          id="earthLabel"
-          font-size="12"
-          font-weight="800"
-          fill="#8fd1ff">
-          Earth
-        </text>
+<circle
+  id="earthMarker"
+  r="8"
+  fill="#3da5ff">
+</circle>
 
-        <text
-          id="marsLabel"
-          font-size="12"
-          font-weight="800"
-          fill="#ffad8a">
-          Mars
-        </text>
+<circle
+  id="marsMarker"
+  r="8"
+  fill="#d96b43">
+</circle>
 
-      </g>
+<circle
+  id="shipMarker"
+  r="6"
+  fill="#ffffff"
+  stroke="#ffd35a"
+  stroke-width="3">
+</circle>
 
 
-      <g
-        id="directGroup"
-        hidden>
+<text
+  id="earthLabel"
+  font-size="12"
+  font-weight="800"
+  fill="#8fd1ff">
+Earth
+</text>
 
-        <text
-          x="320"
-          y="70"
-          text-anchor="middle"
-          fill="#a9bfd2"
-          font-size="15"
-          font-weight="800">
-          DIRECT-LINE RELATIVITY THOUGHT EXPERIMENT
-        </text>
+<text
+  id="marsLabel"
+  font-size="12"
+  font-weight="800"
+  fill="#ffad8a">
+Mars
+</text>
 
-        <line
-          x1="100"
-          y1="215"
-          x2="540"
-          y2="215"
-          stroke="#426887"
-          stroke-width="5">
-        </line>
+</g>
 
-        <line
-          x1="100"
-          y1="215"
-          x2="540"
-          y2="215"
-          stroke="#ffd35a"
-          stroke-width="2"
-          stroke-dasharray="8 8">
-        </line>
 
-        <circle
-          cx="100"
-          cy="215"
-          r="24"
-          fill="#287fc3">
-        </circle>
+<g
+  id="directGroup"
+  hidden>
 
-        <circle
-          cx="540"
-          cy="215"
-          r="20"
-          fill="#ba5435">
-        </circle>
+<text
+  x="320"
+  y="70"
+  text-anchor="middle"
+  fill="#a9bfd2"
+  font-size="15"
+  font-weight="800">
+DIRECT-LINE RELATIVITY THOUGHT EXPERIMENT
+</text>
 
-        <circle
-          id="directShip"
-          cx="100"
-          cy="215"
-          r="7"
-          fill="white"
-          stroke="#ffd35a"
-          stroke-width="4">
-        </circle>
+<line
+  x1="100"
+  y1="215"
+  x2="540"
+  y2="215"
+  stroke="#426887"
+  stroke-width="5">
+</line>
 
-        <text
-          x="100"
-          y="260"
-          text-anchor="middle"
-          fill="#9bd8ff"
-          font-weight="900">
-          EARTH
-        </text>
+<line
+  x1="100"
+  y1="215"
+  x2="540"
+  y2="215"
+  stroke="#ffd35a"
+  stroke-width="2"
+  stroke-dasharray="8 8">
+</line>
 
-        <text
-          x="540"
-          y="260"
-          text-anchor="middle"
-          fill="#ffb093"
-          font-weight="900">
-          MARS
-        </text>
+<circle
+  cx="100"
+  cy="215"
+  r="24"
+  fill="#287fc3">
+</circle>
 
-      </g>
+<circle
+  cx="540"
+  cy="215"
+  r="20"
+  fill="#ba5435">
+</circle>
 
-    </svg>
+<circle
+  id="directShip"
+  cx="100"
+  cy="215"
+  r="7"
+  fill="white"
+  stroke="#ffd35a"
+  stroke-width="4">
+</circle>
 
-    <div
-      id="mapCaption"
-      class="map-caption">
+<text
+  x="100"
+  y="260"
+  text-anchor="middle"
+  fill="#9bd8ff"
+  font-weight="900">
+EARTH
+</text>
 
-      Simplified Hohmann transfer geometry.
-      Planet sizes and orbital distances are visually compressed.
+<text
+  x="540"
+  y="260"
+  text-anchor="middle"
+  fill="#ffb093"
+  font-weight="900">
+MARS
+</text>
 
-    </div>
+</g>
 
-  </div>
+</svg>
+
+
+<div
+  id="mapCaption"
+  class="map-caption">
+
+Simplified Hohmann transfer geometry.
+Planet sizes and orbital distances are visually compressed.
+
+</div>
+
+</div>
 
 </section>
 
@@ -1135,69 +1193,75 @@ footer{
   data-min="2"
   hidden>
 
-  <h2>Technical View</h2>
+<h2>Technical View</h2>
 
-  <div class="grid-three">
+<div class="grid-three">
 
-    <div class="fact">
-      <strong>Transfer Orbit</strong>
+<div class="fact">
 
-      <p>
-        A conventional efficient Mars mission can use an elliptical
-        heliocentric transfer orbit rather than flying directly from
-        Earth to Mars.
-      </p>
-    </div>
+<strong>Transfer Orbit</strong>
 
+<p>
+A conventional efficient Mars mission can use an elliptical
+heliocentric transfer orbit rather than flying directly from
+Earth to Mars.
+</p>
 
-    <div class="fact">
-      <strong>Launch Geometry</strong>
-
-      <p>
-        In this simplified Hohmann model, Mars is about 44° ahead of
-        Earth at departure so that spacecraft and planet reach the
-        same point at arrival.
-      </p>
-    </div>
+</div>
 
 
-    <div class="fact">
-      <strong>Travel Time</strong>
+<div class="fact">
 
-      <p>
-        The idealized Earth-to-Mars Hohmann transfer takes about
-        259 days. Actual missions vary because real trajectories
-        include launch conditions, navigation, corrections and
-        mission requirements.
-      </p>
-    </div>
+<strong>Launch Geometry</strong>
 
-  </div>
+<p>
+In this simplified Hohmann model, Mars is about 44° ahead of
+Earth at departure so that spacecraft and planet reach the
+same point at arrival.
+</p>
+
+</div>
 
 
-  <div class="tech">
+<div class="fact">
 
-    <strong>Transfer-orbit approximation</strong>
+<strong>Travel Time</strong>
 
-    <div class="formula">
-      a = (rEarth + rMars) / 2
-    </div>
+<p>
+The idealized Earth-to-Mars Hohmann transfer takes about
+259 days. Actual missions vary because real trajectories
+include launch conditions, navigation, corrections and
+mission requirements.
+</p>
 
-    <div class="formula">
-      Transfer time ≈ ½ × orbital period of the transfer ellipse
-    </div>
+</div>
 
-    <div class="formula">
-      v = √[ μSun × (2/r − 1/a) ]
-    </div>
+</div>
 
-    <p class="lead">
-      The last expression is the vis-viva equation used here to
-      estimate the spacecraft's heliocentric speed along the transfer
-      ellipse.
-    </p>
 
-  </div>
+<div class="tech">
+
+<strong>Transfer-orbit approximation</strong>
+
+<div class="formula">
+a = (rEarth + rMars) / 2
+</div>
+
+<div class="formula">
+Transfer time ≈ ½ × orbital period of the transfer ellipse
+</div>
+
+<div class="formula">
+v = √[ μSun × (2/r − 1/a) ]
+</div>
+
+<p class="lead">
+The last expression is the vis-viva equation used here to
+estimate the spacecraft's heliocentric speed along the transfer
+ellipse.
+</p>
+
+</div>
 
 </section>
 
@@ -1207,133 +1271,158 @@ footer{
   data-min="3"
   hidden>
 
-  <h2>Advanced Relativity</h2>
+<h2>Advanced Relativity</h2>
 
-  <div class="grid-three">
+<div class="grid-three">
 
-    <div class="fact">
-      <strong>Time Dilation</strong>
+<div class="fact">
 
-      <p>
-        A traveler moving at relativistic speed accumulates less
-        proper time than an observer in the Earth frame.
-      </p>
-    </div>
+<strong>Time Dilation</strong>
 
-    <div class="fact">
-      <strong>Length Contraction</strong>
+<p>
+A traveler moving at relativistic speed accumulates less
+proper time than an observer in the Earth frame.
+</p>
 
-      <p>
-        In the traveler's inertial frame, the distance along the
-        direction of motion is shorter than the corresponding
-        Earth-frame distance.
-      </p>
-    </div>
-
-    <div class="fact">
-      <strong>No Photon Rest Frame</strong>
-
-      <p>
-        The app does not calculate a traveler's elapsed time at
-        exactly c. Special relativity does not define a valid rest
-        frame for a photon.
-      </p>
-    </div>
-
-  </div>
+</div>
 
 
-  <div class="advanced">
+<div class="fact">
 
-    <strong>Special-relativity equations</strong>
+<strong>Length Contraction</strong>
 
-    <div class="formula">
-      γ = 1 / √(1 − v²/c²)
-    </div>
+<p>
+In the traveler's inertial frame, the distance along the
+direction of motion is shorter than the corresponding
+Earth-frame distance.
+</p>
 
-    <div class="formula">
-      Δτ = Δt / γ
-    </div>
-
-    <div class="formula">
-      Ltraveler = LEarth / γ
-    </div>
-
-    <p
-      id="advancedLive"
-      class="lead">
-      Choose a relativistic travel mode to see the equations applied.
-    </p>
-
-  </div>
+</div>
 
 
-  <div class="warning">
-    The star-streak and visual approach effects are illustrative.
-    A fully accurate relativistic view requires ray tracing,
-    aberration, Doppler shifting and intensity transformations that
-    are beyond this first prototype.
-  </div>
+<div class="fact">
 
-</section>
+<strong>No Photon Rest Frame</strong>
 
+<p>
+The app does not calculate a traveler's elapsed time at
+exactly c. Special relativity does not define a valid rest
+frame for a photon.
+</p>
 
-<section class="panel">
+</div>
 
-  <h2>What This Prototype Teaches</h2>
-
-  <div class="grid-three">
-
-    <div class="fact">
-
-      <strong>Mars Is Moving</strong>
-
-      <p>
-        Spaceflight is an interception problem. Earth, Mars and the
-        spacecraft all continue moving around the Sun.
-      </p>
-
-    </div>
+</div>
 
 
-    <div class="fact">
+<div class="advanced">
 
-      <strong>Distance Is Enormous</strong>
+<strong>Special-relativity equations</strong>
 
-      <p>
-        Even neighboring planets can be tens or hundreds of millions
-        of kilometers apart.
-      </p>
+<div class="formula">
+γ = 1 / √(1 − v²/c²)
+</div>
 
-    </div>
+<div class="formula">
+Δτ = Δt / γ
+</div>
+
+<div class="formula">
+Ltraveler = LEarth / γ
+</div>
+
+<p
+  id="advancedLive"
+  class="lead">
+Choose a relativistic travel mode to see the equations applied.
+</p>
+
+</div>
 
 
-    <div class="fact">
-
-      <strong>Relativity Changes Time</strong>
-
-      <p>
-        As speed approaches the speed of light, the difference between
-        Earth-frame time and traveler proper time becomes dramatic.
-      </p>
-
-    </div>
-
-  </div>
+<div class="warning">
+The star-streak and visual approach effects are illustrative.
+A fully accurate relativistic view requires ray tracing,
+aberration, Doppler shifting and intensity transformations that
+are beyond this first prototype.
+</div>
 
 </section>
 
 
 <section class="panel">
 
-  <h2>Educational Simulation</h2>
+<h2>What This Prototype Teaches</h2>
 
-  <div class="warning">
-    Universe Explorer is an educational visualization, not a spacecraft
-    navigation or mission-planning system. Orbital geometry, travel
-    paths, planetary sizes and visual effects are simplified to make
-    the concepts understandable.
-  </div>
+<div class="grid-three">
+
+<div class="fact">
+
+<strong>Mars Is Moving</strong>
+
+<p>
+Spaceflight is an interception problem. Earth, Mars and the
+spacecraft all continue moving around the Sun.
+</p>
+
+</div>
+
+
+<div class="fact">
+
+<strong>Distance Is Enormous</strong>
+
+<p>
+Even neighboring planets can be tens or hundreds of millions
+of kilometers apart.
+</p>
+
+</div>
+
+
+<div class="fact">
+
+<strong>Relativity Changes Time</strong>
+
+<p>
+As speed approaches the speed of light, the difference between
+Earth-frame time and traveler proper time becomes dramatic.
+</p>
+
+</div>
+
+</div>
+
+
+<div class="surface-callout">
+
+<strong>🪐 Arrive on Mars</strong>
+
+<p>
+When you're ready, leave the spacecraft and explore the
+Martian surface, famous landing sites, canyons, volcanoes,
+rocks, dust and polar regions.
+</p>
+
+<a href="mars-surface.html">
+Explore the Mars Surface →
+</a>
+
+</div>
+
+</section>
+
+
+<section class="panel">
+
+<h2>Educational Simulation</h2>
+
+<div class="warning">
+Universe Explorer is an educational visualization, not a spacecraft
+navigation or mission-planning system. Orbital geometry, travel
+paths, planetary sizes and visual effects are simplified to make
+the concepts understandable.
+</div>
 
 </section>
 
@@ -1341,7 +1430,7 @@ footer{
 
 
 <footer>
-  A DONCO-BAYCITY™ App
+A DONCO-BAYCITY™ App
 </footer>
 
 
@@ -1354,9 +1443,9 @@ footer{
    CONSTANTS
 ========================================================= */
 
-const C = 299792.458;          // km/s
-const AU = 149597870.7;        // km
-const DAY = 86400;             // seconds
+const C = 299792.458;
+const AU = 149597870.7;
+const DAY = 86400;
 
 const EARTH_YEAR = 365.256;
 const MARS_YEAR = 686.98;
@@ -1364,7 +1453,7 @@ const MARS_YEAR = 686.98;
 const R_EARTH = 1.0;
 const R_MARS = 1.523679;
 
-const MU_SUN = 1.32712440018e11; // km^3/s^2
+const MU_SUN = 1.32712440018e11;
 
 const TRANSFER_A =
   (R_EARTH + R_MARS) / 2;
@@ -1376,7 +1465,10 @@ const TRANSFER_E =
 const TRANSFER_DAYS =
   0.5 *
   EARTH_YEAR *
-  Math.pow(TRANSFER_A, 1.5);
+  Math.pow(
+    TRANSFER_A,
+    1.5
+  );
 
 const MARS_PHASE_DEG =
   180 -
@@ -1414,6 +1506,9 @@ const resetBtn =
 
 const skipBtn =
   document.getElementById("skipBtn");
+
+const surfaceBtn =
+  document.getElementById("surfaceBtn");
 
 const playbackSelect =
   document.getElementById("playbackSelect");
@@ -1520,7 +1615,8 @@ let playing = false;
 
 let playback = 1;
 
-let lastFrame = performance.now();
+let lastFrame =
+  performance.now();
 
 const ANIMATION_SECONDS = 45;
 
@@ -1531,35 +1627,35 @@ const ANIMATION_SECONDS = 45;
 
 const modes = {
 
-  transfer:{
-    name:"Real Mars Transfer",
-    beta:null
-  },
+transfer:{
+  name:"Real Mars Transfer",
+  beta:null
+},
 
-  "05":{
-    name:"0.5c",
-    beta:0.5
-  },
+"05":{
+  name:"0.5c",
+  beta:0.5
+},
 
-  "09":{
-    name:"0.9c",
-    beta:0.9
-  },
+"09":{
+  name:"0.9c",
+  beta:0.9
+},
 
-  "099":{
-    name:"0.99c",
-    beta:0.99
-  },
+"099":{
+  name:"0.99c",
+  beta:0.99
+},
 
-  "0999":{
-    name:"0.999c",
-    beta:0.999
-  },
+"0999":{
+  name:"0.999c",
+  beta:0.999
+},
 
-  light:{
-    name:"Follow a Light Beam",
-    beta:1
-  }
+light:{
+  name:"Follow a Light Beam",
+  beta:1
+}
 
 };
 
@@ -1568,48 +1664,70 @@ const modes = {
    HELPERS
 ========================================================= */
 
-function clamp(value,min,max){
+function clamp(
+  value,
+  min,
+  max
+){
   return Math.max(
     min,
-    Math.min(max,value)
+    Math.min(
+      max,
+      value
+    )
   );
 }
 
 
 function formatNumber(value){
+
   return new Intl.NumberFormat(
     "en-US",
     {
       maximumFractionDigits:1
     }
   ).format(value);
+
 }
 
 
 function formatDistance(km){
 
   if(km >= 1e9){
+
     return (
       (km / 1e9).toFixed(2) +
       " billion km"
     );
+
   }
 
+
   if(km >= 1e6){
+
     return (
       (km / 1e6).toFixed(1) +
       " million km"
     );
+
   }
 
+
   if(km >= 1000){
+
     return (
       formatNumber(km) +
       " km"
     );
+
   }
 
-  return km.toFixed(1) + " km";
+
+  return (
+    km.toFixed(1) +
+    " km"
+  );
+
 }
 
 
@@ -1619,42 +1737,85 @@ function formatTime(seconds){
     return "Not defined";
   }
 
+
   if(seconds < 60){
-    return seconds.toFixed(1) + " sec";
+
+    return (
+      seconds.toFixed(1) +
+      " sec"
+    );
+
   }
+
 
   if(seconds < 3600){
 
     const m =
-      Math.floor(seconds / 60);
+      Math.floor(
+        seconds / 60
+      );
 
     const s =
-      Math.floor(seconds % 60);
+      Math.floor(
+        seconds % 60
+      );
 
-    return m + " min " + s + " sec";
+    return (
+      m +
+      " min " +
+      s +
+      " sec"
+    );
+
   }
+
 
   if(seconds < DAY){
 
     const h =
-      Math.floor(seconds / 3600);
+      Math.floor(
+        seconds / 3600
+      );
 
     const m =
       Math.floor(
-        (seconds % 3600) / 60
+        (
+          seconds %
+          3600
+        ) /
+        60
       );
 
-    return h + " hr " + m + " min";
+    return (
+      h +
+      " hr " +
+      m +
+      " min"
+    );
+
   }
+
 
   const days =
-    seconds / DAY;
+    seconds /
+    DAY;
+
 
   if(days < 10){
-    return days.toFixed(2) + " days";
+
+    return (
+      days.toFixed(2) +
+      " days"
+    );
+
   }
 
-  return days.toFixed(1) + " days";
+
+  return (
+    days.toFixed(1) +
+    " days"
+  );
+
 }
 
 
@@ -1664,11 +1825,15 @@ function gammaFor(beta){
     return Infinity;
   }
 
-  return 1 /
+  return (
+    1 /
     Math.sqrt(
       1 -
-      beta * beta
-    );
+      beta *
+      beta
+    )
+  );
+
 }
 
 
@@ -1676,40 +1841,55 @@ function gammaFor(beta){
    KEPLER TRANSFER
 ========================================================= */
 
-function solveEccentricAnomaly(M,e){
+function solveEccentricAnomaly(
+  M,
+  e
+){
 
   let E = M;
 
-  for(let i=0;i<8;i++){
+
+  for(
+    let i=0;
+    i<8;
+    i++
+  ){
 
     E =
       E -
       (
         E -
-        e * Math.sin(E) -
+        e *
+        Math.sin(E) -
         M
       ) /
       (
         1 -
-        e * Math.cos(E)
+        e *
+        Math.cos(E)
       );
 
   }
 
+
   return E;
+
 }
 
 
 function transferPosition(p){
 
   const M =
-    Math.PI * p;
+    Math.PI *
+    p;
+
 
   const E =
     solveEccentricAnomaly(
       M,
       TRANSFER_E
     );
+
 
   const b =
     TRANSFER_A *
@@ -1719,6 +1899,7 @@ function transferPosition(p){
       TRANSFER_E
     );
 
+
   const x =
     TRANSFER_A *
     (
@@ -1726,9 +1907,11 @@ function transferPosition(p){
       TRANSFER_E
     );
 
+
   const y =
     b *
     Math.sin(E);
+
 
   const r =
     TRANSFER_A *
@@ -1738,12 +1921,14 @@ function transferPosition(p){
       Math.cos(E)
     );
 
+
   return {
     E,
     x,
     y,
     r
   };
+
 }
 
 
@@ -1755,13 +1940,16 @@ function arcIntegral(E){
 
   const steps = 120;
 
+
   if(E <= 0){
     return 0;
   }
 
+
   let total = 0;
 
   let prevE = 0;
+
 
   let prev =
     TRANSFER_A *
@@ -1773,12 +1961,18 @@ function arcIntegral(E){
       Math.cos(prevE)
     );
 
-  for(let i=1;i<=steps;i++){
+
+  for(
+    let i=1;
+    i<=steps;
+    i++
+  ){
 
     const currE =
       E *
       i /
       steps;
+
 
     const curr =
       TRANSFER_A *
@@ -1789,6 +1983,7 @@ function arcIntegral(E){
         Math.cos(currE) *
         Math.cos(currE)
       );
+
 
     total +=
       0.5 *
@@ -1801,19 +1996,29 @@ function arcIntegral(E){
         prevE
       );
 
-    prevE = currE;
-    prev = curr;
+
+    prevE =
+      currE;
+
+    prev =
+      curr;
+
   }
 
+
   return total;
+
 }
 
 
 const TOTAL_TRANSFER_AU =
-  arcIntegral(Math.PI);
+  arcIntegral(
+    Math.PI
+  );
 
 const TOTAL_TRANSFER_KM =
-  TOTAL_TRANSFER_AU * AU;
+  TOTAL_TRANSFER_AU *
+  AU;
 
 
 /* =========================================================
@@ -1822,32 +2027,40 @@ const TOTAL_TRANSFER_KM =
 
 let stars = [];
 
+
 function resizeCanvas(){
 
   const rect =
     canvas.getBoundingClientRect();
 
+
   const ratio =
     Math.min(
-      window.devicePixelRatio || 1,
+      window.devicePixelRatio ||
+      1,
       2
     );
+
 
   canvas.width =
     Math.max(
       1,
       Math.floor(
-        rect.width * ratio
+        rect.width *
+        ratio
       )
     );
+
 
   canvas.height =
     Math.max(
       1,
       Math.floor(
-        rect.height * ratio
+        rect.height *
+        ratio
       )
     );
+
 
   ctx.setTransform(
     ratio,
@@ -1857,6 +2070,7 @@ function resizeCanvas(){
     0,
     0
   );
+
 }
 
 
@@ -1864,22 +2078,34 @@ function makeStars(){
 
   stars = [];
 
-  for(let i=0;i<150;i++){
+
+  for(
+    let i=0;
+    i<150;
+    i++
+  ){
 
     stars.push({
 
       x:
-        Math.random() * 2 - 1,
+        Math.random() *
+        2 -
+        1,
 
       y:
-        Math.random() * 2 - 1,
+        Math.random() *
+        2 -
+        1,
 
       z:
-        Math.random() * 0.96 + 0.04
+        Math.random() *
+        0.96 +
+        0.04
 
     });
 
   }
+
 }
 
 
@@ -1906,6 +2132,7 @@ function starIntensity(){
   }
 
   return 2.8;
+
 }
 
 
@@ -1914,8 +2141,13 @@ function drawStars(dt){
   const rect =
     canvas.getBoundingClientRect();
 
-  const w = rect.width;
-  const h = rect.height;
+
+  const w =
+    rect.width;
+
+  const h =
+    rect.height;
+
 
   ctx.clearRect(
     0,
@@ -1924,13 +2156,22 @@ function drawStars(dt){
     h
   );
 
-  const cx = w / 2;
-  const cy = h * 0.42;
+
+  const cx =
+    w / 2;
+
+  const cy =
+    h * 0.42;
+
 
   const intensity =
     starIntensity();
 
-  for(const star of stars){
+
+  for(
+    const star
+    of stars
+  ){
 
     if(playing){
 
@@ -1942,29 +2183,43 @@ function drawStars(dt){
 
     }
 
-    if(star.z <= 0.015){
+
+    if(
+      star.z <=
+      0.015
+    ){
 
       star.x =
-        Math.random() * 2 - 1;
+        Math.random() *
+        2 -
+        1;
 
       star.y =
-        Math.random() * 2 - 1;
+        Math.random() *
+        2 -
+        1;
 
       star.z = 1;
+
     }
 
+
     const scale =
-      185 / star.z;
+      185 /
+      star.z;
+
 
     const x =
       cx +
       star.x *
       scale;
 
+
     const y =
       cy +
       star.y *
       scale;
+
 
     if(
       x < -40 ||
@@ -1972,9 +2227,13 @@ function drawStars(dt){
       y < -40 ||
       y > h + 40
     ){
+
       star.z = 1;
+
       continue;
+
     }
+
 
     const brightness =
       clamp(
@@ -1984,12 +2243,15 @@ function drawStars(dt){
         1
       );
 
+
     const radius =
       clamp(
-        1.6 / star.z,
+        1.6 /
+        star.z,
         .6,
         3
       );
+
 
     ctx.beginPath();
 
@@ -2001,46 +2263,62 @@ function drawStars(dt){
       Math.PI * 2
     );
 
+
     if(
       mode === "099" ||
       mode === "0999" ||
       mode === "light"
     ){
+
       ctx.fillStyle =
         "rgba(170,215,255," +
         brightness +
         ")";
+
     }
     else{
+
       ctx.fillStyle =
         "rgba(255,255,255," +
         brightness +
         ")";
+
     }
+
 
     ctx.fill();
 
 
     if(
       playing &&
-      intensity > .7
+      intensity >
+      .7
     ){
 
       const streak =
         clamp(
-          intensity * 6,
+          intensity *
+          6,
           2,
           16
         );
 
+
       const dx =
-        x - cx;
+        x -
+        cx;
 
       const dy =
-        y - cy;
+        y -
+        cy;
+
 
       const len =
-        Math.hypot(dx,dy) || 1;
+        Math.hypot(
+          dx,
+          dy
+        ) || 1;
+
 
       ctx.beginPath();
 
@@ -2051,10 +2329,16 @@ function drawStars(dt){
 
       ctx.lineTo(
         x +
-        dx / len * streak,
+        dx /
+        len *
+        streak,
+
         y +
-        dy / len * streak
+        dy /
+        len *
+        streak
       );
+
 
       ctx.strokeStyle =
         "rgba(170,215,255,.28)";
@@ -2062,6 +2346,7 @@ function drawStars(dt){
       ctx.lineWidth = 1;
 
       ctx.stroke();
+
     }
 
   }
@@ -2098,6 +2383,7 @@ function mapPoint(
       MAP_SCALE
 
   };
+
 }
 
 
@@ -2107,6 +2393,7 @@ function buildTransferPath(){
 
   const points = 100;
 
+
   const b =
     TRANSFER_A *
     Math.sqrt(
@@ -2115,12 +2402,18 @@ function buildTransferPath(){
       TRANSFER_E
     );
 
-  for(let i=0;i<=points;i++){
+
+  for(
+    let i=0;
+    i<=points;
+    i++
+  ){
 
     const E =
       Math.PI *
       i /
       points;
+
 
     const x =
       TRANSFER_A *
@@ -2129,19 +2422,23 @@ function buildTransferPath(){
         TRANSFER_E
       );
 
+
     const y =
       b *
       Math.sin(E);
+
 
     const px =
       MAP_CX +
       x *
       MAP_SCALE;
 
+
     const py =
       MAP_CY -
       y *
       MAP_SCALE;
+
 
     d +=
       (
@@ -2155,10 +2452,12 @@ function buildTransferPath(){
 
   }
 
+
   transferPath.setAttribute(
     "d",
     d
   );
+
 }
 
 
@@ -2168,11 +2467,13 @@ function updateTransferMap(){
     TRANSFER_DAYS *
     progress;
 
+
   const earthAngle =
     2 *
     Math.PI *
     elapsedDays /
     EARTH_YEAR;
+
 
   const marsAngle =
     MARS_PHASE_RAD +
@@ -2181,11 +2482,13 @@ function updateTransferMap(){
     elapsedDays /
     MARS_YEAR;
 
+
   const epos =
     mapPoint(
       R_EARTH,
       earthAngle
     );
+
 
   const mpos =
     mapPoint(
@@ -2193,15 +2496,18 @@ function updateTransferMap(){
       marsAngle
     );
 
+
   const spos =
     transferPosition(
       progress
     );
 
+
   const sx =
     MAP_CX +
     spos.x *
     MAP_SCALE;
+
 
   const sy =
     MAP_CY -
@@ -2273,6 +2579,7 @@ function updateDirectMap(){
     440 *
     progress;
 
+
   directShip.setAttribute(
     "cx",
     x
@@ -2292,16 +2599,19 @@ function transferData(){
       progress
     );
 
+
   const elapsed =
     TRANSFER_DAYS *
     DAY *
     progress;
+
 
   const traveled =
     arcIntegral(
       pos.E
     ) *
     AU;
+
 
   const remaining =
     Math.max(
@@ -2310,27 +2620,34 @@ function transferData(){
       traveled
     );
 
+
   const rKm =
     pos.r *
     AU;
+
 
   const aKm =
     TRANSFER_A *
     AU;
 
+
   const speed =
     Math.sqrt(
       MU_SUN *
       (
-        2 / rKm -
-        1 / aKm
+        2 /
+        rKm -
+        1 /
+        aKm
       )
     );
+
 
   return {
 
     totalTime:
-      TRANSFER_DAYS * DAY,
+      TRANSFER_DAYS *
+      DAY,
 
     earthElapsed:
       elapsed,
@@ -2355,17 +2672,22 @@ function relativisticData(){
       distanceSelect.value
     );
 
+
   const beta =
     modes[mode].beta;
+
 
   if(beta >= 1){
 
     const total =
-      distance / C;
+      distance /
+      C;
+
 
     return {
 
-      totalTime:total,
+      totalTime:
+        total,
 
       earthElapsed:
         total *
@@ -2395,18 +2717,23 @@ function relativisticData(){
 
 
   const velocity =
-    beta * C;
+    beta *
+    C;
+
 
   const total =
     distance /
     velocity;
 
+
   const gamma =
     gammaFor(beta);
 
+
   return {
 
-    totalTime:total,
+    totalTime:
+      total,
 
     earthElapsed:
       total *
@@ -2428,7 +2755,8 @@ function relativisticData(){
         progress
       ),
 
-    speed:velocity,
+    speed:
+      velocity,
 
     gamma
 
@@ -2453,60 +2781,72 @@ function updateMissionNote(){
         "° ahead of Earth in this simplified Hohmann-transfer model.";
 
     }
+
     else if(progress < .25){
 
       missionNote.innerHTML =
         "<strong>Leaving Earth:</strong> The spacecraft is not chasing Mars directly. It is entering a larger orbit around the Sun.";
 
     }
+
     else if(progress < .7){
 
       missionNote.innerHTML =
         "<strong>Interplanetary cruise:</strong> Earth continues around the Sun behind the spacecraft while Mars moves toward the interception point.";
 
     }
+
     else if(progress < .97){
 
       missionNote.innerHTML =
         "<strong>Mars approach:</strong> The spacecraft and Mars are converging on nearly the same heliocentric location.";
 
     }
+
     else{
 
       missionNote.innerHTML =
-        "<strong>Arrival:</strong> Reaching Mars is only part of a real mission. Actual spacecraft must perform carefully designed arrival, capture, entry, descent or flyby operations.";
+        "<strong>Arrival:</strong> You have reached Mars. Tap LAND ON MARS to explore the surface.";
 
     }
 
+
     return;
+
   }
 
 
   if(mode === "light"){
 
     missionNote.innerHTML =
-      "<strong>Light-beam mode:</strong> This follows the travel time of light in the Earth frame. We do not show a photon 'traveler clock' because a photon does not have a valid rest frame in special relativity.";
+      "<strong>Light-beam mode:</strong> This follows the travel time of light in the Earth frame. We do not show a photon traveler clock because a photon does not have a valid rest frame in special relativity.";
 
     return;
+
   }
 
 
   const beta =
     modes[mode].beta;
 
+
   const gamma =
     gammaFor(beta);
+
 
   if(progress < .05){
 
     missionNote.innerHTML =
       "<strong>Relativity experiment:</strong> The spacecraft is hypothetically moving at " +
       (beta * 100).toFixed(
-        beta >= .99 ? 1 : 0
+        beta >= .99 ?
+        1 :
+        0
       ) +
       "% of light speed.";
 
   }
+
   else if(progress < .7){
 
     missionNote.innerHTML =
@@ -2515,10 +2855,11 @@ function updateMissionNote(){
       ".";
 
   }
+
   else{
 
     missionNote.innerHTML =
-      "<strong>Mars approach:</strong> This direct-line flight is a relativity demonstration rather than an actual orbital mission profile.";
+      "<strong>Mars approach:</strong> This direct-line flight is a relativity demonstration rather than an actual Earth-to-Mars orbital trajectory.";
 
   }
 
@@ -2539,6 +2880,7 @@ function updateAdvanced(data){
       "dilation is negligible for this educational model.";
 
     return;
+
   }
 
 
@@ -2550,23 +2892,28 @@ function updateAdvanced(data){
       "relativity does not define a photon rest frame.";
 
     return;
+
   }
 
 
   const beta =
     modes[mode].beta;
 
+
   const gamma =
     data.gamma;
+
 
   const distance =
     Number(
       distanceSelect.value
     );
 
+
   const contracted =
     distance /
     gamma;
+
 
   advancedLive.innerHTML =
     "β = " +
@@ -2596,11 +2943,15 @@ function updatePlanetVisuals(){
       2.2
     );
 
+
   marsDisc.style.width =
-    marsSize + "px";
+    marsSize +
+    "px";
+
 
   marsDisc.style.height =
-    marsSize + "px";
+    marsSize +
+    "px";
 
 
   const earthSize =
@@ -2614,11 +2965,15 @@ function updatePlanetVisuals(){
       )
     );
 
+
   earthDisc.style.width =
-    earthSize + "px";
+    earthSize +
+    "px";
+
 
   earthDisc.style.height =
-    earthSize + "px";
+    earthSize +
+    "px";
 
 }
 
@@ -2631,26 +2986,40 @@ function updateDisplay(){
 
   let data;
 
+
   if(mode === "transfer"){
-    data = transferData();
+
+    data =
+      transferData();
+
   }
+
   else{
-    data = relativisticData();
+
+    data =
+      relativisticData();
+
   }
 
 
   const pct =
-    progress * 100;
+    progress *
+    100;
 
 
   progressBar.style.width =
-    pct.toFixed(2) + "%";
+    pct.toFixed(2) +
+    "%";
+
 
   progressText.textContent =
-    pct.toFixed(0) + "%";
+    pct.toFixed(0) +
+    "%";
+
 
   progressReadout.textContent =
-    pct.toFixed(1) + "%";
+    pct.toFixed(1) +
+    "%";
 
 
   modeReadout.textContent =
@@ -2669,6 +3038,7 @@ function updateDisplay(){
       "Not defined";
 
   }
+
   else{
 
     travelerTime.textContent =
@@ -2698,12 +3068,14 @@ function updateDisplay(){
       " km/s around Sun";
 
   }
+
   else if(mode === "light"){
 
     speedReadout.textContent =
       "c = 299,792 km/s";
 
   }
+
   else{
 
     speedReadout.textContent =
@@ -2717,12 +3089,17 @@ function updateDisplay(){
   }
 
 
-  if(Number.isFinite(data.gamma)){
+  if(
+    Number.isFinite(
+      data.gamma
+    )
+  ){
 
     gammaReadout.textContent =
       data.gamma.toFixed(3);
 
   }
+
   else{
 
     gammaReadout.textContent =
@@ -2743,6 +3120,7 @@ function updateDisplay(){
     updateTransferMap();
 
   }
+
   else{
 
     updateDirectMap();
@@ -2758,31 +3136,39 @@ function updateDisplay(){
 
 function setMode(newMode){
 
-  mode = newMode;
+  mode =
+    newMode;
 
-  modeButtons.forEach(btn => {
 
-    btn.classList.toggle(
-      "active",
-      btn.dataset.mode === mode
-    );
+  modeButtons.forEach(
+    btn => {
 
-  });
+      btn.classList.toggle(
+        "active",
+        btn.dataset.mode ===
+        mode
+      );
+
+    }
+  );
 
 
   progress = 0;
 
   playing = false;
 
+
   launchBtn.textContent =
     "🚀 Launch From Earth";
+
 
   pauseBtn.textContent =
     "Pause";
 
 
   const isTransfer =
-    mode === "transfer";
+    mode ===
+    "transfer";
 
 
   distanceBlock.hidden =
@@ -2791,6 +3177,7 @@ function setMode(newMode){
 
   realOrbitGroup.hidden =
     !isTransfer;
+
 
   directGroup.hidden =
     isTransfer;
@@ -2802,6 +3189,7 @@ function setMode(newMode){
       "Simplified Hohmann transfer geometry. Planet sizes and orbital distances are visually compressed.";
 
   }
+
   else{
 
     mapCaption.textContent =
@@ -2826,26 +3214,33 @@ function setLevel(newLevel){
   level =
     Number(newLevel);
 
-  levelButtons.forEach(btn => {
 
-    btn.classList.toggle(
-      "active",
-      Number(
-        btn.dataset.level
-      ) === level
-    );
+  levelButtons.forEach(
+    btn => {
 
-  });
+      btn.classList.toggle(
+        "active",
+        Number(
+          btn.dataset.level
+        ) ===
+        level
+      );
+
+    }
+  );
 
 
-  levelSections.forEach(section => {
+  levelSections.forEach(
+    section => {
 
-    section.hidden =
-      Number(
-        section.dataset.min
-      ) > level;
+      section.hidden =
+        Number(
+          section.dataset.min
+        ) >
+        level;
 
-  });
+    }
+  );
 
 
   const messages = {
@@ -2872,46 +3267,74 @@ function setLevel(newLevel){
    BUTTONS
 ========================================================= */
 
-modeButtons.forEach(btn => {
+modeButtons.forEach(
+  btn => {
 
-  btn.addEventListener(
-    "click",
-    () => {
-      setMode(
-        btn.dataset.mode
-      );
-    }
-  );
+    btn.addEventListener(
+      "click",
+      () => {
 
-});
+        setMode(
+          btn.dataset.mode
+        );
+
+      }
+    );
+
+  }
+);
 
 
-levelButtons.forEach(btn => {
+levelButtons.forEach(
+  btn => {
 
-  btn.addEventListener(
-    "click",
-    () => {
-      setLevel(
-        btn.dataset.level
-      );
-    }
-  );
+    btn.addEventListener(
+      "click",
+      () => {
 
-});
+        setLevel(
+          btn.dataset.level
+        );
+
+      }
+    );
+
+  }
+);
 
 
 launchBtn.addEventListener(
   "click",
   () => {
 
-    if(progress >= 1){
-      progress = 0;
+    if(
+      progress >= 1
+    ){
+
+      window.location.href =
+        "mars-surface.html";
+
+      return;
+
     }
+
 
     playing = true;
 
+
     launchBtn.textContent =
       "Journey Running";
+
+  }
+);
+
+
+surfaceBtn.addEventListener(
+  "click",
+  () => {
+
+    window.location.href =
+      "mars-surface.html";
 
   }
 );
@@ -2923,6 +3346,7 @@ pauseBtn.addEventListener(
 
     playing =
       !playing;
+
 
     pauseBtn.textContent =
       playing ?
@@ -2941,11 +3365,14 @@ resetBtn.addEventListener(
 
     playing = false;
 
+
     launchBtn.textContent =
       "🚀 Launch From Earth";
 
+
     pauseBtn.textContent =
       "Pause";
+
 
     updateDisplay();
 
@@ -2959,10 +3386,27 @@ skipBtn.addEventListener(
 
     progress =
       clamp(
-        progress + .10,
+        progress +
+        .10,
         0,
         1
       );
+
+
+    if(
+      progress >=
+      1
+    ){
+
+      playing =
+        false;
+
+
+      launchBtn.textContent =
+        "🛬 LAND ON MARS";
+
+    }
+
 
     updateDisplay();
 
@@ -2977,7 +3421,8 @@ playbackSelect.addEventListener(
     playback =
       Number(
         playbackSelect.value
-      ) || 1;
+      ) ||
+      1;
 
   }
 );
@@ -2990,6 +3435,11 @@ distanceSelect.addEventListener(
     progress = 0;
 
     playing = false;
+
+
+    launchBtn.textContent =
+      "🚀 Launch From Earth";
+
 
     updateDisplay();
 
@@ -3006,35 +3456,45 @@ function animate(now){
   const dt =
     Math.min(
       100,
-      now - lastFrame
+      now -
+      lastFrame
     );
 
-  lastFrame = now;
+
+  lastFrame =
+    now;
 
 
   if(playing){
 
     progress +=
       (
-        dt / 1000
+        dt /
+        1000
       ) /
       ANIMATION_SECONDS *
       playback;
 
 
-    if(progress >= 1){
+    if(
+      progress >=
+      1
+    ){
 
       progress = 1;
 
       playing = false;
 
+
       launchBtn.textContent =
-        "Journey Complete";
+        "🛬 LAND ON MARS";
+
 
       pauseBtn.textContent =
         "Pause";
 
     }
+
 
     updateDisplay();
 
@@ -3042,6 +3502,7 @@ function animate(now){
 
 
   drawStars(dt);
+
 
   requestAnimationFrame(
     animate
