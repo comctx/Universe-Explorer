@@ -19,6 +19,32 @@
   --mars:#b45134;
 }
 *{box-sizing:border-box}
+.persistent-home{
+  position:fixed;
+  top:12px;
+  left:12px;
+  z-index:2000;
+  min-height:44px;
+  padding:9px 14px;
+  border:1px solid rgba(255,255,255,.32);
+  border-radius:999px;
+  color:#fff;
+  background:rgba(5,13,22,.86);
+  backdrop-filter:blur(8px);
+  box-shadow:0 8px 24px rgba(0,0,0,.28);
+  font-weight:900;
+}
+.persistent-home:hover{background:#17324a}
+.mode-status{
+  margin-top:10px;
+  padding:10px 12px;
+  border:1px solid #385b77;
+  border-radius:11px;
+  color:#cfe0ec;
+  background:#0a1b2a;
+  font-size:13px;
+  line-height:1.45;
+}
 html{scroll-behavior:smooth}
 body{
   margin:0;
@@ -225,6 +251,7 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
 </style>
 </head>
 <body>
+<button id="homeBtn" class="persistent-home" type="button" aria-label="Home">⌂ Home</button>
 <header>
   <div class="hero">
     <div>
@@ -268,6 +295,7 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
     <button data-speed="fast">Fast Mission</button>
     <button data-speed="tour">Scenic Tour</button>
   </div>
+  <div id="modeStatus" class="mode-status">Normal Mission — balanced speed, standard camera movement, and normal telemetry pacing.</div>
 
   <div class="timeline">
     <div class="timeline-step"><strong>1. Departure</strong><p>Leave Earth orbit and set course for Mars.</p></div>
@@ -447,9 +475,21 @@ function drawFlight(){
 
   if(flightCinematic.complete && flightCinematic.naturalWidth){
     const p=smooth(missionProgress);
-    const focusX=mix(.30,.79,p);
-    const zoom=mix(1.04,1.58,p);
-    drawCover(fctx,flightCinematic,w,h,zoom,focusX,.53);
+    let focusX,zoom,focusY;
+    if(missionMode==="fast"){
+      focusX=mix(.36,.83,p);
+      zoom=mix(1.18,1.82,p);
+      focusY=.53;
+    }else if(missionMode==="tour"){
+      focusX=mix(.24,.72,p);
+      zoom=mix(.94,1.28,p);
+      focusY=.50;
+    }else{
+      focusX=mix(.30,.79,p);
+      zoom=mix(1.04,1.58,p);
+      focusY=.53;
+    }
+    drawCover(fctx,flightCinematic,w,h,zoom,focusX,focusY);
   }else{
     const bg=fctx.createLinearGradient(0,0,0,h);
     bg.addColorStop(0,"#02060c"); bg.addColorStop(1,"#091321");
@@ -457,13 +497,15 @@ function drawFlight(){
   }
 
   /* subtle forward-motion star streaks */
-  const streakAlpha=.05+missionProgress*.20;
-  fctx.strokeStyle=`rgba(180,220,255,${streakAlpha})`;
-  fctx.lineWidth=1;
-  for(let i=0;i<32;i++){
+  const streakBoost=missionMode==="fast" ? 2.5 : missionMode==="tour" ? .25 : 1;
+  const streakAlpha=(.05+missionProgress*.20)*streakBoost;
+  fctx.strokeStyle=`rgba(180,220,255,${Math.min(.65,streakAlpha)})`;
+  fctx.lineWidth=missionMode==="fast" ? 1.6 : 1;
+  const streakCount=missionMode==="fast" ? 64 : missionMode==="tour" ? 14 : 32;
+  for(let i=0;i<streakCount;i++){
     const y=((i*71.7)+missionProgress*900)%h;
     const x=((i*119.3)+missionProgress*620)%(w+100)-50;
-    const len=4+missionProgress*20+(i%5)*2;
+    const len=(4+missionProgress*20+(i%5)*2)*(missionMode==="fast"?2.2:missionMode==="tour"?.45:1);
     fctx.beginPath(); fctx.moveTo(x,y); fctx.lineTo(x-len,y+len*.08); fctx.stroke();
   }
 
@@ -538,13 +580,36 @@ function startMission(){
 }
 function setMode(mode){
   missionMode=mode;
-  document.querySelectorAll('[data-speed]').forEach(btn=>btn.classList.toggle('active',btn.dataset.speed===mode));
-  if(mode==='normal'){ missionSeconds=22; $("modeReadout").textContent='Normal Mission'; }
-  if(mode==='fast'){ missionSeconds=11; $("modeReadout").textContent='Fast Mission'; }
-  if(mode==='tour'){ missionSeconds=34; $("modeReadout").textContent='Scenic Tour'; }
+  missionPlaying=false;
+  missionProgress=0;
+  missionLast=0;
+  document.querySelectorAll('[data-speed]').forEach(btn=>{
+    const active=btn.dataset.speed===mode;
+    btn.classList.toggle('active',active);
+    btn.classList.toggle('primary',active);
+  });
+  if(mode==='normal'){
+    missionSeconds=22;
+    $("modeReadout").textContent='Normal Mission';
+    $("modeStatus").textContent='Normal Mission — balanced speed, standard camera movement, and normal telemetry pacing.';
+  }
+  if(mode==='fast'){
+    missionSeconds=11;
+    $("modeReadout").textContent='Fast Mission';
+    $("modeStatus").textContent='Fast Mission — stronger star streaks, faster camera push toward Mars, and a much quicker trip.';
+  }
+  if(mode==='tour'){
+    missionSeconds=34;
+    $("modeReadout").textContent='Scenic Tour';
+    $("modeStatus").textContent='Scenic Tour — wider camera view, gentler motion, fewer streaks, and more time to watch the journey.';
+  }
+  $("pauseMission").textContent='Pause';
+  $("missionState").textContent='Waiting';
+  updateMissionUI();
 }
 function openMars(){ window.location.href='mars-surface.html'; }
 
+$("homeBtn").onclick=()=>window.scrollTo({top:0,behavior:"smooth"});
 $("startMission").onclick=startMission;
 $("startMissionHero").onclick=()=>{window.scrollTo({top:document.querySelector('.flight-window').getBoundingClientRect().top + window.scrollY - 20, behavior:'smooth'}); setTimeout(startMission,350)};
 $("pauseMission").onclick=()=>{missionPlaying=!missionPlaying; $("pauseMission").textContent=missionPlaying?'Pause':'Resume'; $("missionState").textContent=missionPlaying?'Active':'Paused'; if(missionPlaying){missionLast=0; missionFrame=requestAnimationFrame(missionLoop);}};
