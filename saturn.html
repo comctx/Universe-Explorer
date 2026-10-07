@@ -62,6 +62,29 @@ h1 span{display:block;margin-top:10px;color:#dfc58e;font-size:.43em;line-height:
   padding:7px 10px;border:1px solid rgba(255,255,255,.16);border-radius:9px;
   background:rgba(2,7,12,.68);font-size:11px;font-weight:900
 }
+.hotspot-layer{position:absolute;inset:0;pointer-events:none}
+.hotspot{
+  position:absolute;z-index:4;min-height:38px;padding:7px 10px;
+  border:1px solid rgba(255,224,156,.74);border-radius:999px;
+  background:rgba(8,13,19,.80);color:#fff3cf;font-weight:900;font-size:11px;
+  box-shadow:0 0 0 3px rgba(242,199,110,.10);pointer-events:auto
+}
+.hotspot:before{content:"";display:inline-block;width:7px;height:7px;margin-right:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px rgba(242,199,110,.8)}
+.hotspot-rings{left:8%;top:56%}.hotspot-hex{left:51%;top:18%}.hotspot-titan{right:7%;top:20%}.hotspot-enceladus{right:9%;bottom:24%}
+.hotspot-card{
+  margin-top:12px;padding:13px;border:1px solid #506a80;border-radius:13px;
+  background:rgba(5,14,23,.94);color:#dce9f2;line-height:1.5
+}
+.hidden-gems{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.gem{
+  padding:15px;border:1px solid #33495c;border-radius:14px;background:#07131f;
+  min-width:0
+}
+.gem strong{display:block;margin:4px 0 7px;color:#f0d092;font-size:18px}
+.gem p{margin:0;color:#b9cbd8;line-height:1.5;font-size:13px}
+.gem button{margin-top:10px;width:100%}
+@media(max-width:1000px){.hidden-gems{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.hidden-gems{grid-template-columns:1fr}.hotspot{font-size:10px;padding:6px 8px}.hotspot-titan{right:3%}.hotspot-enceladus{right:3%}}
 .stage-control{
   position:absolute;left:12px;right:12px;bottom:12px;
   padding:11px;border:1px solid rgba(255,255,255,.14);border-radius:13px;
@@ -216,6 +239,12 @@ footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
       <div class="hud-chip" id="viewModeChip">LIVE SATURN VIEW</div>
       <div class="hud-chip" id="rotationChip">ROTATING CLOUDS</div>
     </div>
+    <div class="hotspot-layer" id="saturnHotspots" aria-label="Saturn clickable hotspots">
+      <button class="hotspot hotspot-rings" type="button" data-hotspot="rings">Rings</button>
+      <button class="hotspot hotspot-hex" type="button" data-hotspot="hexagon">North-Pole Hexagon</button>
+      <button class="hotspot hotspot-titan" type="button" data-hotspot="titan">Titan</button>
+      <button class="hotspot hotspot-enceladus" type="button" data-hotspot="enceladus">Enceladus</button>
+    </div>
     <div class="stage-control">
       <label>
         <span>Ring transparency</span>
@@ -236,6 +265,47 @@ footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
     <div class="fact"><span>Length of day</span><strong>~10.7 hours</strong></div>
     <div class="fact"><span>Length of year</span><strong>~29.5 Earth years</strong></div>
     <div class="fact"><span>Average Sun distance</span><strong>~1.43 billion km</strong></div>
+  </section>
+
+  <section class="panel" id="hiddenGems">
+    <div class="section-head">
+      <div><h2>Hidden Gems</h2><p class="lead">Five Saturn facts that are hard to forget. Tap the hotspots to connect the facts to the interactive explorer.</p></div>
+    </div>
+    <div class="hidden-gems">
+      <article class="gem">
+        <span class="small">DENSITY</span>
+        <strong>Saturn could float</strong>
+        <p>Saturn is the only planet with an average density lower than liquid water. A hypothetical ocean large enough could make the whole planet float.</p>
+        <button class="secondary" type="button" data-gem="density">Explain why</button>
+      </article>
+      <article class="gem">
+        <span class="small">ATMOSPHERE</span>
+        <strong>1,800+ km/h winds</strong>
+        <p>Equatorial winds in Saturn's upper atmosphere can reach about 500 m/s — roughly 1,800 km/h.</p>
+        <button class="secondary" type="button" data-gem="winds">Explain the winds</button>
+      </article>
+      <article class="gem">
+        <span class="small">NORTH POLE</span>
+        <strong>A giant hexagon</strong>
+        <p>A persistent six-sided jet-stream pattern surrounds Saturn's north pole, with a powerful rotating storm near its center.</p>
+        <button class="secondary" type="button" data-hotspot="hexagon">Open hotspot</button>
+      </article>
+      <article class="gem">
+        <span class="small">TITAN</span>
+        <strong>A moon with a dense atmosphere</strong>
+        <p>Titan is the only moon in the Solar System with a dense atmosphere and has methane-and-ethane lakes, seas, clouds, and rain.</p>
+        <button class="secondary" type="button" data-hotspot="titan">Open Titan</button>
+      </article>
+      <article class="gem">
+        <span class="small">ENCELADUS</span>
+        <strong>Water sprayed into space</strong>
+        <p>Jets of water vapor and icy particles erupt from cracks near Enceladus's south pole and feed material into Saturn's environment.</p>
+        <button class="secondary" type="button" data-hotspot="enceladus">Open Enceladus</button>
+      </article>
+    </div>
+    <div class="hotspot-card" id="hotspotExplanation" aria-live="polite">
+      Tap a Saturn hotspot or Hidden Gem to see its explanation here.
+    </div>
   </section>
 
   <section class="panel" id="learn">
@@ -496,8 +566,28 @@ footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
     front(R*1.60,R*.38,R*.13,"#8d8165",.68);
     if(heroHighlight==="rings"){ctx.strokeStyle="rgba(255,214,91,.92)";ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(0,0,R*2.33,R*.60,0,0,Math.PI*2);ctx.stroke()}
     ctx.restore();
+    if(heroHighlight==="hexagon"){
+      ctx.save();
+      ctx.translate(cx,cy-R*.58);
+      ctx.strokeStyle="#7fc7ff";ctx.lineWidth=3;
+      ctx.beginPath();
+      for(var hh=0;hh<6;hh++){
+        var ha=-Math.PI/2+hh*Math.PI/3;
+        var hx=Math.cos(ha)*R*.23,hy=Math.sin(ha)*R*.085;
+        if(hh===0)ctx.moveTo(hx,hy);else ctx.lineTo(hx,hy)
+      }
+      ctx.closePath();ctx.stroke();
+      ctx.fillStyle="rgba(127,199,255,.14)";ctx.fill();
+      ctx.restore()
+    }
     if(heroHighlight==="titan"){
       ctx.fillStyle="#efcc8b";ctx.beginPath();ctx.arc(cx+R*2.5,cy-R*.52,7,0,Math.PI*2);ctx.fill()
+    }
+    if(heroHighlight==="enceladus"){
+      var ex=cx+R*1.85,ey=cy+R*.62;
+      ctx.fillStyle="#e8f6ff";ctx.beginPath();ctx.arc(ex,ey,6,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle="rgba(205,240,255,.8)";ctx.lineWidth=1.5;
+      for(var ep=-2;ep<=2;ep++){ctx.beginPath();ctx.moveTo(ex+ep*2,ey+4);ctx.quadraticCurveTo(ex+ep*5,ey+18,ex+ep*7,ey+34);ctx.stroke()}
     }
   }
 
@@ -697,6 +787,41 @@ footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
 
   function setViz(type){vizType=type;document.querySelectorAll("[data-viz]").forEach(function(b){b.classList.toggle("active",b.dataset.viz===type)});$("vizCopy").textContent=vizText[type];drawViz()}
   document.querySelectorAll("[data-viz]").forEach(function(b){b.onclick=function(){setViz(b.dataset.viz)}});setViz("formation");
+
+  var hotspotCopy={
+    rings:"Saturn's rings are not solid sheets. They are countless orbiting particles made mostly of water ice, with rock and dust mixed in. Collisions and gravity keep the system extraordinarily thin compared with its width.",
+    hexagon:"Saturn's north-pole hexagon is a huge six-sided atmospheric jet pattern. NASA describes it as a wavy jet stream roughly 30,000 km across. The polygonal shape forms from organized atmospheric flow around the pole.",
+    titan:"Titan is Saturn's largest moon and the only moon in the Solar System with a dense atmosphere. Its nitrogen-rich air supports clouds, rain, rivers, lakes, and seas made largely from methane and ethane.",
+    enceladus:"Enceladus hides a global salty ocean beneath its icy crust. Water vapor, icy particles, and organic material erupt from south-polar fractures called tiger stripes, spraying material directly into space."
+  };
+  function activateHotspot(type){
+    heroHighlight=type;
+    $("hotspotExplanation").textContent=hotspotCopy[type]||"Explore this Saturn feature.";
+    if(type==="rings"){
+      scrollToId("rings");
+    }else if(type==="titan"){
+      moonIndex=0;updateMoonDetail();renderMoonButtons();scrollToId("moons");
+    }else if(type==="enceladus"){
+      moonIndex=1;updateMoonDetail();renderMoonButtons();scrollToId("moons");
+    }else if(type==="hexagon"){
+      scrollToId("hiddenGems");
+    }
+    setTimeout(function(){if(heroHighlight===type)heroHighlight=""},4500)
+  }
+  document.querySelectorAll("[data-hotspot]").forEach(function(b){
+    b.addEventListener("click",function(){activateHotspot(b.dataset.hotspot)})
+  });
+  document.querySelectorAll("[data-gem]").forEach(function(b){
+    b.addEventListener("click",function(){
+      var type=b.dataset.gem;
+      if(type==="density"){
+        $("hotspotExplanation").textContent="Average density compares total mass with total volume. Saturn's average density is lower than liquid water because its enormous volume is filled mostly with light hydrogen and helium. The 'Saturn would float' idea is a density comparison—not a physically possible experiment.";
+      }else if(type==="winds"){
+        $("hotspotExplanation").textContent="Saturn's fast rotation and atmospheric heat flow help drive powerful jet streams. Near the equator, upper-atmosphere winds can reach about 500 m/s, or roughly 1,800 km/h.";
+      }
+      scrollToId("hiddenGems")
+    })
+  });
 
   function answerQuestion(q){
     var s=q.toLowerCase(),answer="",target="";
