@@ -163,7 +163,7 @@ h2{margin:0 0 8px;padding-left:10px;border-left:5px solid var(--yellow);font-siz
 }
 #flightCanvas{position:absolute;inset:0;width:100%;height:100%}
 .flight-hud{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.22),transparent 22%,transparent 68%,rgba(0,0,0,.46))}
-.hud-top{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;gap:12px}
+.hud-top{position:absolute;top:14px;left:14px;right:min(390px,45%);display:flex;justify-content:space-between;gap:12px}
 .hud-chip{
   padding:7px 10px;
   border:1px solid rgba(255,255,255,.2);
@@ -231,7 +231,7 @@ h2{margin:0 0 8px;padding-left:10px;border-left:5px solid var(--yellow);font-siz
 .orbit-inset{
   position:absolute;
   right:14px;
-  top:58px;
+  top:14px;
   width:min(360px,42%);
   height:240px;
   z-index:5;
@@ -391,11 +391,12 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
   .jump-stage{height:380px}
   .jump-person{font-size:50px}
   .orbit-inset{
-    top:56px;
+    top:8px;
     right:8px;
-    width:46%;
+    width:48%;
     height:170px;
   }
+  .hud-top{right:50%}
   .orbit-inset-title{font-size:8px}
   .orbit-inset-note{font-size:8px}
 }
