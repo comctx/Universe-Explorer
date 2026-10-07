@@ -22,7 +22,7 @@
 .persistent-home{
   position:fixed;
   top:12px;
-  right:12px;
+  left:12px;
   z-index:2000;
   min-height:44px;
   padding:9px 14px;
@@ -66,7 +66,7 @@ header{
   position:relative;
   width:min(1250px,100%);
   margin:auto;
-  padding:34px 18px 28px;
+  padding:70px 18px 28px;
   display:grid;
   grid-template-columns:minmax(0,1fr) minmax(360px,.95fr);
   gap:18px;
@@ -120,6 +120,12 @@ button.primary{background:var(--yellow)!important;border-color:#deb22c!important
   box-shadow:0 18px 42px rgba(0,0,0,.24);
   overflow:hidden;
 }
+.hero-orbit-card{
+  position:relative;
+  align-self:start;
+  min-height:290px;
+}
+.hero-flight-card{grid-column:1 / -1}
 .hero-visual{
   position:relative;
   min-height:400px;
@@ -163,7 +169,7 @@ h2{margin:0 0 8px;padding-left:10px;border-left:5px solid var(--yellow);font-siz
 }
 #flightCanvas{position:absolute;inset:0;width:100%;height:100%}
 .flight-hud{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.22),transparent 22%,transparent 68%,rgba(0,0,0,.46))}
-.hud-top{position:absolute;top:14px;left:14px;right:min(390px,45%);display:flex;justify-content:space-between;gap:12px}
+.hud-top{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;gap:12px}
 .hud-chip{
   padding:7px 10px;
   border:1px solid rgba(255,255,255,.2);
@@ -229,18 +235,14 @@ h2{margin:0 0 8px;padding-left:10px;border-left:5px solid var(--yellow);font-siz
 .small{color:#8faabd;font-size:12px}
 
 .orbit-inset{
-  position:absolute;
-  right:14px;
-  top:14px;
-  width:min(360px,42%);
-  height:240px;
-  z-index:5;
+  position:relative;
+  width:100%;
+  height:290px;
   overflow:hidden;
   border:1px solid rgba(140,190,230,.34);
-  border-radius:14px;
+  border-radius:18px;
   background:rgba(3,8,14,.88);
-  box-shadow:0 10px 28px rgba(0,0,0,.34);
-  backdrop-filter:blur(5px);
+  box-shadow:0 14px 34px rgba(0,0,0,.32);
 }
 .orbit-inset-title{
   position:absolute;
@@ -377,6 +379,8 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
 @media(max-width:960px){
   .hero,.grid-two,.jump-layout{grid-template-columns:1fr}
   .hero-visual{min-height:360px}
+  .hero-orbit-card{min-height:260px}
+  .orbit-inset{height:260px}
 }
 @media(max-width:760px){
   .grid-three,.timeline{grid-template-columns:1fr}
@@ -390,13 +394,6 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
   .readouts{grid-template-columns:1fr}
   .jump-stage{height:380px}
   .jump-person{font-size:50px}
-  .orbit-inset{
-    top:8px;
-    right:8px;
-    width:48%;
-    height:170px;
-  }
-  .hud-top{right:50%}
   .orbit-inset-title{font-size:8px}
   .orbit-inset-note{font-size:8px}
 }
@@ -406,7 +403,7 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
 <button id="homeBtn" class="persistent-home" type="button" aria-label="Home">⌂ Home</button>
 <header>
   <div class="hero">
-    <div>
+    <div class="hero-copy">
       <div class="brand">DONCO <small>UNIVERSE EXPLORER</small></div>
       <h1>Travel from <span>Earth to Mars</span></h1>
       <p>
@@ -422,7 +419,18 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
       </div>
     </div>
 
-    <div class="hero-card">
+    <div class="hero-orbit-card">
+      <div class="orbit-inset">
+        <div class="orbit-inset-title">
+          <strong>HOHMANN TRANSFER</strong>
+          <span id="orbitDayLabel">Day 0 of 259</span>
+        </div>
+        <canvas id="orbitCanvas"></canvas>
+        <div class="orbit-inset-note">Curved orbit around the Sun — not a straight-line flight</div>
+      </div>
+    </div>
+
+    <div class="hero-card hero-flight-card">
       <div class="flight-window hero-flight-window">
         <canvas id="flightCanvas"></canvas>
 
@@ -433,15 +441,6 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
           </div>
 
           <div class="target-box"></div>
-
-          <div class="orbit-inset">
-            <div class="orbit-inset-title">
-              <strong>HOHMANN TRANSFER</strong>
-              <span id="orbitDayLabel">Day 0 of 259</span>
-            </div>
-            <canvas id="orbitCanvas"></canvas>
-            <div class="orbit-inset-note">Curved orbit around the Sun — not a straight-line flight</div>
-          </div>
 
           <div class="hud-bottom">
             <div class="stage-box">
