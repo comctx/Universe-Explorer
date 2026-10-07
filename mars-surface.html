@@ -601,6 +601,31 @@ button.mars-btn{
   transform:translate(-50%,0);
 }
 
+.surface-reveal{
+  position:fixed;
+  inset:0;
+  z-index:850;
+  pointer-events:none;
+  opacity:0;
+  background:
+    radial-gradient(circle at 50% 72%,rgba(219,128,79,.38),transparent 26%),
+    linear-gradient(180deg,rgba(30,12,8,.18),rgba(151,70,42,.28));
+  transition:opacity .7s ease;
+}
+
+.surface-reveal.show{
+  opacity:1;
+}
+
+.viewer{
+  transition:filter .8s ease,transform .8s ease;
+}
+
+.viewer.arriving{
+  filter:brightness(.78) saturate(.82) blur(1px);
+  transform:scale(1.015);
+}
+
 footer{
   padding:24px 16px;
   text-align:center;
@@ -781,6 +806,8 @@ footer{
 <div id="touchdown" class="touchdown">
   TOUCHDOWN — Welcome to Mars
 </div>
+
+<div id="surfaceReveal" class="surface-reveal"></div>
 
 <main>
 
@@ -1144,6 +1171,7 @@ const arrivalBar=$("arrivalBar");
 const attitude=$("attitude");
 const shieldState=$("shieldState");
 const touchdown=$("touchdown");
+const surfaceReveal=$("surfaceReveal");
 
 let arrivalProgress=0;
 let arrivalPlaying=false;
@@ -1443,7 +1471,12 @@ function drawAtmosphereAndTerrain(w,h,d){
   if(d.terrain<=0)return;
 
   const terrain=d.terrain;
-  const horizon=mix(h*.92,h*.48,smoother(terrain));
+  const touchdownBias=clamp((arrivalProgress-.78)/.22,0,1);
+  const horizon=mix(
+    h*.92,
+    mix(h*.48,h*.34,touchdownBias),
+    smoother(terrain)
+  );
 
   const sky=actx.createLinearGradient(0,0,0,horizon);
   sky.addColorStop(0,"rgba(118,64,52,"+(.10+terrain*.60)+")");
@@ -1484,7 +1517,7 @@ function drawAtmosphereAndTerrain(w,h,d){
     const depth=((i*31)%100)/100;
     const x=((i*173)%(w+160))-80;
     const y=horizon+Math.pow(depth,1.65)*(h-horizon);
-    const size=(2+depth*22)*(.25+terrain*.86);
+    const size=(2+depth*22)*(.25+terrain*.86)*(1+touchdownBias*.75);
 
     actx.fillStyle="rgba(45,19,15,.74)";
     actx.beginPath();
@@ -1554,7 +1587,10 @@ function drawEnginePlumes(w,h,d){
 }
 
 function drawDust(w,h,d){
-  if(d.dust<=.01)return;
+  if(d.dust<=.01 && arrivalProgress<.88)return;
+
+  const landingDust=clamp((arrivalProgress-.86)/.14,0,1);
+  d={...d,dust:Math.max(d.dust,landingDust*.95)};
 
   const strength=d.dust;
 
@@ -1640,7 +1676,7 @@ function finishLanding(){
 
   stageTitle.textContent="Touchdown";
   stageText.textContent=
-    "Landing complete. Engine thrust falls away as the landing gear takes the load and the exterior camera transitions to the Martian surface.";
+    "Touchdown confirmed. Engine thrust falls away, dust settles, and the landing camera hands off directly to the Martian surface.";
 
   phase.textContent="Touchdown";
   altitude.textContent="0 m";
@@ -1650,15 +1686,29 @@ function finishLanding(){
   heating.textContent="Minimal";
   attitude.textContent="LANDED";
 
+  const viewerEl=$("viewer");
+  viewerEl.classList.add("arriving");
+  surfaceReveal.classList.add("show");
+
   setTimeout(()=>{
     arrival.classList.add("hidden");
     touchdown.classList.add("show");
 
     setTimeout(()=>{
+      viewerEl.scrollIntoView({behavior:"smooth",block:"center"});
+      drawSurface();
+
+      setTimeout(()=>{
+        viewerEl.classList.remove("arriving");
+        surfaceReveal.classList.remove("show");
+      },700);
+    },250);
+
+    setTimeout(()=>{
       touchdown.classList.remove("show");
     },2300);
 
-  },950);
+  },1050);
 }
 
 function arrivalLoop(time){
@@ -1683,6 +1733,8 @@ function arrivalLoop(time){
 
 function startArrival(){
   arrival.classList.remove("hidden");
+  $("viewer").classList.add("arriving");
+  surfaceReveal.classList.add("show");
 
   arrivalProgress=0;
   arrivalPlaying=true;
@@ -1712,6 +1764,9 @@ $("skipArrival").onclick=()=>{
   arrivalProgress=1;
   updateArrival();
   arrival.classList.add("hidden");
+  $("viewer").classList.remove("arriving");
+  surfaceReveal.classList.remove("show");
+  setTimeout(()=>$("viewer").scrollIntoView({behavior:"smooth",block:"center"}),120);
 };
 
 $("replay").onclick=()=>{
