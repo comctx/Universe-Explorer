@@ -295,7 +295,7 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
     <button data-speed="fast">Fast Mission</button>
     <button data-speed="tour">Scenic Tour</button>
   </div>
-  <div id="modeStatus" class="mode-status">Normal Mission — balanced speed, standard camera movement, and normal telemetry pacing.</div>
+  <div id="modeStatus" class="mode-status">Normal Mission — a visible Earth departure, forward interplanetary cruise, and gradual Mars approach.</div>
 
   <div class="timeline">
     <div class="timeline-step"><strong>1. Departure</strong><p>Leave Earth orbit and set course for Mars.</p></div>
@@ -310,7 +310,7 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
     <div>
       <h2>Earth → Mars Flight</h2>
       <p class="lead">
-        This forward-flight view keeps Mars directly ahead as you travel. Start the trip and watch the Red Planet grow from a distant point into the world filling your windshield.
+        This forward-flight view begins with Earth dropping away below you, then keeps Mars directly ahead for the entire interplanetary trip. Watch Earth recede and the Red Planet grow from a tiny target into a world filling the windshield.
       </p>
 
       <div class="flight-window">
@@ -448,7 +448,7 @@ let missionProgress=0;
 let missionPlaying=false;
 let missionLast=0;
 let missionFrame=0;
-let missionSeconds=22;
+let missionSeconds=28;
 let missionMode="normal";
 
 function resizeFlight(){
@@ -462,11 +462,12 @@ function resizeFlight(){
   drawFlight();
 }
 function stageFor(p){
-  if(p<.15)return {title:"Departure Burn", text:"Leaving Earth orbit and beginning the transfer toward Mars.", course:"Outbound", status:"Leaving Earth", speed:"24 km/s", days:"18 days", distance:"205 M km"};
-  if(p<.42)return {title:"Interplanetary Cruise", text:"Cruising through deep space as Earth fades behind and Mars remains ahead.", course:"Transfer Orbit", status:"Mid-Cruise", speed:"28 km/s", days:"74 days", distance:"145 M km"};
-  if(p<.72)return {title:"Mars Transfer", text:"Mars becomes visibly larger as the spacecraft closes the remaining distance.", course:"Mars Intercept", status:"Approaching Mars", speed:"24 km/s", days:"158 days", distance:"58 M km"};
-  if(p<.94)return {title:"Final Approach", text:"Trajectory is aligned with the Mars arrival corridor and landing sequence.", course:"Arrival Corridor", status:"Arrival Ready", speed:"18 km/s", days:"206 days", distance:"8 M km"};
-  return {title:"Mars Arrival", text:"Mission complete. Continue into the Mars entry, descent, and landing experience.", course:"At Mars", status:"At Destination", speed:"12 km/s", days:"214 days", distance:"0 M km"};
+  if(p<.12)return {title:"Leaving Earth", text:"The spacecraft climbs away from Earth. The blue planet drops below the forward window as the vehicle turns onto the Mars departure path.", course:"Earth Escape", status:"Earth Departure", speed:"11 km/s", days:"0 days", distance:"225 M km"};
+  if(p<.25)return {title:"Outbound Turn", text:"Earth is now receding behind and below. Mars is a tiny red target straight ahead in the forward view.", course:"Mars Transfer Injection", status:"Earth Receding", speed:"24 km/s", days:"12 days", distance:"211 M km"};
+  if(p<.58)return {title:"Interplanetary Cruise", text:"The spacecraft is committed to the transfer. Stars drift past while Mars remains centered ahead and slowly grows.", course:"Transfer Orbit", status:"Mid-Cruise", speed:"28 km/s", days:"86 days", distance:"142 M km"};
+  if(p<.82)return {title:"Mars Closing", text:"Mars is now unmistakable in the forward window. Surface shading becomes visible as the remaining distance falls rapidly.", course:"Mars Intercept", status:"Approaching Mars", speed:"24 km/s", days:"171 days", distance:"46 M km"};
+  if(p<.96)return {title:"Final Approach", text:"Mars dominates the forward view as guidance lines the spacecraft up with the arrival corridor.", course:"Arrival Corridor", status:"Arrival Ready", speed:"18 km/s", days:"208 days", distance:"6 M km"};
+  return {title:"Mars Arrival", text:"The interplanetary trip is complete. Continue directly into Mars entry, descent, and landing.", course:"At Mars", status:"At Destination", speed:"12 km/s", days:"214 days", distance:"0 M km"};
 }
 function drawFlight(){
   const w=flightCanvas.parentElement.clientWidth;
@@ -512,13 +513,114 @@ function drawFlight(){
 
   /* Forward view toward Mars: keep the destination visibly ahead for the whole trip. */
   const p=clamp(missionProgress,0,1);
+
+  /* Earth departure: forward window begins with Earth below and to the left,
+     then Earth falls away as the spacecraft turns toward Mars. */
+  if(p<.30){
+    const depart=clamp(p/.30,0,1);
+    const e=smooth(depart);
+    const earthRadius=mix(Math.min(w,h)*.34,Math.min(w,h)*.055,e);
+    const earthX=mix(w*.23,w*.08,e);
+    const earthY=mix(h*.80,h*.93,e);
+    const earthAlpha=1-clamp((p-.22)/.08,0,1);
+
+    fctx.save();
+    fctx.globalAlpha=earthAlpha;
+
+    const earthGlow=fctx.createRadialGradient(
+      earthX,earthY,earthRadius*.88,
+      earthX,earthY,earthRadius*1.30
+    );
+    earthGlow.addColorStop(0,"rgba(87,176,255,0)");
+    earthGlow.addColorStop(.72,"rgba(87,176,255,.13)");
+    earthGlow.addColorStop(1,"rgba(87,176,255,0)");
+    fctx.fillStyle=earthGlow;
+    fctx.beginPath();
+    fctx.arc(earthX,earthY,earthRadius*1.32,0,Math.PI*2);
+    fctx.fill();
+
+    fctx.save();
+    fctx.beginPath();
+    fctx.arc(earthX,earthY,earthRadius,0,Math.PI*2);
+    fctx.clip();
+
+    const earthShade=fctx.createRadialGradient(
+      earthX-earthRadius*.34,
+      earthY-earthRadius*.38,
+      earthRadius*.08,
+      earthX,
+      earthY,
+      earthRadius*1.08
+    );
+    earthShade.addColorStop(0,"#a8ddff");
+    earthShade.addColorStop(.18,"#4aa0e5");
+    earthShade.addColorStop(.52,"#1764a7");
+    earthShade.addColorStop(.82,"#0a315d");
+    earthShade.addColorStop(1,"#061827");
+    fctx.fillStyle=earthShade;
+    fctx.fillRect(earthX-earthRadius,earthY-earthRadius,earthRadius*2,earthRadius*2);
+
+    /* Soft land masses and cloud bands so Earth reads as a planet, not a flat blue disk. */
+    fctx.fillStyle="rgba(94,132,76,.72)";
+    fctx.beginPath();
+    fctx.ellipse(earthX-earthRadius*.22,earthY-earthRadius*.10,earthRadius*.25,earthRadius*.14,-.42,0,Math.PI*2);
+    fctx.fill();
+    fctx.beginPath();
+    fctx.ellipse(earthX+earthRadius*.18,earthY+earthRadius*.16,earthRadius*.19,earthRadius*.11,.28,0,Math.PI*2);
+    fctx.fill();
+
+    fctx.strokeStyle="rgba(255,255,255,.48)";
+    fctx.lineWidth=Math.max(1,earthRadius*.018);
+    for(let i=-1;i<=1;i++){
+      fctx.beginPath();
+      fctx.arc(
+        earthX-earthRadius*.06,
+        earthY+i*earthRadius*.18,
+        earthRadius*(.54+i*.04),
+        Math.PI*.15,
+        Math.PI*.88
+      );
+      fctx.stroke();
+    }
+    fctx.restore();
+
+    fctx.strokeStyle="rgba(176,224,255,.65)";
+    fctx.lineWidth=1.2;
+    fctx.beginPath();
+    fctx.arc(earthX,earthY,earthRadius+1,0,Math.PI*2);
+    fctx.stroke();
+
+    if(p<.20){
+      fctx.fillStyle="rgba(213,235,250,.82)";
+      fctx.font="800 11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif";
+      fctx.textAlign="left";
+      fctx.fillText("EARTH · DEPARTURE",Math.max(14,earthX-earthRadius*.65),Math.max(22,earthY-earthRadius-12));
+    }
+
+    fctx.restore();
+  }
+
   const marsX=w*.5;
   const marsY=mix(h*.43,h*.49,smooth(p));
   const marsRadius=mix(
-    missionMode==="tour"?5:7,
+    missionMode==="tour"?2.4:3.2,
     missionMode==="fast"?Math.min(w,h)*.34:Math.min(w,h)*.29,
-    Math.pow(smooth(p),1.35)
+    Math.pow(smooth(p),1.55)
   );
+
+  /* Transfer-corridor cue: a faint forward guide keeps the eye aimed at Mars. */
+  if(p>.07 && p<.88){
+    const alpha=.10+Math.sin(Math.min(1,p/.88)*Math.PI)*.14;
+    fctx.save();
+    fctx.setLineDash([5,9]);
+    fctx.strokeStyle=`rgba(112,205,255,${alpha})`;
+    fctx.lineWidth=1;
+    fctx.beginPath();
+    fctx.moveTo(w*.5,h*.88);
+    fctx.lineTo(marsX,marsY+Math.max(12,marsRadius+16));
+    fctx.stroke();
+    fctx.restore();
+  }
 
   /* Radial star flow from the forward vanishing point creates a true "flying toward Mars" view. */
   const flowStrength=(.15+p*.85)*(missionMode==="fast"?1.45:missionMode==="tour"?.65:1);
@@ -628,7 +730,7 @@ function drawFlight(){
 
   /* target brackets tighten as Mars nears */
   const bracket=70-missionProgress*24;
-  fctx.strokeStyle=`rgba(132,213,255,${.20+missionProgress*.28})`;
+  fctx.strokeStyle=`rgba(132,213,255,${.07+missionProgress*.41})`;
   fctx.lineWidth=1.4;
   const cx=w*.5, cy=mix(h*.43,h*.49,smooth(missionProgress));
   [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([sx,sy])=>{
