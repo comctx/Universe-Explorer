@@ -369,20 +369,12 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
 
       <div class="quick-links">
         <button id="openMarsPage">Open Mars Arrival Page</button>
-        <button id="scrollFeatures">See Features</button>
       </div>
     </div>
   </div>
 </section>
 
-<section id="features" class="panel">
-  <h2>What Improved</h2>
-  <div class="grid-three">
-    <div class="card"><strong>More realistic style</strong><p>Stronger space visuals, cleaner layout, and a cinematic feel closer to the header artwork you liked.</p></div>
-    <div class="card"><strong>Better flight flow</strong><p>The mission now feels like a journey, not just a basic animation. Telemetry and mission stages update as you travel.</p></div>
-    <div class="card"><strong>Direct Mars transition</strong><p>When you are ready, the flight takes you into the Mars arrival page so the overall app feels connected.</p></div>
-  </div>
-</section>
+
 </main>
 
 <footer>A DONCO-BAYCITY™ App</footer>
@@ -935,7 +927,6 @@ $("resetMission").onclick=()=>{missionPlaying=false; missionProgress=0; $("pause
 $("goToMars").onclick=openMars;
 $("openMarsPage").onclick=openMars;
 $("openMarsPageHero").onclick=openMars;
-$("scrollFeatures").onclick=()=>document.getElementById('features').scrollIntoView({behavior:'smooth'});
 
 document.querySelectorAll('[data-speed]').forEach(btn=>{
   btn.addEventListener('click',()=>{
