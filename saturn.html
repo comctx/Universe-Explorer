@@ -75,6 +75,13 @@ h1 span{display:block;margin-top:10px;color:#dfc58e;font-size:.43em;line-height:
   margin-top:12px;padding:13px;border:1px solid #506a80;border-radius:13px;
   background:rgba(5,14,23,.94);color:#dce9f2;line-height:1.5
 }
+.realistic-gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.realistic-card{overflow:hidden;border:1px solid #33495c;border-radius:16px;background:#07131f}
+.realistic-card img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:#02060b}
+.realistic-card .copy{padding:13px}
+.realistic-card h3{margin:0 0 6px;color:#f0d092;font-size:20px}
+.realistic-card p{margin:0;color:#b9cbd8;line-height:1.5;font-size:13px}
+@media(max-width:900px){.realistic-gallery{grid-template-columns:1fr}}
 .hidden-gems{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
 .gem{
   padding:15px;border:1px solid #33495c;border-radius:14px;background:#07131f;
@@ -231,6 +238,7 @@ footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
       <button class="secondary" id="ringShortcut" type="button">Explore Rings</button>
       <button class="secondary" id="moonShortcut" type="button">Explore Moons</button>
       <button class="secondary" id="hiddenGemsTop" type="button">Hidden Gems</button>
+      <button class="secondary" id="realisticViewsTop" type="button">Realistic Views</button>
     </div>
   </div>
 
@@ -266,6 +274,38 @@ footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
     <div class="fact"><span>Length of day</span><strong>~10.7 hours</strong></div>
     <div class="fact"><span>Length of year</span><strong>~29.5 Earth years</strong></div>
     <div class="fact"><span>Average Sun distance</span><strong>~1.43 billion km</strong></div>
+  </section>
+
+  <section class="panel" id="realisticViews">
+    <div class="section-head">
+      <div>
+        <h2>Realistic Saturn Views</h2>
+        <p class="lead">Photorealistic scientific illustrations of Saturn, its rings, and the turbulent cloud tops of its upper atmosphere.</p>
+      </div>
+    </div>
+    <div class="realistic-gallery">
+      <article class="realistic-card">
+        <img src="images/saturn/saturn-realistic.svg" alt="Realistic illustration of Saturn and its rings in space">
+        <div class="copy">
+          <h3>Saturn &amp; Its Rings</h3>
+          <p>Golden atmospheric bands, the major ring system, the Cassini Division, and ring shadows across Saturn's globe.</p>
+        </div>
+      </article>
+      <article class="realistic-card">
+        <img src="images/saturn/saturn-rings-realistic.svg" alt="Realistic close view of Saturn's icy rings">
+        <div class="copy">
+          <h3>Inside the Rings</h3>
+          <p>A close view of the icy ring material, with bright dense regions, dark gaps, and countless pieces of water ice, dust, and rock.</p>
+        </div>
+      </article>
+      <article class="realistic-card">
+        <img src="images/saturn/saturn-atmosphere-realistic.svg" alt="Realistic view above Saturn's upper atmosphere">
+        <div class="copy">
+          <h3>Cloud-Top View</h3>
+          <p>Saturn has no solid surface. This spacecraft-style view looks across the planet's layered clouds, storms, haze, and curved horizon.</p>
+        </div>
+      </article>
+    </div>
   </section>
 
   <section class="panel" id="hiddenGems">
@@ -762,6 +802,7 @@ footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
   $("ringShortcut").onclick=function(){scrollToId("rings")};
   $("moonShortcut").onclick=function(){scrollToId("moons")};
   $("hiddenGemsTop").onclick=function(){scrollToId("hiddenGems")};
+  $("realisticViewsTop").onclick=function(){scrollToId("realisticViews")};
   $("startTour").onclick=function(){scrollToId("learn");heroHighlight="rings";setTimeout(function(){heroHighlight=""},2500)};
 
   $("ringAlpha").oninput=function(){ringAlpha=Number(this.value)/100;$("ringAlphaValue").textContent=this.value+"%"};
