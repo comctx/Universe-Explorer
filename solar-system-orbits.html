@@ -286,6 +286,75 @@ main{
   text-transform:uppercase;
 }
 .compare-box strong{font-size:14px}
+.mechanics-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  margin-top:12px;
+}
+.mechanics-card{
+  padding:12px;
+  border:1px solid #2e4a61;
+  border-radius:12px;
+  background:#081725;
+}
+.mechanics-card span{
+  display:block;
+  margin-bottom:4px;
+  color:#8faabd;
+  font-size:10px;
+  font-weight:900;
+  text-transform:uppercase;
+}
+.mechanics-card strong{
+  display:block;
+  font-size:18px;
+  color:#eef6fc;
+}
+.mechanics-card p{
+  margin:6px 0 0;
+  color:#a9bfd0;
+  font-size:12px;
+  line-height:1.4;
+}
+.speed-bars{margin-top:14px}
+.speed-row{
+  display:grid;
+  grid-template-columns:86px 1fr 74px;
+  gap:9px;
+  align-items:center;
+  margin:8px 0;
+}
+.speed-row span{font-size:12px;color:#c6d8e6}
+.speed-track{
+  height:10px;
+  overflow:hidden;
+  border-radius:999px;
+  background:#07111b;
+  border:1px solid #29445c;
+}
+.speed-fill{
+  height:100%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#79c4ff,#ffd35a);
+}
+.speed-value{text-align:right;font-size:11px;color:#9fb6c9}
+.explain-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:12px;
+}
+.explain-card{
+  padding:13px;
+  border:1px solid #2e4a61;
+  border-radius:12px;
+  background:#07111b;
+}
+.explain-card h3{margin:0 0 6px;font-size:17px}
+.explain-card p{margin:0;color:#b8cede;line-height:1.5}
+.explain-card.bad{border-color:rgba(224,104,92,.38)}
+.explain-card.good{border-color:rgba(255,211,90,.38)}
 .transfer-note{
   margin-top:12px;
   padding:12px;
@@ -304,8 +373,12 @@ footer{
   .orbit-layout{grid-template-columns:1fr}
   .canvas-wrap{min-height:590px}
 }
+@media(max-width:760px){
+  .mechanics-grid{grid-template-columns:1fr 1fr}
+  .explain-grid{grid-template-columns:1fr}
+}
 @media(max-width:620px){
-  .compare-strip{grid-template-columns:1fr 1fr}
+  .compare-strip,.mechanics-grid{grid-template-columns:1fr 1fr}
   .topbar{padding:12px}
   .hero{padding:8px 12px 18px}
   main{padding:12px}
@@ -341,6 +414,11 @@ footer{
       <button id="innerBtn" type="button">Inner Planets View</button>
       <button id="asteroidBtn" class="primary" type="button">Asteroid Belt On</button>
       <button id="trailsBtn" class="primary" type="button">Orbit Trails On</button>
+      <button id="launchWindowBtn" type="button">Mars Launch Window</button>
+      <button id="straightBtn" type="button">Straight vs Hohmann</button>
+      <button id="habitableBtn" type="button">Habitable Zone</button>
+      <button id="kuiperBtn" type="button">Kuiper Belt</button>
+      <button id="minorBtn" type="button">Minor Worlds</button>
       <label class="speed-wrap">Speed
         <select id="speedSelect" aria-label="Simulation speed">
           <option value="1">1 day / sec</option>
@@ -383,6 +461,10 @@ footer{
           <div class="data-box"><span>Moons</span><strong id="moonsVal">2</strong></div>
           <div class="data-box"><span>Perihelion</span><strong id="periVal">1.38 AU</strong></div>
           <div class="data-box"><span>Aphelion</span><strong id="apheVal">1.67 AU</strong></div>
+          <div class="data-box"><span>Light Time</span><strong id="lightTimeVal">12.7 min</strong></div>
+          <div class="data-box"><span>Synodic Period</span><strong id="synodicVal">780 days</strong></div>
+          <div class="data-box"><span>Inclination</span><strong id="inclinationVal">1.85°</strong></div>
+          <div class="data-box"><span>Current Angle</span><strong id="angleVal">—</strong></div>
         </div>
 
         <div class="level-buttons" aria-label="Explanation level">
@@ -416,6 +498,50 @@ footer{
       Earth and Mars are shown in a simplified launch-window geometry. Mars begins about 44° ahead of Earth.
       The yellow Hohmann path curves around the Sun and meets Mars near the transfer intercept point.
     </div>
+
+    <div class="mechanics-grid">
+      <div class="mechanics-card">
+        <span>Earth → Mars Phase Angle</span>
+        <strong id="phaseAngleVal">44°</strong>
+        <p id="phaseStatus">Ideal Hohmann launch geometry.</p>
+      </div>
+      <div class="mechanics-card">
+        <span>Mars Launch Opportunity</span>
+        <strong id="windowVal">Every ~780 days</strong>
+        <p>About every 26 months, Earth and Mars return to a useful relative geometry.</p>
+      </div>
+      <div class="mechanics-card">
+        <span>Hohmann Transfer Time</span>
+        <strong>~259 days</strong>
+        <p>Idealized Sun-centered transfer from Earth's orbit to Mars' orbit.</p>
+      </div>
+      <div class="mechanics-card">
+        <span>Selected Planet Light Time</span>
+        <strong id="lightTimeLive">—</strong>
+        <p>One-way sunlight travel time at the selected planet's current Sun distance.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 class="section-title">Why not fly straight to Mars?</h2>
+    <p class="lead">A spacecraft leaving Earth is already moving around the Sun. The efficient route is another solar orbit that intersects Mars later.</p>
+    <div class="explain-grid">
+      <div class="explain-card bad">
+        <h3>Straight Line ✕</h3>
+        <p>Mars keeps moving while the spacecraft travels. Aiming at where Mars is at launch would miss the planet, and fighting orbital motion would require far more energy.</p>
+      </div>
+      <div class="explain-card good">
+        <h3>Hohmann Transfer ✓</h3>
+        <p>The spacecraft enters an elliptical orbit around the Sun and reaches Mars' orbital distance near the same time Mars reaches the intercept point.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 class="section-title">Planet Orbital Speed Comparison</h2>
+    <p class="lead">The closer a planet is to the Sun, the faster it generally travels through its orbit.</p>
+    <div id="speedBars" class="speed-bars"></div>
   </section>
 
   <section class="panel">
@@ -424,6 +550,7 @@ footer{
       Inner planets orbit faster because they are closer to the Sun. Outer planets have much longer years.
       Mars also follows a slightly elliptical path rather than a perfect circle, which is visible here more clearly than Earth's nearly circular orbit.
       Turn on the Inner Planets view to spread Mercury through Mars apart, watch the asteroid belt between Mars and Jupiter, and use the orbit trails to compare how quickly the planets sweep around the Sun.
+      You can also display the approximate habitable zone, Kuiper Belt, minor worlds, the Earth-to-Mars launch phase angle, and a straight-line-versus-Hohmann comparison.
     </p>
   </section>
 </main>
@@ -439,39 +566,39 @@ footer{
   const wrap=$("canvasWrap");
 
   const planets=[
-    {name:"Mercury",tag:"Fastest planet around the Sun",a:0.387,e:0.2056,period:87.97,speed:47.4,phase:2.35,color:"#b8b0a5",size:4.1,diameter:4879,gravity:3.70,dayLength:"58.6 Earth days",moons:"0",
+    {name:"Mercury",tag:"Fastest planet around the Sun",a:0.387,e:0.2056,period:87.97,speed:47.4,phase:2.35,color:"#b8b0a5",size:4.1,inclination:7,diameter:4879,gravity:3.70,dayLength:"58.6 Earth days",moons:"0",
       beginner:"Mercury is closest to the Sun and completes a year in only 88 Earth days.",
       technical:"Mercury's orbit is noticeably elliptical. Its average distance is 0.387 AU and its orbital speed is about 47.4 km/s.",
       advanced:"With eccentricity 0.2056, Mercury has the most eccentric orbit of the eight planets. The animation solves Kepler's equation so it moves faster near perihelion and slower near aphelion."},
-    {name:"Venus",tag:"Nearly circular orbit",a:0.723,e:0.0068,period:224.70,speed:35.0,phase:4.50,color:"#d8b16c",size:5.0,diameter:12104,gravity:8.87,dayLength:"243 days retrograde",moons:"0",
+    {name:"Venus",tag:"Nearly circular orbit",a:0.723,e:0.0068,period:224.70,speed:35.0,phase:4.50,color:"#d8b16c",size:5.0,inclination:3.39,diameter:12104,gravity:8.87,dayLength:"243 days retrograde",moons:"0",
       beginner:"Venus takes about 225 Earth days to orbit the Sun.",
       technical:"Venus orbits at about 0.723 AU and has one of the most circular planetary orbits.",
       advanced:"Its eccentricity is only 0.0068, so the difference between perihelion and aphelion is small."},
-    {name:"Earth",tag:"Our home world",a:1.000,e:0.0167,period:365.256,speed:29.8,phase:0,color:"#59aef8",size:5.3,diameter:12742,gravity:9.81,dayLength:"23h 56m",moons:"1",
+    {name:"Earth",tag:"Our home world",a:1.000,e:0.0167,period:365.256,speed:29.8,phase:0,color:"#59aef8",size:5.3,inclination:0,diameter:12742,gravity:9.81,dayLength:"23h 56m",moons:"1",
       beginner:"Earth takes about 365 days to make one trip around the Sun.",
       technical:"Earth's average orbital distance defines 1 astronomical unit, or 1 AU.",
       advanced:"Earth's eccentricity is 0.0167, making its orbit close to circular but not perfectly circular."},
-    {name:"Mars",tag:"The Red Planet",a:1.524,e:0.0934,period:686.98,speed:24.1,phase:44*Math.PI/180,color:"#d86c4d",size:5.1,diameter:6779,gravity:3.71,dayLength:"24h 37m",moons:"2",
+    {name:"Mars",tag:"The Red Planet",a:1.524,e:0.0934,period:686.98,speed:24.1,phase:44*Math.PI/180,color:"#d86c4d",size:5.1,inclination:1.85,diameter:6779,gravity:3.71,dayLength:"24h 37m",moons:"2",
       beginner:"Mars takes about 687 Earth days to orbit the Sun, almost twice as long as Earth.",
       technical:"Mars averages 1.524 AU from the Sun and has a more elliptical orbit than Earth.",
       advanced:"Mars' eccentricity is 0.0934. For an ideal Earth-to-Mars Hohmann transfer, Mars is roughly 44° ahead of Earth at launch."},
-    {name:"Jupiter",tag:"Largest planet",a:5.203,e:0.0489,period:4332.59,speed:13.1,phase:1.25,color:"#d3a47c",size:7.4,diameter:139820,gravity:24.79,dayLength:"9h 56m",moons:"95+",
+    {name:"Jupiter",tag:"Largest planet",a:5.203,e:0.0489,period:4332.59,speed:13.1,phase:1.25,color:"#d3a47c",size:7.4,inclination:1.3,diameter:139820,gravity:24.79,dayLength:"9h 56m",moons:"95+",
       beginner:"Jupiter needs almost 12 Earth years to orbit the Sun.",
       technical:"Jupiter averages 5.20 AU from the Sun and moves at about 13.1 km/s.",
       advanced:"Its orbital period is about 11.86 Earth years and eccentricity is 0.0489."},
-    {name:"Saturn",tag:"Ringed giant",a:9.537,e:0.0565,period:10759.22,speed:9.7,phase:3.70,color:"#d9c58d",size:7.0,diameter:116460,gravity:10.44,dayLength:"10h 42m",moons:"270+",
+    {name:"Saturn",tag:"Ringed giant",a:9.537,e:0.0565,period:10759.22,speed:9.7,phase:3.70,color:"#d9c58d",size:7.0,inclination:2.49,diameter:116460,gravity:10.44,dayLength:"10h 42m",moons:"270+",
       beginner:"Saturn takes about 29.5 Earth years to orbit the Sun.",
       technical:"Saturn averages about 9.54 AU from the Sun and travels around 9.7 km/s.",
       advanced:"Its eccentricity is 0.0565 and its orbital period is about 10,759 Earth days."},
-    {name:"Uranus",tag:"Ice giant",a:19.191,e:0.0457,period:30688.5,speed:6.8,phase:5.00,color:"#8fd7dc",size:6.0,diameter:50724,gravity:8.69,dayLength:"17h 14m retrograde",moons:"29",
+    {name:"Uranus",tag:"Ice giant",a:19.191,e:0.0457,period:30688.5,speed:6.8,phase:5.00,color:"#8fd7dc",size:6.0,inclination:0.77,diameter:50724,gravity:8.69,dayLength:"17h 14m retrograde",moons:"29",
       beginner:"Uranus takes about 84 Earth years to complete one orbit.",
       technical:"Uranus averages about 19.19 AU from the Sun.",
       advanced:"Its orbital period is roughly 30,689 Earth days, with eccentricity 0.0457."},
-    {name:"Neptune",tag:"Outer major planet",a:30.07,e:0.0113,period:60182,speed:5.4,phase:2.70,color:"#5d79df",size:6.0,diameter:49244,gravity:11.15,dayLength:"16h 6m",moons:"16",
+    {name:"Neptune",tag:"Outer major planet",a:30.07,e:0.0113,period:60182,speed:5.4,phase:2.70,color:"#5d79df",size:6.0,inclination:1.77,diameter:49244,gravity:11.15,dayLength:"16h 6m",moons:"16",
       beginner:"Neptune takes about 165 Earth years to orbit the Sun.",
       technical:"Neptune averages about 30.07 AU from the Sun and moves around 5.4 km/s.",
       advanced:"Despite its great distance, Neptune's orbit is quite close to circular, with eccentricity about 0.0113."},
-    {name:"Pluto",tag:"Dwarf planet",a:39.482,e:0.2488,period:90560,speed:4.7,phase:4.15,color:"#b9a895",size:4.2,diameter:2377,gravity:0.62,dayLength:"6.39 Earth days",moons:"5",
+    {name:"Pluto",tag:"Dwarf planet",a:39.482,e:0.2488,period:90560,speed:4.7,phase:4.15,color:"#b9a895",size:4.2,inclination:17.16,diameter:2377,gravity:0.62,dayLength:"6.39 Earth days",moons:"5",
       beginner:"Pluto is a dwarf planet and takes about 248 Earth years to orbit the Sun.",
       technical:"Pluto averages about 39.48 AU from the Sun and follows a strongly elliptical orbit.",
       advanced:"Pluto's eccentricity is about 0.2488, far greater than any of the eight major planets."}
@@ -487,6 +614,11 @@ footer{
   let showTransfer=false;
   let showAsteroids=true;
   let showTrails=true;
+  let showHabitable=false;
+  let showKuiper=false;
+  let showMinor=false;
+  let compareStraight=false;
+  let showPhaseAngle=false;
   let innerView=false;
   let transferProgress=0;
   let lastPoints=[];
@@ -506,6 +638,24 @@ footer{
     let E=M;
     for(let i=0;i<7;i++) E=E-(E-e*Math.sin(E)-M)/(1-e*Math.cos(E));
     return E;
+  }
+
+  function normalizeDeg(d){
+    d%=360;
+    if(d<0)d+=360;
+    return d;
+  }
+
+  function lightTimeText(au){
+    const minutes=au*8.3167;
+    if(minutes<60)return minutes.toFixed(minutes<10?1:0)+" min";
+    return (minutes/60).toFixed(1)+" hr";
+  }
+
+  function synodicDays(p){
+    const earth=365.256;
+    if(p.name==="Earth")return null;
+    return 1/Math.abs(1/earth-1/p.period);
   }
 
   function orbitRadiusFor(a){
@@ -546,6 +696,85 @@ footer{
     }
     ctx.stroke();
     ctx.globalAlpha=1;
+  }
+
+  function drawHabitableZone(cx,cy){
+    if(!showHabitable)return;
+    const inner=orbitRadiusFor(.95);
+    const outer=orbitRadiusFor(1.67);
+    ctx.save();
+    ctx.fillStyle="rgba(76,170,107,.10)";
+    ctx.beginPath();
+    ctx.arc(cx,cy,outer,0,Math.PI*2);
+    ctx.arc(cx,cy,inner,0,Math.PI*2,true);
+    ctx.fill();
+    ctx.strokeStyle="rgba(104,206,131,.28)";
+    ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(cx,cy,inner,0,Math.PI*2);ctx.stroke();
+    ctx.beginPath();ctx.arc(cx,cy,outer,0,Math.PI*2);ctx.stroke();
+    ctx.font="700 8px -apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif";
+    ctx.fillStyle="rgba(129,220,151,.82)";
+    ctx.fillText("APPROX. HABITABLE ZONE",cx+inner*.25,cy-outer*.73);
+    ctx.restore();
+  }
+
+  function drawKuiperBelt(cx,cy){
+    if(!showKuiper || innerView)return;
+    const inner=orbitRadiusFor(30);
+    const outer=orbitRadiusFor(showPluto?48:40);
+    ctx.save();
+    for(let i=0;i<420;i++){
+      const a=((i*97)%997)/997*Math.PI*2;
+      const f=((i*211+13)%991)/991;
+      const r=inner+(outer-inner)*f;
+      const x=cx+r*Math.cos(a);
+      const y=cy+r*Math.sin(a)*.96;
+      ctx.fillStyle="rgba(119,154,181,"+(0.05+((i*19)%25)/100)+")";
+      ctx.fillRect(x,y,.7,.7);
+    }
+    ctx.font="700 8px -apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif";
+    ctx.fillStyle="rgba(143,183,211,.62)";
+    ctx.fillText("KUIPER BELT",cx-outer*.2,cy-outer*.91);
+    ctx.restore();
+  }
+
+  function drawMinorWorlds(cx,cy){
+    if(!showMinor)return;
+    const worlds=[
+      {name:"Ceres",a:2.77,e:.076,period:1682,phase:1.6,color:"#b7aaa0"},
+      {name:"Vesta",a:2.36,e:.089,period:1325,phase:4.1,color:"#c0b8ad"}
+    ];
+    ctx.save();
+    worlds.forEach(m=>{
+      if(innerView)return;
+      const M=((simDays/m.period)*Math.PI*2+m.phase)%(Math.PI*2);
+      const E=solveKepler(M,m.e);
+      const A=orbitRadiusFor(m.a);
+      const B=A*Math.sqrt(1-m.e*m.e);
+      const x=cx+A*(Math.cos(E)-m.e);
+      const y=cy+B*Math.sin(E);
+      ctx.fillStyle=m.color;
+      ctx.beginPath();
+      ctx.arc(x,y,2.4,0,Math.PI*2);
+      ctx.fill();
+      ctx.font="700 7px -apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif";
+      ctx.fillStyle="#bfcbd4";
+      ctx.fillText(m.name,x+4,y-3);
+    });
+    if(showPluto){
+      const erisA=67.78, erisE=.44, erisP=203830;
+      const M=((simDays/erisP)*Math.PI*2+2.1)%(Math.PI*2);
+      const E=solveKepler(M,erisE);
+      const A=orbitRadiusFor(Math.min(erisA,48));
+      const B=A*Math.sqrt(1-erisE*erisE);
+      const x=cx+A*(Math.cos(E)-erisE);
+      const y=cy+B*Math.sin(E);
+      ctx.fillStyle="#c4c8cd";
+      ctx.beginPath();ctx.arc(x,y,2.4,0,Math.PI*2);ctx.fill();
+      ctx.font="700 7px -apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif";
+      ctx.fillStyle="#c4c8cd";ctx.fillText("Eris",x+4,y-3);
+    }
+    ctx.restore();
   }
 
   function drawAsteroidBelt(cx,cy){
@@ -609,6 +838,47 @@ footer{
     ctx.fillText("PERIHELION",peri.x+5,peri.y-5);
     ctx.fillText("APHELION",aphe.x-40,aphe.y-5);
     ctx.restore();
+  }
+
+  function drawLaunchGeometry(cx,cy){
+    const earth=planets.find(p=>p.name==="Earth");
+    const mars=planets.find(p=>p.name==="Mars");
+    const ep=positionFor(earth);
+    const mp=positionFor(mars);
+    const ex=cx+ep.x, ey=cy+ep.y;
+    const mx=cx+mp.x, my=cy+mp.y;
+
+    if(compareStraight){
+      ctx.save();
+      ctx.strokeStyle="rgba(231,92,78,.82)";
+      ctx.lineWidth=1.8;
+      ctx.setLineDash([6,5]);
+      ctx.beginPath();ctx.moveTo(ex,ey);ctx.lineTo(mx,my);ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.font="800 8px -apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif";
+      ctx.fillStyle="rgba(244,117,102,.95)";
+      ctx.fillText("AIMING AT MARS NOW — WRONG", (ex+mx)/2-54,(ey+my)/2-7);
+      ctx.restore();
+    }
+
+    if(showPhaseAngle){
+      const ea=Math.atan2(ey-cy,ex-cx);
+      const ma=Math.atan2(my-cy,mx-cx);
+      let diff=ma-ea;
+      while(diff<0)diff+=Math.PI*2;
+      while(diff>Math.PI*2)diff-=Math.PI*2;
+      const r=Math.min(orbitRadiusFor(.72),55);
+      ctx.save();
+      ctx.strokeStyle="rgba(255,211,90,.78)";
+      ctx.lineWidth=2;
+      ctx.beginPath();
+      ctx.arc(cx,cy,r,ea,ea+diff,false);
+      ctx.stroke();
+      ctx.font="800 9px -apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif";
+      ctx.fillStyle="#ffd35a";
+      ctx.fillText(Math.round(diff*180/Math.PI)+"°",cx+r*.25,cy-r*.18);
+      ctx.restore();
+    }
   }
 
   function drawTransfer(cx,cy){
@@ -697,8 +967,11 @@ footer{
     const cy=h*.52;
     const visible=visiblePlanets();
 
+    drawHabitableZone(cx,cy);
+    drawKuiperBelt(cx,cy);
     visible.forEach(p=>drawOrbitPath(cx,cy,p,p.name===selected?.70:.28));
     drawAsteroidBelt(cx,cy);
+    drawMinorWorlds(cx,cy);
     visible.forEach(p=>drawTrail(cx,cy,p));
     const selectedPlanet=visible.find(p=>p.name===selected);
     if(selectedPlanet)drawApsisMarkers(cx,cy,selectedPlanet);
@@ -716,6 +989,7 @@ footer{
     ctx.arc(cx,cy,7,0,Math.PI*2);
     ctx.fill();
 
+    drawLaunchGeometry(cx,cy);
     drawTransfer(cx,cy);
 
     lastPoints=[];
@@ -768,7 +1042,19 @@ footer{
       const orbitPct=((simDays/sel.period)%1+1)%1;
       $("currentDistVal").textContent=currentAU.toFixed(currentAU<10?3:2)+" AU";
       $("orbitProgressVal").textContent=(orbitPct*100).toFixed(1)+"%";
+      $("lightTimeLive").textContent=lightTimeText(currentAU);
+      $("lightTimeVal").textContent=lightTimeText(currentAU);
+      $("angleVal").textContent=normalizeDeg(E*180/Math.PI).toFixed(1)+"°";
     }
+
+    const earth=planets.find(p=>p.name==="Earth");
+    const mars=planets.find(p=>p.name==="Mars");
+    const ep=positionFor(earth), mp=positionFor(mars);
+    const ea=Math.atan2(ep.y,ep.x), ma=Math.atan2(mp.y,mp.x);
+    const phase=normalizeDeg((ma-ea)*180/Math.PI);
+    $("phaseAngleVal").textContent=phase.toFixed(1)+"°";
+    const delta=Math.min(Math.abs(phase-44),360-Math.abs(phase-44));
+    $("phaseStatus").textContent=delta<5?"Near ideal Hohmann launch geometry.":(delta<15?"Approaching a useful launch geometry.":"Not at the ideal Earth → Mars Hohmann phase angle.");
   }
 
   function animate(t){
@@ -805,6 +1091,9 @@ footer{
     $("apheVal").textContent=(p.a*(1+p.e)).toFixed(p.a<10?3:2)+" AU";
     $("yearCompareVal").textContent=(p.period/365.256).toFixed(p.period<1000?2:1)+"× Earth";
     $("speedCompareVal").textContent=(p.speed/29.8).toFixed(2)+"× Earth";
+    const syn=synodicDays(p);
+    $("synodicVal").textContent=syn?Math.round(syn).toLocaleString()+" days":"—";
+    $("inclinationVal").textContent=p.inclination.toFixed(2)+"°";
     document.querySelectorAll("#planetButtons button").forEach(b=>b.classList.toggle("active",b.dataset.planet===name));
     updateLevelCopy();
     draw();
@@ -814,6 +1103,18 @@ footer{
     const p=planets.find(x=>x.name===selected);
     $("levelCopy").textContent=p[level];
     document.querySelectorAll("[data-level]").forEach(b=>b.classList.toggle("active",b.dataset.level===level));
+  }
+
+  function buildSpeedBars(){
+    const holder=$("speedBars");
+    holder.innerHTML="";
+    const max=Math.max(...planets.filter(p=>p.name!=="Pluto").map(p=>p.speed));
+    planets.filter(p=>p.name!=="Pluto").forEach(p=>{
+      const row=document.createElement("div");
+      row.className="speed-row";
+      row.innerHTML='<span>'+p.name+'</span><div class="speed-track"><div class="speed-fill" style="width:'+(p.speed/max*100).toFixed(1)+'%"></div></div><div class="speed-value">'+p.speed.toFixed(1)+' km/s</div>';
+      holder.appendChild(row);
+    });
   }
 
   function buildPlanetButtons(){
@@ -891,6 +1192,59 @@ footer{
     draw();
   });
 
+  $("launchWindowBtn").addEventListener("click",()=>{
+    innerView=true;
+    showTransfer=true;
+    showPhaseAngle=true;
+    compareStraight=false;
+    simDays=0;
+    transferProgress=0;
+    running=true;
+    $("innerBtn").textContent="Full Solar System View";
+    $("innerBtn").classList.add("primary");
+    $("transferBtn").textContent="Hide Earth → Mars Transfer";
+    $("transferBtn").classList.add("primary");
+    $("straightBtn").classList.remove("primary");
+    $("launchWindowBtn").classList.add("primary");
+    $("transferNote").hidden=false;
+    buildPlanetButtons();
+    selectPlanet("Mars");
+    resize();
+  });
+
+  $("straightBtn").addEventListener("click",()=>{
+    compareStraight=!compareStraight;
+    showPhaseAngle=compareStraight||showPhaseAngle;
+    $("straightBtn").textContent=compareStraight?"Hide Straight-Line Comparison":"Straight vs Hohmann";
+    $("straightBtn").classList.toggle("primary",compareStraight);
+    draw();
+  });
+
+  $("habitableBtn").addEventListener("click",()=>{
+    showHabitable=!showHabitable;
+    $("habitableBtn").textContent=showHabitable?"Hide Habitable Zone":"Habitable Zone";
+    $("habitableBtn").classList.toggle("primary",showHabitable);
+    draw();
+  });
+
+  $("kuiperBtn").addEventListener("click",()=>{
+    showKuiper=!showKuiper;
+    if(showKuiper){showPluto=true;innerView=false;}
+    $("kuiperBtn").textContent=showKuiper?"Hide Kuiper Belt":"Kuiper Belt";
+    $("kuiperBtn").classList.toggle("primary",showKuiper);
+    $("plutoBtn").textContent=showPluto?"Hide Pluto":"Show Pluto";
+    buildPlanetButtons();
+    selectPlanet(selected);
+    resize();
+  });
+
+  $("minorBtn").addEventListener("click",()=>{
+    showMinor=!showMinor;
+    $("minorBtn").textContent=showMinor?"Hide Minor Worlds":"Minor Worlds";
+    $("minorBtn").classList.toggle("primary",showMinor);
+    draw();
+  });
+
   document.querySelectorAll("[data-level]").forEach(b=>{
     b.addEventListener("click",()=>{
       level=b.dataset.level;
@@ -912,6 +1266,7 @@ footer{
   window.addEventListener("resize",resize);
 
   buildPlanetButtons();
+  buildSpeedBars();
   selectPlanet("Mars");
   resize();
   requestAnimationFrame(animate);
