@@ -515,7 +515,7 @@ footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
       ];
       ctx.save();ctx.translate(cx,cy);ctx.rotate(-.12);ctx.scale(scale,scale);
       for(var i=0;i<bands.length;i++){
-        var b=bands[i];ctx.strokeStyle=b.c;ctx.globalAlpha=selectedRing&&selectedRing!==b.name?.24:.84;ctx.lineWidth=R*b.l;ctx.beginPath();ctx.ellipse(0,0,R*b.rx,R*b.ry,0,0,Math.PI*2);ctx.stroke()
+        var b=bands[i];ctx.strokeStyle=b.c;ctx.globalAlpha=(selectedRing && selectedRing!==b.name) ? .24 : .84;ctx.lineWidth=R*b.l;ctx.beginPath();ctx.ellipse(0,0,R*b.rx,R*b.ry,0,0,Math.PI*2);ctx.stroke()
       }
       ctx.globalAlpha=1;
       var pg=ctx.createRadialGradient(-R*.25,-R*.25,R*.08,0,0,R);
@@ -637,7 +637,7 @@ footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
       for(var q=0;q<layers.length;q++){ctx.fillStyle=layers[q][0];ctx.beginPath();ctx.arc(cx,cy,R*layers[q][1],0,Math.PI*2);ctx.fill()}
       ctx.fillStyle="#101820";ctx.fillRect(cx,cy-R-3,R+4,R*2+6);ctx.strokeStyle="#e7d5a8";ctx.beginPath();ctx.arc(cx,cy,R,Math.PI/2,Math.PI*1.5);ctx.stroke()
     }
-    if(vizType!=="interior"||true){
+    if(vizType!=="interior"){
       if(vizType!=="seasons"){var pg=ctx.createRadialGradient(cx-R*.28,cy-R*.28,R*.05,cx,cy,R);pg.addColorStop(0,"rgba(255,236,181,.95)");pg.addColorStop(.58,"rgba(199,164,101,.82)");pg.addColorStop(1,"rgba(76,55,31,.92)");ctx.fillStyle=pg;ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fill();ctx.strokeStyle="rgba(228,211,171,.55)";ctx.lineWidth=R*.12;ctx.beginPath();ctx.ellipse(cx,cy,R*2,R*.45,-.08,0,Math.PI*2);ctx.stroke()}
       else{var pg2=ctx.createRadialGradient(cx-R*.28,cy-R*.28,R*.05,cx,cy,R*.55);pg2.addColorStop(0,"#ffeab1");pg2.addColorStop(1,"#765735");ctx.fillStyle=pg2;ctx.beginPath();ctx.arc(cx,cy,R*.55,0,Math.PI*2);ctx.fill();ctx.strokeStyle="#e0cf9f";ctx.lineWidth=R*.08;ctx.beginPath();ctx.ellipse(cx,cy,R*1.1,R*.24,-.08,0,Math.PI*2);ctx.stroke();ctx.strokeStyle="#79c4ff";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(cx-R*.5,cy+R*.65);ctx.lineTo(cx+R*.5,cy-R*.65);ctx.stroke()}
     }
