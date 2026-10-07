@@ -1444,6 +1444,11 @@ footer{
       const asking=q.includes("tell me") || q.includes("explain") || q.includes("about") || q.includes("what is");
       const wantsMove=q.includes("move") || q.includes("take me") || q.includes("fly") || q.includes("go to") || q.includes("zoom");
       if(wantsMove){
+        if(planet.name==="Saturn"){
+          talkSay("Traveling to Saturn...");
+          window.setTimeout(()=>{ window.location.href="saturn.html"; },450);
+          return;
+        }
         focusPlanetName=planet.name;
         draw();
         talkSay("Moving the view to "+planet.name+". "+planet[level]);
