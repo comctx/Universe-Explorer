@@ -159,6 +159,25 @@ button.mars-btn{
   background:#633022!important;
 }
 
+.orbit-link{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:46px;
+  margin-top:14px;
+  padding:10px 15px;
+  border:1px solid #e2b631;
+  border-radius:11px;
+  background:var(--yellow);
+  color:#171004;
+  font-weight:900;
+  text-decoration:none;
+}
+.orbit-link:focus-visible{
+  outline:3px solid #fff;
+  outline-offset:2px;
+}
+
 .status{
   margin-top:10px;
   padding:10px 12px;
@@ -1129,6 +1148,54 @@ footer{
   </div>
 
 </section>
+
+<section id="mars-orbit" class="panel">
+
+  <h2>Mars Orbit &amp; How We Get There</h2>
+
+  <p class="lead">
+    Mars does not travel around the Sun in a perfect circle, and a spacecraft
+    cannot simply aim at where Mars is when it leaves Earth. The trip has to
+    account for the motion of both planets around the Sun.
+  </p>
+
+  <div class="grid-three" style="margin-top:14px">
+
+    <div class="card">
+      <strong>Mars Has an Elliptical Orbit</strong>
+      <p>
+        Mars averages about 1.52 AU from the Sun and takes about 687 Earth days
+        to complete one orbit. Its eccentricity is about 0.093, so its distance
+        from the Sun changes more noticeably than Earth's.
+      </p>
+    </div>
+
+    <div class="card">
+      <strong>Why Not Fly Straight to Mars?</strong>
+      <p>
+        Mars keeps moving while the spacecraft is traveling. Aiming at where
+        Mars is at launch would miss it. The spacecraft instead follows its own
+        curved orbit around the Sun toward where Mars will be later.
+      </p>
+    </div>
+
+    <div class="card">
+      <strong>Earth → Mars Launch Window</strong>
+      <p>
+        For an ideal Hohmann transfer, Mars is roughly 44° ahead of Earth at
+        departure. The transfer takes about 259 days, and a similar useful
+        Earth-Mars geometry returns about every 26 months.
+      </p>
+    </div>
+
+  </div>
+
+  <a class="orbit-link" href="solar-system-orbits.html?planet=Mars&amp;mode=launch">
+    See the Full Orbital Simulation
+  </a>
+
+</section>
+
 
 <section class="panel">
 
