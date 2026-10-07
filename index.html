@@ -470,6 +470,7 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
         <button id="openMarsPageHero" type="button">Open Mars Arrival</button>
         <button id="openMarsFacts" type="button">Mars Facts &amp; History</button>
         <button id="openJumpSim" type="button">Jump Simulator</button>
+        <button id="openSolarOrbits" type="button">Solar System Orbits</button>
       </div>
     </div>
 
@@ -1628,6 +1629,7 @@ $("goToMars").onclick=openMars;
 $("openMarsPage").onclick=openMars;
 $("openMarsFacts").onclick=()=>document.getElementById('mars-facts').scrollIntoView({behavior:'smooth',block:'start'});
 $("openJumpSim").onclick=()=>document.getElementById('jump-simulator').scrollIntoView({behavior:'smooth',block:'start'});
+$("openSolarOrbits").onclick=()=>window.location.href='solar-system-orbits.html';
 $("jumpNow").onclick=runJump;
 $("jumpCompare").onclick=toggleJumpTour;
 $("openMarsPageHero").onclick=openMars;
