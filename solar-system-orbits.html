@@ -24,9 +24,9 @@ body{
   color:var(--text);
   background:radial-gradient(circle at 50% 0,#17324d 0,#091522 38%,#040a12 78%);
 }
-button,select{font:inherit}
+button,select,input{font:inherit}
 button{cursor:pointer}
-button:focus-visible,select:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
 .topbar{
   width:min(1260px,100%);
   margin:auto;
@@ -130,6 +130,92 @@ main{
   background:#10283c;
   color:#fff;
   padding:4px 7px;
+}
+.talk-panel{
+  margin-bottom:14px;
+  padding:14px;
+  border:1px solid #42637d;
+  border-radius:16px;
+  background:linear-gradient(135deg,#0a1c2b,#102b40);
+}
+.talk-head{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  margin-bottom:9px;
+}
+.talk-title{
+  margin:0;
+  font-size:21px;
+}
+.talk-badge{
+  padding:5px 8px;
+  border:1px solid #567791;
+  border-radius:999px;
+  color:#c9deec;
+  background:#071521;
+  font-size:11px;
+  font-weight:850;
+}
+.talk-copy{
+  margin:0 0 10px;
+  color:#b8ccda;
+  line-height:1.45;
+}
+.talk-form{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:8px;
+}
+.talk-form input{
+  width:100%;
+  min-height:46px;
+  padding:10px 12px;
+  border:1px solid #567791;
+  border-radius:11px;
+  background:#04101a;
+  color:#fff;
+}
+.talk-form button,
+.talk-chip{
+  min-height:44px;
+  padding:9px 13px;
+  border:1px solid #deb22c;
+  border-radius:11px;
+  background:var(--yellow);
+  color:#1b1303;
+  font-weight:900;
+}
+.talk-examples{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:9px;
+}
+.talk-chip{
+  min-height:38px;
+  padding:7px 10px;
+  border-color:#4c6b83;
+  background:#153149;
+  color:#eaf5fc;
+  font-size:12px;
+}
+.talk-response{
+  margin-top:10px;
+  padding:10px 12px;
+  border-left:4px solid var(--yellow);
+  border-radius:8px;
+  background:#06131e;
+  color:#d9e8f2;
+  line-height:1.5;
+}
+.talk-note{
+  margin:7px 0 0;
+  color:#8faabd;
+  font-size:11px;
+  line-height:1.4;
 }
 .orbit-layout{
   display:grid;
@@ -386,6 +472,8 @@ footer{
   .canvas-overlay{left:8px;right:8px}
   .chip{font-size:9px}
   .data-grid{grid-template-columns:1fr}
+  .talk-form{grid-template-columns:1fr}
+  .talk-form button{width:100%}
 }
 </style>
 </head>
@@ -406,6 +494,26 @@ footer{
 
 <main>
   <section class="panel">
+    <div class="talk-panel" role="region" aria-labelledby="talkTitle">
+      <div class="talk-head">
+        <h2 id="talkTitle" class="talk-title">Talk to the Universe</h2>
+        <span class="talk-badge">OFFLINE CONTROLS · PREVIEW</span>
+      </div>
+      <p class="talk-copy">Type what you want to see. The first version understands common solar-system commands and works without an internet connection.</p>
+      <form id="talkForm" class="talk-form">
+        <input id="talkInput" type="text" autocomplete="off" aria-label="Talk to the Universe command" placeholder="Try: Move me to Saturn">
+        <button id="talkSubmit" type="submit">Go</button>
+      </form>
+      <div class="talk-examples" aria-label="Example commands">
+        <button class="talk-chip" type="button" data-talk="Move me to Saturn">Move me to Saturn</button>
+        <button class="talk-chip" type="button" data-talk="Speed up time 100x">Speed up time 100x</button>
+        <button class="talk-chip" type="button" data-talk="Show the Mars launch window">Show Mars launch window</button>
+        <button class="talk-chip" type="button" data-talk="Why does Mars move backward in the sky?">Explain Mars retrograde</button>
+      </div>
+      <div id="talkResponse" class="talk-response" aria-live="polite">Ready. Ask to visit a planet, change time speed, show a launch window, or explain what you are seeing.</div>
+      <p class="talk-note">This preview uses a local command engine. An online AI layer can be added later for open-ended questions while keeping these controls available offline.</p>
+    </div>
+
     <div class="orbit-toolbar">
       <button id="playBtn" class="primary" type="button">Pause</button>
       <button id="resetBtn" type="button">Reset</button>
@@ -1129,6 +1237,227 @@ footer{
       holder.appendChild(b);
     });
   }
+
+  function talkSay(message){
+    $("talkResponse").textContent=message;
+  }
+
+  function setRunning(next){
+    running=next;
+    $("playBtn").textContent=running?"Pause":"Play";
+    $("playBtn").classList.toggle("primary",running);
+  }
+
+  function setTalkSpeed(value){
+    const choices=[1,10,30,100,365];
+    let best=choices.reduce((a,b)=>Math.abs(b-value)<Math.abs(a-value)?b:a,choices[0]);
+    daysPerSecond=best;
+    $("speedSelect").value=String(best);
+    draw();
+    return best;
+  }
+
+  function makePlanetVisible(name){
+    if(name==="Pluto" && !showPluto){
+      showPluto=true;
+      $("plutoBtn").textContent="Hide Pluto";
+      $("plutoBtn").classList.add("primary");
+    }
+    const p=planets.find(x=>x.name===name);
+    if(p && innerView && p.a>1.7){
+      innerView=false;
+      $("innerBtn").textContent="Inner Planets View";
+      $("innerBtn").classList.remove("primary");
+    }
+    buildPlanetButtons();
+  }
+
+  function runUniverseCommand(raw){
+    const original=String(raw||"").trim();
+    if(!original){
+      talkSay("Type a request such as “Move me to Saturn” or “Speed up time 100x.”");
+      return;
+    }
+    const q=original.toLowerCase().replace(/[’]/g,"'");
+
+    if(q.includes("what can you do") || q==="help"){
+      talkSay("Try: move me to a planet, tell me about Jupiter, pause time, play time, reset, speed up time 100x, show the Mars launch window, show the Earth to Mars transfer, show the habitable zone, show the Kuiper Belt, or explain Mars retrograde.");
+      return;
+    }
+
+    if(q.includes("retrograde")){
+      makePlanetVisible("Mars");
+      selectPlanet("Mars");
+      level="beginner";
+      updateLevelCopy();
+      talkSay("Mars is highlighted. Retrograde motion is an apparent backward motion: Earth moves faster on its inner orbit, so when Earth passes Mars, Mars can briefly look as if it is moving backward against the background stars — like a slower car seeming to slide backward when you pass it.");
+      return;
+    }
+
+    if((q.includes("like i'm 10") || q.includes("like i am 10") || q.includes("for a 10 year old"))){
+      level="beginner";
+      updateLevelCopy();
+      const p=planets.find(x=>x.name===selected);
+      talkSay("Beginner explanation for "+selected+": "+p.beginner);
+      return;
+    }
+
+    if(q.includes("larger than earth")){
+      talkSay("The planets larger than Earth are Jupiter, Saturn, Uranus, and Neptune. This preview can select them one at a time; multi-planet filtering can be added next.");
+      return;
+    }
+
+    if(q.includes("2024") && q.includes("eclipse")){
+      talkSay("Calendar-date eclipse playback is not in this simulator yet. That would require adding date-based Earth, Moon, and Sun geometry.");
+      return;
+    }
+
+    if(q.includes("voyager") && (q.includes("launch") || q.includes("1977"))){
+      talkSay("Historical date control is not connected yet. We can add a real calendar so a request such as “Show Voyager 1 launch day” moves the planets to that date.");
+      return;
+    }
+
+    if(q.includes("launch window") && q.includes("mars")){
+      $("launchWindowBtn").click();
+      talkSay("Mars launch-window mode is on. Mars begins near the useful Earth-to-Mars phase geometry and the Hohmann transfer is shown.");
+      return;
+    }
+
+    if(q.includes("hohmann") || (q.includes("earth") && q.includes("mars") && q.includes("transfer"))){
+      if(!showTransfer)$("transferBtn").click();
+      talkSay("Earth-to-Mars Hohmann transfer is shown. The spacecraft follows an elliptical solar orbit that meets Mars later instead of flying straight at where Mars started.");
+      return;
+    }
+
+    if(q.includes("habitable")){
+      if(!showHabitable)$("habitableBtn").click();
+      talkSay("Habitable zone is shown.");
+      return;
+    }
+
+    if(q.includes("kuiper")){
+      if(!showKuiper)$("kuiperBtn").click();
+      talkSay("Kuiper Belt is shown, and the display has expanded to the outer solar system.");
+      return;
+    }
+
+    if(q.includes("asteroid")){
+      const wantsHide=q.includes("hide") || q.includes("off");
+      if(wantsHide===showAsteroids)$("asteroidBtn").click();
+      talkSay(wantsHide?"Asteroid Belt hidden.":"Asteroid Belt shown.");
+      return;
+    }
+
+    if(q.includes("trail")){
+      const wantsHide=q.includes("hide") || q.includes("off");
+      if(wantsHide===showTrails)$("trailsBtn").click();
+      talkSay(wantsHide?"Orbit trails hidden.":"Orbit trails shown.");
+      return;
+    }
+
+    if(q.includes("inner planet")){
+      if(!innerView)$("innerBtn").click();
+      talkSay("Inner-planet view is on.");
+      return;
+    }
+
+    if(q.includes("full solar") || q.includes("all planet")){
+      if(innerView)$("innerBtn").click();
+      talkSay("Full solar-system view is on.");
+      return;
+    }
+
+    if(q.includes("pause") || q.includes("stop time")){
+      setRunning(false);
+      talkSay("Simulation paused.");
+      return;
+    }
+
+    if(q==="play" || q.includes("resume") || q.includes("start time")){
+      setRunning(true);
+      talkSay("Simulation running.");
+      return;
+    }
+
+    if(q.includes("reset")){
+      simDays=0;
+      transferProgress=0;
+      draw();
+      talkSay("Simulation reset to Day 0.");
+      return;
+    }
+
+    const speedMatch=q.match(/(\d+(?:\.\d+)?)\s*(?:x|days?\s*(?:\/|per)\s*sec(?:ond)?)/);
+    if(speedMatch || q.includes("speed up") || q.includes("faster") || q.includes("slow down")){
+      let target=speedMatch?Number(speedMatch[1]):daysPerSecond;
+      if(!speedMatch){
+        const choices=[1,10,30,100,365];
+        const idx=Math.max(0,choices.indexOf(daysPerSecond));
+        if(q.includes("slow"))target=choices[Math.max(0,idx-1)];
+        else target=choices[Math.min(choices.length-1,idx+1)];
+      }
+      const actual=setTalkSpeed(target);
+      talkSay("Simulation speed set to "+actual+" day"+(actual===1?"":"s")+" per second.");
+      return;
+    }
+
+    if(q.includes("largest planet")){
+      makePlanetVisible("Jupiter");
+      selectPlanet("Jupiter");
+      talkSay("Jupiter is selected. It is the largest planet in the solar system.");
+      return;
+    }
+
+    if(q.includes("smallest planet")){
+      makePlanetVisible("Mercury");
+      selectPlanet("Mercury");
+      talkSay("Mercury is selected. It is the smallest of the eight major planets.");
+      return;
+    }
+
+    const planet=planets.find(p=>q.includes(p.name.toLowerCase()));
+    if(planet){
+      makePlanetVisible(planet.name);
+      selectPlanet(planet.name);
+      const asking=q.includes("tell me") || q.includes("explain") || q.includes("about") || q.includes("what is");
+      talkSay((asking?"Here is "+planet.name+": ":"Moved to "+planet.name+". ")+planet[level]);
+      return;
+    }
+
+    if(q.includes("technical")){
+      level="technical";
+      updateLevelCopy();
+      talkSay("Technical explanation level selected for "+selected+".");
+      return;
+    }
+
+    if(q.includes("advanced")){
+      level="advanced";
+      updateLevelCopy();
+      talkSay("Advanced explanation level selected for "+selected+".");
+      return;
+    }
+
+    if(q.includes("beginner") || q.includes("simple")){
+      level="beginner";
+      updateLevelCopy();
+      talkSay("Beginner explanation level selected for "+selected+".");
+      return;
+    }
+
+    talkSay("I don't recognize that command yet. Try a planet name, a time command, Mars launch window, Earth-to-Mars transfer, habitable zone, Kuiper Belt, or ask “What can you do?”");
+  }
+
+  $("talkForm").addEventListener("submit",e=>{
+    e.preventDefault();
+    runUniverseCommand($("talkInput").value);
+  });
+  document.querySelectorAll("[data-talk]").forEach(b=>{
+    b.addEventListener("click",()=>{
+      $("talkInput").value=b.dataset.talk;
+      runUniverseCommand(b.dataset.talk);
+    });
+  });
 
   $("homeBtn").addEventListener("click",()=>window.location.href="index.html");
   $("playBtn").addEventListener("click",()=>{
