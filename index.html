@@ -578,7 +578,7 @@ function drawFlight(){
   /* EARTH'S MOON
      Keep it visible during departure as a small, realistic companion to Earth,
      then let it shrink and fade as both worlds fall behind. */
-  if(p<.255 && flightCinematic.complete && flightCinematic.naturalWidth){
+  if(p<.19 && flightCinematic.complete && flightCinematic.naturalWidth){
     const mt=smooth(clamp(p/.255,0,1));
     const iw=flightCinematic.naturalWidth;
     const ih=flightCinematic.naturalHeight;
@@ -595,12 +595,17 @@ function drawFlight(){
 
     const moonSize=mix(
       Math.max(22,Math.min(w,h)*.060),
-      Math.max(6,Math.min(w,h)*.015),
+      Math.max(7,Math.min(w,h)*.018),
       mt
     );
-    const moonX=mix(w*.73,w*.61,mt);
-    const moonY=mix(h*.25,h*.18,mt);
-    const moonAlpha=1-clamp((p-.185)/.070,0,1);
+
+    /* Keep the Moon visually with Earth: it starts above Earth's limb, then
+       drops lower and outward with Earth instead of drifting toward Mars. */
+    const moonX=mix(w*.70,w*.80,mt);
+    const moonY=mix(h*.28,h*.82,mt);
+
+    /* Remove it before Mars becomes a meaningful visible target. */
+    const moonAlpha=1-clamp((p-.125)/.055,0,1);
 
     fctx.save();
     fctx.globalAlpha=.94*moonAlpha;
@@ -658,7 +663,7 @@ function drawFlight(){
   /* MARS AHEAD
      It stays very small for most of the cruise, then grows convincingly during
      the final third of the journey. */
-  const marsVisible=clamp((p-.14)/.86,0,1);
+  const marsVisible=clamp((p-.18)/.82,0,1);
   const marsGrowth=Math.pow(marsVisible,missionMode==="tour"?2.7:2.35);
   const marsX=w*.5;
   const marsY=mix(h*.43,h*.47,sp);
