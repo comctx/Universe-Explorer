@@ -445,7 +445,6 @@ footer{
   let showPluto=false;
   let showTransfer=false;
   let transferProgress=0;
-  let transferRunning=false;
   let lastPoints=[];
 
   function resize(){
@@ -649,13 +648,7 @@ footer{
     lastTime=t;
 
     if(running) simDays+=dt*daysPerSecond;
-    if(showTransfer && transferRunning){
-      transferProgress+=dt/18;
-      if(transferProgress>=1){
-        transferProgress=1;
-        transferRunning=false;
-      }
-    }
+    transferProgress=showTransfer?Math.min(1,Math.max(0,simDays/259)):0;
     draw();
     requestAnimationFrame(animate);
   }
@@ -708,7 +701,6 @@ footer{
   $("resetBtn").addEventListener("click",()=>{
     simDays=0;
     transferProgress=0;
-    transferRunning=showTransfer;
     draw();
   });
   $("speedSelect").addEventListener("change",e=>{
@@ -717,8 +709,13 @@ footer{
   });
   $("transferBtn").addEventListener("click",()=>{
     showTransfer=!showTransfer;
-    transferProgress=0;
-    transferRunning=showTransfer;
+    if(showTransfer){
+      simDays=0;
+      transferProgress=0;
+      running=true;
+      $("playBtn").textContent="Pause";
+      $("playBtn").classList.add("primary");
+    }
     $("transferBtn").textContent=showTransfer?"Hide Earth → Mars Transfer":"Show Earth → Mars Transfer";
     $("transferBtn").classList.toggle("primary",showTransfer);
     $("transferNote").hidden=!showTransfer;
