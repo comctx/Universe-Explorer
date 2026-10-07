@@ -66,15 +66,15 @@ header{
   position:relative;
   width:min(1250px,100%);
   margin:auto;
-  padding:100px 18px 28px;
+  padding:62px 18px 24px;
 }
 .hero-copy{
-  max-width:48%;
-  min-height:350px;
+  max-width:calc(100% - 350px);
+  min-height:210px;
 }
 .hero-actions{
   width:100%;
-  margin-top:4px;
+  margin-top:0;
 }
 .brand{
   display:inline-flex;
@@ -126,15 +126,15 @@ button.primary{background:var(--yellow)!important;border-color:#deb22c!important
 }
 .hero-orbit-card{
   position:absolute;
-  top:0;
+  top:56px;
   right:18px;
-  width:50%;
-  min-height:350px;
+  width:320px;
+  min-height:210px;
   z-index:30;
 }
 .hero-flight-card{
   width:100%;
-  margin-top:18px;
+  margin-top:12px;
 }
 .hero-visual{
   position:relative;
@@ -248,7 +248,7 @@ h2{margin:0 0 8px;padding-left:10px;border-left:5px solid var(--yellow);font-siz
 .orbit-inset{
   position:relative;
   width:100%;
-  height:350px;
+  height:210px;
   overflow:hidden;
   border:1px solid rgba(140,190,230,.34);
   border-radius:18px;
@@ -258,15 +258,15 @@ h2{margin:0 0 8px;padding-left:10px;border-left:5px solid var(--yellow);font-siz
 .orbit-inset-title{
   position:absolute;
   z-index:3;
-  left:10px;
-  right:10px;
-  top:8px;
+  left:8px;
+  right:8px;
+  top:7px;
   display:flex;
   justify-content:space-between;
   gap:8px;
   align-items:center;
   color:#d8e7f3;
-  font-size:10px;
+  font-size:9px;
 }
 .orbit-inset-title strong{color:#ffd35a;letter-spacing:.05em}
 #orbitCanvas{
@@ -278,14 +278,14 @@ h2{margin:0 0 8px;padding-left:10px;border-left:5px solid var(--yellow);font-siz
 .orbit-inset-note{
   position:absolute;
   z-index:3;
-  left:8px;
-  right:8px;
-  bottom:7px;
-  padding:5px 7px;
+  left:6px;
+  right:6px;
+  bottom:5px;
+  padding:4px 6px;
   border-radius:8px;
   background:rgba(3,8,14,.72);
   color:#9fb6c9;
-  font-size:9px;
+  font-size:8px;
   text-align:center;
 }
 .jump-panel{overflow:hidden}
@@ -389,6 +389,7 @@ h2{margin:0 0 8px;padding-left:10px;border-left:5px solid var(--yellow);font-siz
 footer{padding:28px 16px;text-align:center;color:#9db6c9}
 @media(max-width:960px){
   .grid-two,.jump-layout{grid-template-columns:1fr}
+  .hero-copy{max-width:calc(100% - 330px)}
   .hero-visual{min-height:360px}
 }
 @media(max-width:680px){
@@ -402,7 +403,7 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
     min-height:240px;
     margin-top:16px;
   }
-  .orbit-inset{height:240px}
+  .orbit-inset{height:210px}
   .hero-actions{margin-top:16px}
 }
 @media(max-width:760px){
