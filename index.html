@@ -355,6 +355,7 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
       </div>
     <div class="quick-links">
         <button id="openMarsPage">Open Mars Arrival Page</button>
+        <button id="openMarsFacts">Mars Facts &amp; History</button>
       </div>
   </div>
 
@@ -914,6 +915,7 @@ $("pauseMission").onclick=()=>{missionPlaying=!missionPlaying; $("pauseMission")
 $("resetMission").onclick=()=>{missionPlaying=false; missionProgress=0; $("pauseMission").textContent='Pause'; $("missionState").textContent='Waiting'; updateMissionUI();};
 $("goToMars").onclick=openMars;
 $("openMarsPage").onclick=openMars;
+$("openMarsFacts").onclick=()=>window.location.href='mars-surface.html?v=20261006-2#mars-facts';
 $("openMarsPageHero").onclick=openMars;
 
 document.querySelectorAll('[data-speed]').forEach(btn=>{
