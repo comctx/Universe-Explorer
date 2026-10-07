@@ -1265,10 +1265,29 @@ footer{
   });
   window.addEventListener("resize",resize);
 
+  const params=new URLSearchParams(window.location.search);
+  const requested=params.get("planet");
+  if(requested){
+    const match=planets.find(p=>p.name.toLowerCase()===requested.toLowerCase());
+    if(match){
+      selected=match.name;
+      if(selected==="Pluto"){
+        showPluto=true;
+        $("plutoBtn").textContent="Hide Pluto";
+        $("plutoBtn").classList.add("primary");
+      }
+    }
+  }
+
   buildPlanetButtons();
   buildSpeedBars();
-  selectPlanet("Mars");
+  selectPlanet(selected);
   resize();
+
+  if(params.get("mode")==="launch" && selected==="Mars"){
+    $("launchWindowBtn").click();
+  }
+
   requestAnimationFrame(animate);
 })();
 </script>
