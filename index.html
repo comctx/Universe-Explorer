@@ -575,6 +575,60 @@ function drawFlight(){
     fctx.restore();
   }
 
+  /* EARTH'S MOON
+     Keep it visible during departure as a small, realistic companion to Earth,
+     then let it shrink and fade as both worlds fall behind. */
+  if(p<.255 && flightCinematic.complete && flightCinematic.naturalWidth){
+    const mt=smooth(clamp(p/.255,0,1));
+    const iw=flightCinematic.naturalWidth;
+    const ih=flightCinematic.naturalHeight;
+
+    /* The cinematic artwork already contains a photographic Moon. Crop that
+       source instead of drawing a gray circle. */
+    const moonCropX=iw*.735;
+    const moonCropY=ih*.49;
+    const moonCropW=iw*.070;
+    const moonCropH=ih*.235;
+
+    const moonSize=mix(
+      Math.max(22,Math.min(w,h)*.060),
+      Math.max(6,Math.min(w,h)*.015),
+      mt
+    );
+    const moonX=mix(w*.73,w*.61,mt);
+    const moonY=mix(h*.25,h*.18,mt);
+    const moonAlpha=1-clamp((p-.185)/.070,0,1);
+
+    fctx.save();
+    fctx.globalAlpha=.94*moonAlpha;
+
+    /* Faint reflected sunlight around the Moon. */
+    const mg=fctx.createRadialGradient(
+      moonX,moonY,moonSize*.35,
+      moonX,moonY,moonSize*.75
+    );
+    mg.addColorStop(0,"rgba(225,232,238,.08)");
+    mg.addColorStop(1,"rgba(225,232,238,0)");
+    fctx.fillStyle=mg;
+    fctx.beginPath();
+    fctx.arc(moonX,moonY,moonSize*.78,0,Math.PI*2);
+    fctx.fill();
+
+    fctx.beginPath();
+    fctx.arc(moonX,moonY,moonSize*.50,0,Math.PI*2);
+    fctx.clip();
+
+    fctx.drawImage(
+      flightCinematic,
+      moonCropX,moonCropY,moonCropW,moonCropH,
+      moonX-moonSize*.50,
+      moonY-moonSize*.50,
+      moonSize,
+      moonSize
+    );
+    fctx.restore();
+  }
+
   /* MARS AHEAD
      It stays very small for most of the cruise, then grows convincingly during
      the final third of the journey. */
@@ -686,6 +740,40 @@ function drawFlight(){
       fctx.arc(marsX,marsY,marsRadius+.6,0,Math.PI*2);
       fctx.stroke();
     }
+  }
+
+  /* Mars' moons appear only on close approach. They are tiny, irregular
+     bodies, not large dramatic moons. */
+  if(p>.84 && marsRadius>18){
+    const ma=clamp((p-.84)/.16,0,1);
+
+    /* Phobos - brighter and closer to Mars. */
+    const phobosX=marsX-marsRadius*(1.28+.10*Math.sin(p*18));
+    const phobosY=marsY-marsRadius*(.30+.08*Math.cos(p*15));
+    const phobosR=Math.max(1.8,marsRadius*.030);
+    fctx.save();
+    fctx.globalAlpha=.28+ma*.62;
+    fctx.fillStyle="#9e8b7d";
+    fctx.beginPath();
+    fctx.ellipse(phobosX,phobosY,phobosR*1.25,phobosR*.82,-.34,0,Math.PI*2);
+    fctx.fill();
+    fctx.fillStyle="rgba(50,42,38,.34)";
+    fctx.beginPath();
+    fctx.arc(phobosX-phobosR*.26,phobosY-phobosR*.10,phobosR*.24,0,Math.PI*2);
+    fctx.fill();
+    fctx.restore();
+
+    /* Deimos - smaller, dimmer, and farther out. */
+    const deimosX=marsX+marsRadius*(1.62+.08*Math.cos(p*11));
+    const deimosY=marsY-marsRadius*(.58+.05*Math.sin(p*9));
+    const deimosR=Math.max(1.1,marsRadius*.016);
+    fctx.save();
+    fctx.globalAlpha=.18+ma*.42;
+    fctx.fillStyle="#a79b91";
+    fctx.beginPath();
+    fctx.ellipse(deimosX,deimosY,deimosR*1.20,deimosR*.78,.22,0,Math.PI*2);
+    fctx.fill();
+    fctx.restore();
   }
 
   /* During the final approach only, allow subtle guidance brackets to appear. */
