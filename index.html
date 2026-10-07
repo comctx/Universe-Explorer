@@ -585,10 +585,11 @@ function drawFlight(){
 
     /* The cinematic artwork already contains a photographic Moon. Crop that
        source instead of drawing a gray circle. */
-    const moonCropX=iw*.735;
-    const moonCropY=ih*.49;
-    const moonCropW=iw*.070;
-    const moonCropH=ih*.235;
+    /* Tight crop around the lit Moon in the source artwork. */
+    const moonCropX=iw*.688;
+    const moonCropY=ih*.500;
+    const moonCropW=iw*.050;
+    const moonCropH=ih*.205;
 
     const moonSize=mix(
       Math.max(22,Math.min(w,h)*.060),
@@ -618,6 +619,7 @@ function drawFlight(){
     fctx.arc(moonX,moonY,moonSize*.50,0,Math.PI*2);
     fctx.clip();
 
+    fctx.filter="brightness(1.55) contrast(1.10)";
     fctx.drawImage(
       flightCinematic,
       moonCropX,moonCropY,moonCropW,moonCropH,
@@ -626,6 +628,28 @@ function drawFlight(){
       moonSize,
       moonSize
     );
+    fctx.filter="none";
+
+    /* Subtle sunlit highlight so the Moon reads clearly against black space. */
+    const moonLight=fctx.createRadialGradient(
+      moonX-moonSize*.16,
+      moonY-moonSize*.18,
+      0,
+      moonX,
+      moonY,
+      moonSize*.52
+    );
+    moonLight.addColorStop(0,"rgba(255,248,230,.14)");
+    moonLight.addColorStop(.58,"rgba(255,248,230,.035)");
+    moonLight.addColorStop(1,"rgba(255,248,230,0)");
+    fctx.fillStyle=moonLight;
+    fctx.fillRect(
+      moonX-moonSize*.55,
+      moonY-moonSize*.55,
+      moonSize*1.10,
+      moonSize*1.10
+    );
+
     fctx.restore();
   }
 
