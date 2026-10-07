@@ -303,17 +303,10 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
     <div class="timeline-step"><strong>3. Approach</strong><p>Line up with the Mars entry corridor.</p></div>
     <div class="timeline-step"><strong>4. Arrival</strong><p>Enter the Mars landing and surface explorer.</p></div>
   </div>
-</section>
 
-<section class="panel">
-  <div class="grid-two">
-    <div>
-      <h2>Earth → Mars Flight</h2>
-      <p class="lead">
-        This forward-flight view now uses photographic planet imagery: Earth's real cloud-covered curved limb drops below the spacecraft, then Mars grows from a distant red point into a detailed world filling the windshield.
-      </p>
 
-      <div class="flight-window">
+  <div style="margin-top:18px">
+    <div class="flight-window">
         <canvas id="flightCanvas"></canvas>
         <div class="flight-hud">
           <div class="hud-top">
@@ -339,22 +332,20 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
           </div>
         </div>
       </div>
-
-      <div style="margin-top:12px">
+    <div style="margin-top:12px">
         <div class="progress"><div id="flightBar"></div></div>
       </div>
-
-      <div class="mission-buttons">
+    <div class="mission-buttons">
         <button id="startMission" class="primary">Start Mission</button>
         <button id="pauseMission">Pause</button>
         <button id="resetMission">Reset</button>
         <button id="goToMars">Go to Mars Arrival</button>
       </div>
-    </div>
+  </div>
 
-    <div>
-      <h2>Live Mission Data</h2>
-      <div class="readouts">
+  <div style="margin-top:18px">
+    <h3>Live Mission Data</h3>
+    <div class="readouts">
         <div class="readout"><span>Departure</span><strong>Low Earth Orbit</strong></div>
         <div class="readout"><span>Destination</span><strong>Mars</strong></div>
         <div class="readout"><span>Flight Type</span><strong id="modeReadout">Normal Mission</strong></div>
@@ -362,17 +353,14 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
         <div class="readout"><span>Mars Status</span><strong id="marsStatus">Distant Target</strong></div>
         <div class="readout"><span>Mission State</span><strong id="missionState">Waiting</strong></div>
       </div>
-
-      <div class="note-box" style="margin-top:12px">
-        This is a stylized educational mission view. It is designed to feel much more realistic and polished than the earlier version while still staying simple enough to run as a lightweight app page.
-      </div>
-
-      <div class="quick-links">
+    <div class="quick-links">
         <button id="openMarsPage">Open Mars Arrival Page</button>
       </div>
-    </div>
   </div>
+
 </section>
+
+
 
 
 </main>
