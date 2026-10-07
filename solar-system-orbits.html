@@ -265,6 +265,27 @@ main{
   width:9px;height:9px;border-radius:50%;
   display:inline-block;
 }
+.compare-strip{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+  margin-top:12px;
+}
+.compare-box{
+  padding:10px;
+  border:1px solid #2e4a61;
+  border-radius:10px;
+  background:#07111b;
+}
+.compare-box span{
+  display:block;
+  margin-bottom:4px;
+  color:#8faabd;
+  font-size:10px;
+  font-weight:800;
+  text-transform:uppercase;
+}
+.compare-box strong{font-size:14px}
 .transfer-note{
   margin-top:12px;
   padding:12px;
@@ -284,6 +305,7 @@ footer{
   .canvas-wrap{min-height:590px}
 }
 @media(max-width:620px){
+  .compare-strip{grid-template-columns:1fr 1fr}
   .topbar{padding:12px}
   .hero{padding:8px 12px 18px}
   main{padding:12px}
@@ -316,6 +338,9 @@ footer{
       <button id="resetBtn" type="button">Reset</button>
       <button id="transferBtn" type="button">Show Earth → Mars Transfer</button>
       <button id="plutoBtn" type="button">Show Pluto</button>
+      <button id="innerBtn" type="button">Inner Planets View</button>
+      <button id="asteroidBtn" class="primary" type="button">Asteroid Belt On</button>
+      <button id="trailsBtn" class="primary" type="button">Orbit Trails On</button>
       <label class="speed-wrap">Speed
         <select id="speedSelect" aria-label="Simulation speed">
           <option value="1">1 day / sec</option>
@@ -349,9 +374,15 @@ footer{
 
         <div class="data-grid">
           <div class="data-box"><span>Year</span><strong id="periodVal">687 days</strong></div>
-          <div class="data-box"><span>Distance</span><strong id="distanceVal">1.52 AU</strong></div>
+          <div class="data-box"><span>Average Distance</span><strong id="distanceVal">1.52 AU</strong></div>
           <div class="data-box"><span>Eccentricity</span><strong id="eccVal">0.093</strong></div>
           <div class="data-box"><span>Orbital Speed</span><strong id="speedVal">24.1 km/s</strong></div>
+          <div class="data-box"><span>Diameter</span><strong id="diameterVal">6,779 km</strong></div>
+          <div class="data-box"><span>Gravity</span><strong id="gravityVal">3.71 m/s²</strong></div>
+          <div class="data-box"><span>Day Length</span><strong id="dayLengthVal">24h 37m</strong></div>
+          <div class="data-box"><span>Moons</span><strong id="moonsVal">2</strong></div>
+          <div class="data-box"><span>Perihelion</span><strong id="periVal">1.38 AU</strong></div>
+          <div class="data-box"><span>Aphelion</span><strong id="apheVal">1.67 AU</strong></div>
         </div>
 
         <div class="level-buttons" aria-label="Explanation level">
@@ -365,11 +396,20 @@ footer{
 
     <div class="planet-buttons" id="planetButtons" aria-label="Choose a planet"></div>
 
+    <div class="compare-strip">
+      <div class="compare-box"><span>Current Sun Distance</span><strong id="currentDistVal">—</strong></div>
+      <div class="compare-box"><span>Orbit Completed</span><strong id="orbitProgressVal">—</strong></div>
+      <div class="compare-box"><span>Year vs Earth</span><strong id="yearCompareVal">—</strong></div>
+      <div class="compare-box"><span>Speed vs Earth</span><strong id="speedCompareVal">—</strong></div>
+    </div>
+
     <div class="legend">
       <span><i class="dot" style="background:#ffd35a"></i>Sun</span>
       <span><i class="dot" style="background:#79c4ff"></i>Earth</span>
       <span><i class="dot" style="background:#ef8a69"></i>Mars</span>
       <span><i class="dot" style="background:#fff"></i>Spacecraft when transfer is shown</span>
+      <span><i class="dot" style="background:#a79b83"></i>Asteroid belt</span>
+      <span><i class="dot" style="background:#ffd35a"></i>Selected planet perihelion / aphelion</span>
     </div>
 
     <div id="transferNote" class="transfer-note" hidden>
@@ -383,6 +423,7 @@ footer{
     <p class="lead">
       Inner planets orbit faster because they are closer to the Sun. Outer planets have much longer years.
       Mars also follows a slightly elliptical path rather than a perfect circle, which is visible here more clearly than Earth's nearly circular orbit.
+      Turn on the Inner Planets view to spread Mercury through Mars apart, watch the asteroid belt between Mars and Jupiter, and use the orbit trails to compare how quickly the planets sweep around the Sun.
     </p>
   </section>
 </main>
@@ -398,39 +439,39 @@ footer{
   const wrap=$("canvasWrap");
 
   const planets=[
-    {name:"Mercury",tag:"Fastest planet around the Sun",a:0.387,e:0.2056,period:87.97,speed:47.4,phase:2.35,color:"#b8b0a5",size:4.1,
+    {name:"Mercury",tag:"Fastest planet around the Sun",a:0.387,e:0.2056,period:87.97,speed:47.4,phase:2.35,color:"#b8b0a5",size:4.1,diameter:4879,gravity:3.70,dayLength:"58.6 Earth days",moons:"0",
       beginner:"Mercury is closest to the Sun and completes a year in only 88 Earth days.",
       technical:"Mercury's orbit is noticeably elliptical. Its average distance is 0.387 AU and its orbital speed is about 47.4 km/s.",
       advanced:"With eccentricity 0.2056, Mercury has the most eccentric orbit of the eight planets. The animation solves Kepler's equation so it moves faster near perihelion and slower near aphelion."},
-    {name:"Venus",tag:"Nearly circular orbit",a:0.723,e:0.0068,period:224.70,speed:35.0,phase:4.50,color:"#d8b16c",size:5.0,
+    {name:"Venus",tag:"Nearly circular orbit",a:0.723,e:0.0068,period:224.70,speed:35.0,phase:4.50,color:"#d8b16c",size:5.0,diameter:12104,gravity:8.87,dayLength:"243 days retrograde",moons:"0",
       beginner:"Venus takes about 225 Earth days to orbit the Sun.",
       technical:"Venus orbits at about 0.723 AU and has one of the most circular planetary orbits.",
       advanced:"Its eccentricity is only 0.0068, so the difference between perihelion and aphelion is small."},
-    {name:"Earth",tag:"Our home world",a:1.000,e:0.0167,period:365.256,speed:29.8,phase:0,color:"#59aef8",size:5.3,
+    {name:"Earth",tag:"Our home world",a:1.000,e:0.0167,period:365.256,speed:29.8,phase:0,color:"#59aef8",size:5.3,diameter:12742,gravity:9.81,dayLength:"23h 56m",moons:"1",
       beginner:"Earth takes about 365 days to make one trip around the Sun.",
       technical:"Earth's average orbital distance defines 1 astronomical unit, or 1 AU.",
       advanced:"Earth's eccentricity is 0.0167, making its orbit close to circular but not perfectly circular."},
-    {name:"Mars",tag:"The Red Planet",a:1.524,e:0.0934,period:686.98,speed:24.1,phase:44*Math.PI/180,color:"#d86c4d",size:5.1,
+    {name:"Mars",tag:"The Red Planet",a:1.524,e:0.0934,period:686.98,speed:24.1,phase:44*Math.PI/180,color:"#d86c4d",size:5.1,diameter:6779,gravity:3.71,dayLength:"24h 37m",moons:"2",
       beginner:"Mars takes about 687 Earth days to orbit the Sun, almost twice as long as Earth.",
       technical:"Mars averages 1.524 AU from the Sun and has a more elliptical orbit than Earth.",
       advanced:"Mars' eccentricity is 0.0934. For an ideal Earth-to-Mars Hohmann transfer, Mars is roughly 44° ahead of Earth at launch."},
-    {name:"Jupiter",tag:"Largest planet",a:5.203,e:0.0489,period:4332.59,speed:13.1,phase:1.25,color:"#d3a47c",size:7.4,
+    {name:"Jupiter",tag:"Largest planet",a:5.203,e:0.0489,period:4332.59,speed:13.1,phase:1.25,color:"#d3a47c",size:7.4,diameter:139820,gravity:24.79,dayLength:"9h 56m",moons:"95+",
       beginner:"Jupiter needs almost 12 Earth years to orbit the Sun.",
       technical:"Jupiter averages 5.20 AU from the Sun and moves at about 13.1 km/s.",
       advanced:"Its orbital period is about 11.86 Earth years and eccentricity is 0.0489."},
-    {name:"Saturn",tag:"Ringed giant",a:9.537,e:0.0565,period:10759.22,speed:9.7,phase:3.70,color:"#d9c58d",size:7.0,
+    {name:"Saturn",tag:"Ringed giant",a:9.537,e:0.0565,period:10759.22,speed:9.7,phase:3.70,color:"#d9c58d",size:7.0,diameter:116460,gravity:10.44,dayLength:"10h 42m",moons:"270+",
       beginner:"Saturn takes about 29.5 Earth years to orbit the Sun.",
       technical:"Saturn averages about 9.54 AU from the Sun and travels around 9.7 km/s.",
       advanced:"Its eccentricity is 0.0565 and its orbital period is about 10,759 Earth days."},
-    {name:"Uranus",tag:"Ice giant",a:19.191,e:0.0457,period:30688.5,speed:6.8,phase:5.00,color:"#8fd7dc",size:6.0,
+    {name:"Uranus",tag:"Ice giant",a:19.191,e:0.0457,period:30688.5,speed:6.8,phase:5.00,color:"#8fd7dc",size:6.0,diameter:50724,gravity:8.69,dayLength:"17h 14m retrograde",moons:"29",
       beginner:"Uranus takes about 84 Earth years to complete one orbit.",
       technical:"Uranus averages about 19.19 AU from the Sun.",
       advanced:"Its orbital period is roughly 30,689 Earth days, with eccentricity 0.0457."},
-    {name:"Neptune",tag:"Outer major planet",a:30.07,e:0.0113,period:60182,speed:5.4,phase:2.70,color:"#5d79df",size:6.0,
+    {name:"Neptune",tag:"Outer major planet",a:30.07,e:0.0113,period:60182,speed:5.4,phase:2.70,color:"#5d79df",size:6.0,diameter:49244,gravity:11.15,dayLength:"16h 6m",moons:"16",
       beginner:"Neptune takes about 165 Earth years to orbit the Sun.",
       technical:"Neptune averages about 30.07 AU from the Sun and moves around 5.4 km/s.",
       advanced:"Despite its great distance, Neptune's orbit is quite close to circular, with eccentricity about 0.0113."},
-    {name:"Pluto",tag:"Dwarf planet",a:39.482,e:0.2488,period:90560,speed:4.7,phase:4.15,color:"#b9a895",size:4.2,
+    {name:"Pluto",tag:"Dwarf planet",a:39.482,e:0.2488,period:90560,speed:4.7,phase:4.15,color:"#b9a895",size:4.2,diameter:2377,gravity:0.62,dayLength:"6.39 Earth days",moons:"5",
       beginner:"Pluto is a dwarf planet and takes about 248 Earth years to orbit the Sun.",
       technical:"Pluto averages about 39.48 AU from the Sun and follows a strongly elliptical orbit.",
       advanced:"Pluto's eccentricity is about 0.2488, far greater than any of the eight major planets."}
@@ -444,6 +485,9 @@ footer{
   let level="beginner";
   let showPluto=false;
   let showTransfer=false;
+  let showAsteroids=true;
+  let showTrails=true;
+  let innerView=false;
   let transferProgress=0;
   let lastPoints=[];
 
@@ -466,9 +510,17 @@ footer{
 
   function orbitRadiusFor(a){
     const minR=42;
-    const maxA=showPluto?39.482:30.07;
+    const maxA=innerView?1.75:(showPluto?39.482:30.07);
     const maxR=Math.min(wrap.clientWidth,wrap.clientHeight)*0.46;
     return minR+(Math.log1p(a)/Math.log1p(maxA))*(maxR-minR);
+  }
+
+  function visiblePlanets(){
+    return planets.filter(p=>{
+      if(innerView && p.a>1.7)return false;
+      if(!showPluto && p.name==="Pluto")return false;
+      return true;
+    });
   }
 
   function positionFor(p){
@@ -494,6 +546,69 @@ footer{
     }
     ctx.stroke();
     ctx.globalAlpha=1;
+  }
+
+  function drawAsteroidBelt(cx,cy){
+    if(!showAsteroids || innerView)return;
+    const inner=orbitRadiusFor(2.15);
+    const outer=orbitRadiusFor(3.25);
+    ctx.save();
+    for(let i=0;i<320;i++){
+      const h1=((i*73)%997)/997;
+      const h2=((i*191+37)%991)/991;
+      const ang=h1*Math.PI*2;
+      const r=inner+(outer-inner)*h2;
+      const squash=.96;
+      const x=cx+r*Math.cos(ang);
+      const y=cy+r*Math.sin(ang)*squash;
+      ctx.fillStyle="rgba(184,169,139,"+(0.10+((i*17)%38)/100)+")";
+      const sz=i%19===0?1.25:.7;
+      ctx.fillRect(x,y,sz,sz);
+    }
+    ctx.font="700 8px -apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif";
+    ctx.fillStyle="rgba(200,187,160,.72)";
+    ctx.fillText("ASTEROID BELT",cx+outer*.18,cy-outer*.86);
+    ctx.restore();
+  }
+
+  function drawTrail(cx,cy,p){
+    if(!showTrails)return;
+    const samples=26;
+    ctx.save();
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    for(let i=0;i<samples;i++){
+      const back=(samples-1-i)/(samples-1)*p.period*.10;
+      const M=(((simDays-back)/p.period)*Math.PI*2+p.phase)%(Math.PI*2);
+      const E=solveKepler(M,p.e);
+      const A=orbitRadiusFor(p.a);
+      const B=A*Math.sqrt(1-p.e*p.e);
+      const x=cx+A*(Math.cos(E)-p.e);
+      const y=cy+B*Math.sin(E);
+      if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    }
+    ctx.globalAlpha=p.name===selected?.72:.24;
+    ctx.strokeStyle=p.color;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawApsisMarkers(cx,cy,p){
+    const A=orbitRadiusFor(p.a);
+    const B=A*Math.sqrt(1-p.e*p.e);
+    const peri={x:cx+A*(1-p.e),y:cy};
+    const aphe={x:cx-A*(1+p.e),y:cy};
+    ctx.save();
+    ctx.fillStyle="#ffd35a";
+    [peri,aphe].forEach(pt=>{
+      ctx.beginPath();
+      ctx.arc(pt.x,pt.y,2.6,0,Math.PI*2);
+      ctx.fill();
+    });
+    ctx.font="800 7px -apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif";
+    ctx.fillText("PERIHELION",peri.x+5,peri.y-5);
+    ctx.fillText("APHELION",aphe.x-40,aphe.y-5);
+    ctx.restore();
   }
 
   function drawTransfer(cx,cy){
@@ -580,9 +695,13 @@ footer{
 
     const cx=w*.5;
     const cy=h*.52;
-    const visible=planets.filter(p=>showPluto||p.name!=="Pluto");
+    const visible=visiblePlanets();
 
     visible.forEach(p=>drawOrbitPath(cx,cy,p,p.name===selected?.70:.28));
+    drawAsteroidBelt(cx,cy);
+    visible.forEach(p=>drawTrail(cx,cy,p));
+    const selectedPlanet=visible.find(p=>p.name===selected);
+    if(selectedPlanet)drawApsisMarkers(cx,cy,selectedPlanet);
 
     const sun=ctx.createRadialGradient(cx,cy,1,cx,cy,24);
     sun.addColorStop(0,"#fff9c9");
@@ -639,7 +758,17 @@ footer{
     });
 
     $("dayChip").textContent="Simulation Day "+Math.round(simDays).toLocaleString();
-    $("statusChip").textContent=running?(daysPerSecond+" days / sec"):"Paused";
+    $("statusChip").textContent=(innerView?"Inner Planets · ":"Full System · ")+(running?(daysPerSecond+" days / sec"):"Paused");
+
+    const sel=planets.find(p=>p.name===selected);
+    if(sel){
+      const M=((simDays/sel.period)*Math.PI*2+sel.phase)%(Math.PI*2);
+      const E=solveKepler(M,sel.e);
+      const currentAU=sel.a*(1-sel.e*Math.cos(E));
+      const orbitPct=((simDays/sel.period)%1+1)%1;
+      $("currentDistVal").textContent=currentAU.toFixed(currentAU<10?3:2)+" AU";
+      $("orbitProgressVal").textContent=(orbitPct*100).toFixed(1)+"%";
+    }
   }
 
   function animate(t){
@@ -668,6 +797,14 @@ footer{
     $("distanceVal").textContent=p.a.toFixed(p.a<10?2:1)+" AU";
     $("eccVal").textContent=p.e.toFixed(3);
     $("speedVal").textContent=p.speed.toFixed(1)+" km/s";
+    $("diameterVal").textContent=p.diameter.toLocaleString()+" km";
+    $("gravityVal").textContent=p.gravity.toFixed(2)+" m/s²";
+    $("dayLengthVal").textContent=p.dayLength;
+    $("moonsVal").textContent=p.moons;
+    $("periVal").textContent=(p.a*(1-p.e)).toFixed(p.a<10?3:2)+" AU";
+    $("apheVal").textContent=(p.a*(1+p.e)).toFixed(p.a<10?3:2)+" AU";
+    $("yearCompareVal").textContent=(p.period/365.256).toFixed(p.period<1000?2:1)+"× Earth";
+    $("speedCompareVal").textContent=(p.speed/29.8).toFixed(2)+"× Earth";
     document.querySelectorAll("#planetButtons button").forEach(b=>b.classList.toggle("active",b.dataset.planet===name));
     updateLevelCopy();
     draw();
@@ -682,7 +819,7 @@ footer{
   function buildPlanetButtons(){
     const holder=$("planetButtons");
     holder.innerHTML="";
-    planets.filter(p=>showPluto||p.name!=="Pluto").forEach(p=>{
+    visiblePlanets().forEach(p=>{
       const b=document.createElement("button");
       b.type="button";
       b.textContent=p.name;
@@ -730,6 +867,30 @@ footer{
     selectPlanet(selected);
     resize();
   });
+  $("innerBtn").addEventListener("click",()=>{
+    innerView=!innerView;
+    $("innerBtn").textContent=innerView?"Full Solar System View":"Inner Planets View";
+    $("innerBtn").classList.toggle("primary",innerView);
+    if(innerView && !["Mercury","Venus","Earth","Mars"].includes(selected))selected="Mars";
+    buildPlanetButtons();
+    selectPlanet(selected);
+    resize();
+  });
+
+  $("asteroidBtn").addEventListener("click",()=>{
+    showAsteroids=!showAsteroids;
+    $("asteroidBtn").textContent=showAsteroids?"Asteroid Belt On":"Asteroid Belt Off";
+    $("asteroidBtn").classList.toggle("primary",showAsteroids);
+    draw();
+  });
+
+  $("trailsBtn").addEventListener("click",()=>{
+    showTrails=!showTrails;
+    $("trailsBtn").textContent=showTrails?"Orbit Trails On":"Orbit Trails Off";
+    $("trailsBtn").classList.toggle("primary",showTrails);
+    draw();
+  });
+
   document.querySelectorAll("[data-level]").forEach(b=>{
     b.addEventListener("click",()=>{
       level=b.dataset.level;
