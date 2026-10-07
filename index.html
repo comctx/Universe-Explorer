@@ -310,7 +310,7 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
     <div>
       <h2>Earth → Mars Flight</h2>
       <p class="lead">
-        This forward-flight view begins with Earth dropping away below you, then keeps Mars directly ahead for the entire interplanetary trip. Watch Earth recede and the Red Planet grow from a tiny target into a world filling the windshield.
+        This forward-flight view begins just above Earth's curved horizon. The blue atmospheric rim drops below the spacecraft, deep space opens ahead, and Mars eventually appears as a tiny red point that grows into a world filling the windshield.
       </p>
 
       <div class="flight-window">
@@ -462,289 +462,261 @@ function resizeFlight(){
   drawFlight();
 }
 function stageFor(p){
-  if(p<.12)return {title:"Leaving Earth", text:"The spacecraft climbs away from Earth. The blue planet drops below the forward window as the vehicle turns onto the Mars departure path.", course:"Earth Escape", status:"Earth Departure", speed:"11 km/s", days:"0 days", distance:"225 M km"};
-  if(p<.25)return {title:"Outbound Turn", text:"Earth is now receding behind and below. Mars is a tiny red target straight ahead in the forward view.", course:"Mars Transfer Injection", status:"Earth Receding", speed:"24 km/s", days:"12 days", distance:"211 M km"};
-  if(p<.58)return {title:"Interplanetary Cruise", text:"The spacecraft is committed to the transfer. Stars drift past while Mars remains centered ahead and slowly grows.", course:"Transfer Orbit", status:"Mid-Cruise", speed:"28 km/s", days:"86 days", distance:"142 M km"};
-  if(p<.82)return {title:"Mars Closing", text:"Mars is now unmistakable in the forward window. Surface shading becomes visible as the remaining distance falls rapidly.", course:"Mars Intercept", status:"Approaching Mars", speed:"24 km/s", days:"171 days", distance:"46 M km"};
-  if(p<.96)return {title:"Final Approach", text:"Mars dominates the forward view as guidance lines the spacecraft up with the arrival corridor.", course:"Arrival Corridor", status:"Arrival Ready", speed:"18 km/s", days:"208 days", distance:"6 M km"};
-  return {title:"Mars Arrival", text:"The interplanetary trip is complete. Continue directly into Mars entry, descent, and landing.", course:"At Mars", status:"At Destination", speed:"12 km/s", days:"214 days", distance:"0 M km"};
+  if(p<.12)return {title:"Leaving Earth", text:"Earth's curved horizon drops lower in the forward window as the spacecraft climbs away and turns onto its Mars trajectory.", course:"Earth Escape", status:"Earth Departure", speed:"11 km/s", days:"0 days", distance:"225 M km"};
+  if(p<.28)return {title:"Earth Falling Away", text:"The blue atmospheric rim slips out of sight below. Ahead is open interplanetary space, with Mars still too distant to look like more than a faint red point.", course:"Outbound", status:"Earth Receding", speed:"24 km/s", days:"12 days", distance:"211 M km"};
+  if(p<.62)return {title:"Interplanetary Cruise", text:"The forward view is now deep space. Mars remains almost motionless near the center while very slowly growing as the spacecraft closes the distance.", course:"Transfer Orbit", status:"Mid-Cruise", speed:"28 km/s", days:"86 days", distance:"142 M km"};
+  if(p<.84)return {title:"Mars Ahead", text:"Mars is now clearly visible as a small world ahead. Surface shading begins to resolve as the remaining distance drops.", course:"Mars Intercept", status:"Approaching Mars", speed:"24 km/s", days:"171 days", distance:"46 M km"};
+  if(p<.97)return {title:"Final Approach", text:"Mars expands across the forward view. Guidance begins aligning the spacecraft with the arrival corridor.", course:"Arrival Corridor", status:"Arrival Ready", speed:"18 km/s", days:"208 days", distance:"6 M km"};
+  return {title:"Mars Arrival", text:"Mars now dominates the window. Continue into atmospheric entry, descent, and landing.", course:"At Mars", status:"At Destination", speed:"12 km/s", days:"214 days", distance:"0 M km"};
 }
 function drawFlight(){
   const w=flightCanvas.parentElement.clientWidth;
   const h=flightCanvas.parentElement.clientHeight;
+  const p=clamp(missionProgress,0,1);
+  const sp=smooth(p);
   fctx.clearRect(0,0,w,h);
 
-  if(flightCinematic.complete && flightCinematic.naturalWidth){
-    const p=smooth(missionProgress);
-    let focusX,zoom,focusY;
-    if(missionMode==="fast"){
-      focusX=mix(.36,.83,p);
-      zoom=mix(1.18,1.82,p);
-      focusY=.53;
-    }else if(missionMode==="tour"){
-      focusX=mix(.24,.72,p);
-      zoom=mix(.94,1.28,p);
-      focusY=.50;
-    }else{
-      focusX=mix(.30,.79,p);
-      zoom=mix(1.04,1.58,p);
-      focusY=.53;
-    }
-    drawCover(fctx,flightCinematic,w,h,zoom,focusX,focusY);
-  }else{
-    const bg=fctx.createLinearGradient(0,0,0,h);
-    bg.addColorStop(0,"#02060c"); bg.addColorStop(1,"#091321");
-    fctx.fillStyle=bg; fctx.fillRect(0,0,w,h);
-  }
+  /* Deep-space forward view. Keep it dark and uncluttered so the motion comes
+     from Earth falling away and Mars slowly growing ahead. */
+  const bg=fctx.createRadialGradient(w*.5,h*.44,10,w*.5,h*.48,Math.max(w,h)*.78);
+  bg.addColorStop(0,"#08111d");
+  bg.addColorStop(.48,"#03070d");
+  bg.addColorStop(1,"#010306");
+  fctx.fillStyle=bg;
+  fctx.fillRect(0,0,w,h);
 
-  /* subtle forward-motion star streaks */
-  const streakBoost=missionMode==="fast" ? 2.5 : missionMode==="tour" ? .25 : 1;
-  const streakAlpha=(.05+missionProgress*.20)*streakBoost;
-  fctx.strokeStyle=`rgba(180,220,255,${Math.min(.65,streakAlpha)})`;
-  fctx.lineWidth=missionMode==="fast" ? 1.6 : 1;
-  const streakCount=missionMode==="fast" ? 64 : missionMode==="tour" ? 14 : 32;
-  for(let i=0;i<streakCount;i++){
-    const y=((i*71.7)+missionProgress*900)%h;
-    const x=((i*119.3)+missionProgress*620)%(w+100)-50;
-    const len=(4+missionProgress*20+(i%5)*2)*(missionMode==="fast"?2.2:missionMode==="tour"?.45:1);
-    fctx.beginPath(); fctx.moveTo(x,y); fctx.lineTo(x-len,y+len*.08); fctx.stroke();
-  }
-
-
-  /* Forward view toward Mars: keep the destination visibly ahead for the whole trip. */
-  const p=clamp(missionProgress,0,1);
-
-  /* Earth departure: forward window begins with Earth below and to the left,
-     then Earth falls away as the spacecraft turns toward Mars. */
-  if(p<.30){
-    const depart=clamp(p/.30,0,1);
-    const e=smooth(depart);
-    const earthRadius=mix(Math.min(w,h)*.34,Math.min(w,h)*.055,e);
-    const earthX=mix(w*.23,w*.08,e);
-    const earthY=mix(h*.80,h*.93,e);
-    const earthAlpha=1-clamp((p-.22)/.08,0,1);
-
-    fctx.save();
-    fctx.globalAlpha=earthAlpha;
-
-    const earthGlow=fctx.createRadialGradient(
-      earthX,earthY,earthRadius*.88,
-      earthX,earthY,earthRadius*1.30
-    );
-    earthGlow.addColorStop(0,"rgba(87,176,255,0)");
-    earthGlow.addColorStop(.72,"rgba(87,176,255,.13)");
-    earthGlow.addColorStop(1,"rgba(87,176,255,0)");
-    fctx.fillStyle=earthGlow;
+  /* Stable star field with only a slight outward drift from the forward
+     vanishing point. No exaggerated warp-speed effect. */
+  const cx=w*.5;
+  const cy=h*.44;
+  for(let i=0;i<155;i++){
+    const a=i*2.3999632297;
+    const seed=((i*53)%101)/101;
+    const baseR=22+seed*Math.max(w,h)*.63;
+    const drift=(p<.20?0:p-.20)*(missionMode==="fast"?30:missionMode==="tour"?8:16);
+    const r=baseR+drift*(.35+seed);
+    const x=cx+Math.cos(a)*r;
+    const y=cy+Math.sin(a)*r*.72;
+    if(x<0||x>w||y<0||y>h) continue;
+    const tw=.38+((i*17)%10)/20;
+    fctx.fillStyle=`rgba(230,241,255,${tw})`;
     fctx.beginPath();
-    fctx.arc(earthX,earthY,earthRadius*1.32,0,Math.PI*2);
+    fctx.arc(x,y,(i%13===0)?1.25:.62,0,Math.PI*2);
+    fctx.fill();
+  }
+
+  /* EARTH DEPARTURE
+     The viewer is looking forward from just above Earth. Instead of showing a
+     little globe, only Earth's enormous curved limb occupies the lower window.
+     It drops downward and disappears behind the spacecraft. */
+  if(p<.245){
+    const t=smooth(clamp(p/.245,0,1));
+    const earthR=mix(Math.max(w,h)*1.12,Math.max(w,h)*.92,t);
+    const earthX=w*.47;
+    const earthY=mix(h*1.18,h*1.92,t);
+
+    /* atmospheric glow above the limb */
+    const atmosphere=fctx.createRadialGradient(
+      earthX,earthY,earthR*.94,
+      earthX,earthY,earthR*1.035
+    );
+    atmosphere.addColorStop(0,"rgba(76,156,220,0)");
+    atmosphere.addColorStop(.74,"rgba(71,164,232,.10)");
+    atmosphere.addColorStop(.91,"rgba(91,188,255,.42)");
+    atmosphere.addColorStop(1,"rgba(91,188,255,0)");
+    fctx.fillStyle=atmosphere;
+    fctx.beginPath();
+    fctx.arc(earthX,earthY,earthR*1.04,Math.PI,Math.PI*2);
+    fctx.lineTo(earthX+earthR*1.04,h+80);
+    fctx.lineTo(earthX-earthR*1.04,h+80);
+    fctx.closePath();
     fctx.fill();
 
+    /* ocean / night-side curvature */
+    const earth=fctx.createRadialGradient(
+      earthX-earthR*.28,earthY-earthR*.48,earthR*.12,
+      earthX,earthY,earthR
+    );
+    earth.addColorStop(0,"#2d87ca");
+    earth.addColorStop(.26,"#175f9d");
+    earth.addColorStop(.62,"#0a365f");
+    earth.addColorStop(.90,"#061928");
+    earth.addColorStop(1,"#030b12");
+    fctx.fillStyle=earth;
+    fctx.beginPath();
+    fctx.arc(earthX,earthY,earthR,Math.PI,Math.PI*2);
+    fctx.lineTo(earthX+earthR,h+80);
+    fctx.lineTo(earthX-earthR,h+80);
+    fctx.closePath();
+    fctx.fill();
+
+    /* very soft continents/cloud structures - deliberately subtle */
     fctx.save();
     fctx.beginPath();
-    fctx.arc(earthX,earthY,earthRadius,0,Math.PI*2);
+    fctx.arc(earthX,earthY,earthR,Math.PI,Math.PI*2);
     fctx.clip();
 
-    const earthShade=fctx.createRadialGradient(
-      earthX-earthRadius*.34,
-      earthY-earthRadius*.38,
-      earthRadius*.08,
-      earthX,
-      earthY,
-      earthRadius*1.08
-    );
-    earthShade.addColorStop(0,"#a8ddff");
-    earthShade.addColorStop(.18,"#4aa0e5");
-    earthShade.addColorStop(.52,"#1764a7");
-    earthShade.addColorStop(.82,"#0a315d");
-    earthShade.addColorStop(1,"#061827");
-    fctx.fillStyle=earthShade;
-    fctx.fillRect(earthX-earthRadius,earthY-earthRadius,earthRadius*2,earthRadius*2);
-
-    /* Soft land masses and cloud bands so Earth reads as a planet, not a flat blue disk. */
-    fctx.fillStyle="rgba(94,132,76,.72)";
+    fctx.fillStyle="rgba(82,114,74,.30)";
     fctx.beginPath();
-    fctx.ellipse(earthX-earthRadius*.22,earthY-earthRadius*.10,earthRadius*.25,earthRadius*.14,-.42,0,Math.PI*2);
+    fctx.ellipse(earthX-earthR*.20,earthY-earthR*.71,earthR*.18,earthR*.055,-.24,0,Math.PI*2);
     fctx.fill();
     fctx.beginPath();
-    fctx.ellipse(earthX+earthRadius*.18,earthY+earthRadius*.16,earthRadius*.19,earthRadius*.11,.28,0,Math.PI*2);
+    fctx.ellipse(earthX+earthR*.14,earthY-earthR*.77,earthR*.14,earthR*.045,.18,0,Math.PI*2);
     fctx.fill();
 
-    fctx.strokeStyle="rgba(255,255,255,.48)";
-    fctx.lineWidth=Math.max(1,earthRadius*.018);
-    for(let i=-1;i<=1;i++){
+    fctx.strokeStyle="rgba(255,255,255,.15)";
+    fctx.lineWidth=Math.max(1,earthR*.004);
+    for(let k=0;k<4;k++){
       fctx.beginPath();
       fctx.arc(
-        earthX-earthRadius*.06,
-        earthY+i*earthRadius*.18,
-        earthRadius*(.54+i*.04),
-        Math.PI*.15,
-        Math.PI*.88
+        earthX-earthR*.08,
+        earthY-earthR*(.88-k*.055),
+        earthR*(.26+k*.05),
+        Math.PI*.16,
+        Math.PI*.82
       );
       fctx.stroke();
     }
     fctx.restore();
 
-    fctx.strokeStyle="rgba(176,224,255,.65)";
-    fctx.lineWidth=1.2;
+    /* thin bright blue edge */
+    fctx.strokeStyle=`rgba(113,201,255,${.72*(1-t*.55)})`;
+    fctx.lineWidth=Math.max(1.5,Math.min(w,h)*.005);
     fctx.beginPath();
-    fctx.arc(earthX,earthY,earthRadius+1,0,Math.PI*2);
+    fctx.arc(earthX,earthY,earthR,Math.PI*1.04,Math.PI*1.96);
     fctx.stroke();
 
-    if(p<.20){
-      fctx.fillStyle="rgba(213,235,250,.82)";
-      fctx.font="800 11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif";
-      fctx.textAlign="left";
-      fctx.fillText("EARTH · DEPARTURE",Math.max(14,earthX-earthRadius*.65),Math.max(22,earthY-earthRadius-12));
-    }
-
-    fctx.restore();
+    /* faint reflected Earth light on the window */
+    const blueWash=fctx.createLinearGradient(0,h*.42,0,h);
+    blueWash.addColorStop(0,"rgba(38,115,177,0)");
+    blueWash.addColorStop(1,`rgba(35,104,163,${.12*(1-t)})`);
+    fctx.fillStyle=blueWash;
+    fctx.fillRect(0,0,w,h);
   }
 
+  /* MARS AHEAD
+     It stays very small for most of the cruise, then grows convincingly during
+     the final third of the journey. */
+  const marsVisible=clamp((p-.14)/.86,0,1);
+  const marsGrowth=Math.pow(marsVisible,2.35);
   const marsX=w*.5;
-  const marsY=mix(h*.43,h*.49,smooth(p));
-  const marsRadius=mix(
-    missionMode==="tour"?2.4:3.2,
-    missionMode==="fast"?Math.min(w,h)*.34:Math.min(w,h)*.29,
-    Math.pow(smooth(p),1.55)
-  );
+  const marsY=mix(h*.43,h*.47,sp);
+  const maxMars=missionMode==="fast"?Math.min(w,h)*.36:Math.min(w,h)*.31;
+  const marsRadius=mix(1.2,maxMars,marsGrowth);
 
-  /* Transfer-corridor cue: a faint forward guide keeps the eye aimed at Mars. */
-  if(p>.07 && p<.88){
-    const alpha=.10+Math.sin(Math.min(1,p/.88)*Math.PI)*.14;
-    fctx.save();
-    fctx.setLineDash([5,9]);
-    fctx.strokeStyle=`rgba(112,205,255,${alpha})`;
-    fctx.lineWidth=1;
-    fctx.beginPath();
-    fctx.moveTo(w*.5,h*.88);
-    fctx.lineTo(marsX,marsY+Math.max(12,marsRadius+16));
-    fctx.stroke();
-    fctx.restore();
-  }
-
-  /* Radial star flow from the forward vanishing point creates a true "flying toward Mars" view. */
-  const flowStrength=(.15+p*.85)*(missionMode==="fast"?1.45:missionMode==="tour"?.65:1);
-  fctx.save();
-  fctx.translate(marsX,marsY);
-  for(let i=0;i<72;i++){
-    const angle=(i*2.399963229728653)+(p*1.4);
-    const seed=((i*47)%100)/100;
-    const inner=18+seed*Math.min(w,h)*.16;
-    const outer=inner+(10+p*70)*(0.35+seed);
-    const x1=Math.cos(angle)*inner;
-    const y1=Math.sin(angle)*inner;
-    const x2=Math.cos(angle)*outer;
-    const y2=Math.sin(angle)*outer;
-    fctx.strokeStyle=`rgba(205,228,255,${Math.min(.46,.035+flowStrength*(.05+seed*.13))})`;
-    fctx.lineWidth=seed>.82?1.4:.8;
-    fctx.beginPath();
-    fctx.moveTo(x1,y1);
-    fctx.lineTo(x2,y2);
-    fctx.stroke();
-  }
-  fctx.restore();
-
-  /* Mars itself grows continuously in the forward windshield. */
-  if(marsRadius>2){
-    const halo=fctx.createRadialGradient(
-      marsX,marsY,marsRadius*.82,
-      marsX,marsY,marsRadius*1.34
-    );
-    halo.addColorStop(0,"rgba(255,116,62,0)");
-    halo.addColorStop(.72,`rgba(255,111,58,${.04+p*.10})`);
-    halo.addColorStop(1,"rgba(255,80,32,0)");
-    fctx.fillStyle=halo;
-    fctx.beginPath();
-    fctx.arc(marsX,marsY,marsRadius*1.36,0,Math.PI*2);
-    fctx.fill();
-
-    fctx.save();
-    fctx.beginPath();
-    fctx.arc(marsX,marsY,marsRadius,0,Math.PI*2);
-    fctx.clip();
-
-    const planet=fctx.createRadialGradient(
-      marsX-marsRadius*.34,
-      marsY-marsRadius*.34,
-      marsRadius*.06,
-      marsX,
-      marsY,
-      marsRadius*1.04
-    );
-    planet.addColorStop(0,"#f2a36d");
-    planet.addColorStop(.24,"#d56842");
-    planet.addColorStop(.60,"#9b412f");
-    planet.addColorStop(1,"#3c1715");
-    fctx.fillStyle=planet;
-    fctx.fillRect(marsX-marsRadius,marsY-marsRadius,marsRadius*2,marsRadius*2);
-
-    /* Broad surface markings to keep it planet-like rather than a flat orange ball. */
-    fctx.fillStyle="rgba(88,36,28,.26)";
-    fctx.beginPath();
-    fctx.ellipse(marsX-marsRadius*.30,marsY-marsRadius*.05,marsRadius*.24,marsRadius*.11,-.25,0,Math.PI*2);
-    fctx.fill();
-    fctx.beginPath();
-    fctx.ellipse(marsX+marsRadius*.25,marsY+marsRadius*.16,marsRadius*.28,marsRadius*.13,.30,0,Math.PI*2);
-    fctx.fill();
-
-    if(p>.62){
-      fctx.fillStyle=`rgba(233,190,164,${(p-.62)*.22})`;
+  if(marsVisible>.01){
+    /* distant red point */
+    if(marsRadius<5){
+      const g=fctx.createRadialGradient(marsX,marsY,0,marsX,marsY,8);
+      g.addColorStop(0,"rgba(255,178,126,.96)");
+      g.addColorStop(.18,"rgba(221,94,54,.78)");
+      g.addColorStop(1,"rgba(221,94,54,0)");
+      fctx.fillStyle=g;
       fctx.beginPath();
-      fctx.ellipse(marsX+marsRadius*.06,marsY-marsRadius*.48,marsRadius*.24,marsRadius*.08,0,0,Math.PI*2);
+      fctx.arc(marsX,marsY,8,0,Math.PI*2);
       fctx.fill();
-    }
-    fctx.restore();
+    }else{
+      const halo=fctx.createRadialGradient(
+        marsX,marsY,marsRadius*.84,
+        marsX,marsY,marsRadius*1.30
+      );
+      halo.addColorStop(0,"rgba(255,126,74,0)");
+      halo.addColorStop(.76,`rgba(255,112,65,${.04+marsVisible*.08})`);
+      halo.addColorStop(1,"rgba(255,95,48,0)");
+      fctx.fillStyle=halo;
+      fctx.beginPath();
+      fctx.arc(marsX,marsY,marsRadius*1.31,0,Math.PI*2);
+      fctx.fill();
 
-    fctx.strokeStyle=`rgba(255,194,154,${.16+p*.28})`;
-    fctx.lineWidth=1.2+p*1.3;
-    fctx.beginPath();
-    fctx.arc(marsX,marsY,marsRadius+1,0,Math.PI*2);
-    fctx.stroke();
+      fctx.save();
+      fctx.beginPath();
+      fctx.arc(marsX,marsY,marsRadius,0,Math.PI*2);
+      fctx.clip();
+
+      const planet=fctx.createRadialGradient(
+        marsX-marsRadius*.34,
+        marsY-marsRadius*.34,
+        marsRadius*.07,
+        marsX,
+        marsY,
+        marsRadius*1.04
+      );
+      planet.addColorStop(0,"#eaa071");
+      planet.addColorStop(.28,"#bd5e40");
+      planet.addColorStop(.64,"#783427");
+      planet.addColorStop(1,"#28100f");
+      fctx.fillStyle=planet;
+      fctx.fillRect(marsX-marsRadius,marsY-marsRadius,marsRadius*2,marsRadius*2);
+
+      /* broad low-contrast albedo features */
+      fctx.fillStyle="rgba(73,28,24,.24)";
+      fctx.beginPath();
+      fctx.ellipse(marsX-marsRadius*.28,marsY-marsRadius*.04,marsRadius*.24,marsRadius*.10,-.28,0,Math.PI*2);
+      fctx.fill();
+      fctx.beginPath();
+      fctx.ellipse(marsX+marsRadius*.26,marsY+marsRadius*.17,marsRadius*.27,marsRadius*.12,.22,0,Math.PI*2);
+      fctx.fill();
+
+      if(p>.70){
+        fctx.fillStyle=`rgba(229,196,177,${(p-.70)*.25})`;
+        fctx.beginPath();
+        fctx.ellipse(marsX+marsRadius*.04,marsY-marsRadius*.49,marsRadius*.23,marsRadius*.065,0,0,Math.PI*2);
+        fctx.fill();
+      }
+      fctx.restore();
+
+      fctx.strokeStyle=`rgba(242,165,123,${.10+marsVisible*.24})`;
+      fctx.lineWidth=1.1;
+      fctx.beginPath();
+      fctx.arc(marsX,marsY,marsRadius+.8,0,Math.PI*2);
+      fctx.stroke();
+    }
   }
 
-  /* Small centerline and range cue aimed directly at Mars. */
-  fctx.strokeStyle=`rgba(134,214,255,${.18+p*.30})`;
-  fctx.lineWidth=1;
-  fctx.beginPath();
-  fctx.moveTo(marsX-44,marsY);
-  fctx.lineTo(marsX-18,marsY);
-  fctx.moveTo(marsX+18,marsY);
-  fctx.lineTo(marsX+44,marsY);
-  fctx.moveTo(marsX,marsY-44);
-  fctx.lineTo(marsX,marsY-18);
-  fctx.moveTo(marsX,marsY+18);
-  fctx.lineTo(marsX,marsY+44);
-  fctx.stroke();
+  /* During the final approach only, allow subtle guidance brackets to appear. */
+  if(p>.68){
+    const a=clamp((p-.68)/.20,0,1);
+    const bracket=mix(70,48,a);
+    fctx.strokeStyle=`rgba(132,213,255,${.08+a*.32})`;
+    fctx.lineWidth=1.2;
+    [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([sx,sy])=>{
+      const x=marsX+sx*bracket;
+      const y=marsY+sy*bracket;
+      fctx.beginPath();
+      fctx.moveTo(x,y+sy*15);
+      fctx.lineTo(x,y);
+      fctx.lineTo(x+sx*15,y);
+      fctx.stroke();
+    });
+  }
 
-  /* window glass tint and cinematic lighting */
+  /* quiet window reflections */
   const glass=fctx.createLinearGradient(0,0,w,h);
-  glass.addColorStop(0,"rgba(2,8,16,.10)");
-  glass.addColorStop(.48,"rgba(5,18,31,.02)");
-  glass.addColorStop(1,"rgba(70,16,8,.12)");
-  fctx.fillStyle=glass; fctx.fillRect(0,0,w,h);
+  glass.addColorStop(0,"rgba(8,18,30,.06)");
+  glass.addColorStop(.52,"rgba(5,10,17,.01)");
+  glass.addColorStop(1,"rgba(30,10,7,.08)");
+  fctx.fillStyle=glass;
+  fctx.fillRect(0,0,w,h);
 
-  /* cockpit lower sill */
-  fctx.fillStyle="rgba(3,8,13,.58)";
+  /* low spacecraft window sill - minimal, just enough to establish viewpoint */
+  fctx.fillStyle="rgba(2,6,10,.64)";
   fctx.beginPath();
-  fctx.moveTo(0,h); fctx.lineTo(0,h*.91); fctx.lineTo(w*.14,h*.955); fctx.lineTo(w*.86,h*.955); fctx.lineTo(w,h*.91); fctx.lineTo(w,h); fctx.closePath(); fctx.fill();
+  fctx.moveTo(0,h);
+  fctx.lineTo(0,h*.955);
+  fctx.lineTo(w*.16,h*.982);
+  fctx.lineTo(w*.84,h*.982);
+  fctx.lineTo(w,h*.955);
+  fctx.lineTo(w,h);
+  fctx.closePath();
+  fctx.fill();
 
-  /* target brackets tighten as Mars nears */
-  const bracket=70-missionProgress*24;
-  fctx.strokeStyle=`rgba(132,213,255,${.07+missionProgress*.41})`;
-  fctx.lineWidth=1.4;
-  const cx=w*.5, cy=mix(h*.43,h*.49,smooth(missionProgress));
-  [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([sx,sy])=>{
-    const x=cx+sx*bracket, y=cy+sy*bracket;
-    fctx.beginPath();
-    fctx.moveTo(x,y+sy*18); fctx.lineTo(x,y); fctx.lineTo(x+sx*18,y); fctx.stroke();
-  });
-
-  if(missionProgress>.78){
-    const a=clamp((missionProgress-.78)/.22,0,1);
-    const glow=fctx.createRadialGradient(w*.72,h*.45,10,w*.72,h*.45,w*.38);
-    glow.addColorStop(0,`rgba(255,133,74,${.12*a})`);
+  if(p>.80){
+    const a=clamp((p-.80)/.20,0,1);
+    const glow=fctx.createRadialGradient(marsX,marsY,10,marsX,marsY,w*.42);
+    glow.addColorStop(0,`rgba(255,126,76,${.05*a})`);
     glow.addColorStop(1,"rgba(255,90,40,0)");
-    fctx.fillStyle=glow; fctx.fillRect(0,0,w,h);
+    fctx.fillStyle=glow;
+    fctx.fillRect(0,0,w,h);
   }
 }
 function updateMissionUI(){
@@ -759,6 +731,11 @@ function updateMissionUI(){
   $("flightBar").style.width=(missionProgress*100).toFixed(1)+"%";
   $("marsStatus").textContent=s.status;
   $("missionState").textContent=missionPlaying?"Active":"Waiting";
+  const target=document.querySelector(".target-box");
+  if(target){
+    const a=clamp((missionProgress-.68)/.18,0,1);
+    target.style.opacity=String(a*.72);
+  }
   drawFlight();
 }
 function missionLoop(time){
@@ -796,9 +773,9 @@ function setMode(mode){
     btn.classList.toggle('primary',active);
   });
   if(mode==='normal'){
-    missionSeconds=22;
+    missionSeconds=30;
     $("modeReadout").textContent='Normal Mission';
-    $("modeStatus").textContent='Normal Mission — balanced speed, standard camera movement, and normal telemetry pacing.';
+    $("modeStatus").textContent='Normal Mission — a natural Earth departure, quiet forward cruise, and gradual Mars approach.';
   }
   if(mode==='fast'){
     missionSeconds=11;
