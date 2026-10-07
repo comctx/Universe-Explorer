@@ -228,63 +228,53 @@ h2{margin:0 0 8px;padding-left:10px;border-left:5px solid var(--yellow);font-siz
 .timeline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}
 .small{color:#8faabd;font-size:12px}
 
-.transfer-orbit-card{
-  display:grid;
-  grid-template-columns:minmax(260px,.55fr) minmax(420px,1.45fr);
-  gap:14px;
-  margin-top:14px;
-  padding:14px;
-  border:1px solid #36546c;
-  border-radius:15px;
-  background:#081725;
-}
-.transfer-orbit-copy strong{
-  display:block;
-  margin-bottom:6px;
-  font-size:18px;
-  color:#ffe3cf;
-}
-.transfer-orbit-copy span{
-  display:block;
-  color:#bdd2e1;
-  line-height:1.5;
-}
-.transfer-orbit-view{
-  position:relative;
-  min-height:290px;
+.orbit-inset{
+  position:absolute;
+  right:14px;
+  top:58px;
+  width:min(360px,42%);
+  height:240px;
+  z-index:5;
   overflow:hidden;
-  border:1px solid #324d63;
-  border-radius:13px;
-  background:radial-gradient(circle at 50% 50%,#101a25 0%,#040a11 62%,#020508 100%);
+  border:1px solid rgba(140,190,230,.34);
+  border-radius:14px;
+  background:rgba(3,8,14,.88);
+  box-shadow:0 10px 28px rgba(0,0,0,.34);
+  backdrop-filter:blur(5px);
 }
+.orbit-inset-title{
+  position:absolute;
+  z-index:3;
+  left:10px;
+  right:10px;
+  top:8px;
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  align-items:center;
+  color:#d8e7f3;
+  font-size:10px;
+}
+.orbit-inset-title strong{color:#ffd35a;letter-spacing:.05em}
 #orbitCanvas{
   position:absolute;
   inset:0;
   width:100%;
   height:100%;
 }
-.orbit-key{
+.orbit-inset-note{
   position:absolute;
-  left:10px;
-  right:10px;
-  bottom:8px;
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px 14px;
-  padding:7px 9px;
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:10px;
-  background:rgba(3,8,14,.70);
-  color:#b9cddd;
-  font-size:10px;
-  font-weight:800;
+  z-index:3;
+  left:8px;
+  right:8px;
+  bottom:7px;
+  padding:5px 7px;
+  border-radius:8px;
+  background:rgba(3,8,14,.72);
+  color:#9fb6c9;
+  font-size:9px;
+  text-align:center;
 }
-.orbit-key span{display:flex;align-items:center;gap:5px}
-.orbit-key i{display:inline-block;width:18px;height:2px}
-.key-earth{background:#59aef8}
-.key-transfer{background:#ffd35a}
-.key-mars{background:#d86c4d}
-
 .jump-panel{overflow:hidden}
 .jump-world-buttons{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
 .jump-world-buttons button{
@@ -385,9 +375,8 @@ h2{margin:0 0 8px;padding-left:10px;border-left:5px solid var(--yellow);font-siz
 
 footer{padding:28px 16px;text-align:center;color:#9db6c9}
 @media(max-width:960px){
-  .hero,.grid-two,.jump-layout,.transfer-orbit-card{grid-template-columns:1fr}
+  .hero,.grid-two,.jump-layout{grid-template-columns:1fr}
   .hero-visual{min-height:360px}
-  .transfer-orbit-view{min-height:260px}
 }
 @media(max-width:760px){
   .grid-three,.timeline{grid-template-columns:1fr}
@@ -401,6 +390,14 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
   .readouts{grid-template-columns:1fr}
   .jump-stage{height:380px}
   .jump-person{font-size:50px}
+  .orbit-inset{
+    top:56px;
+    right:8px;
+    width:46%;
+    height:170px;
+  }
+  .orbit-inset-title{font-size:8px}
+  .orbit-inset-note{font-size:8px}
 }
 </style>
 </head>
@@ -436,6 +433,15 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
 
           <div class="target-box"></div>
 
+          <div class="orbit-inset">
+            <div class="orbit-inset-title">
+              <strong>HOHMANN TRANSFER</strong>
+              <span id="orbitDayLabel">Day 0 of 259</span>
+            </div>
+            <canvas id="orbitCanvas"></canvas>
+            <div class="orbit-inset-note">Curved orbit around the Sun — not a straight-line flight</div>
+          </div>
+
           <div class="hud-bottom">
             <div class="stage-box">
               <strong id="stageTitle">Ready for Departure</strong>
@@ -468,7 +474,7 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
       </div>
 
       <div id="modeStatus" class="mode-status">
-        Normal Mission — a Hohmann transfer around the Sun with a forward spacecraft view and gradual Mars approach.
+        Normal Mission — the ship follows a curved Hohmann transfer orbit around the Sun, while the forward camera shows what you would see out the window.
       </div>
 
       <div class="timeline">
@@ -478,25 +484,7 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
         <div class="timeline-step"><strong>4. Arrival</strong><p>Continue into entry, descent, and landing.</p></div>
       </div>
 
-      <div class="transfer-orbit-card">
-        <div class="transfer-orbit-copy">
-          <strong>Hohmann Transfer Orbit</strong>
-          <span>
-            The spacecraft does not fly in a straight line from Earth to Mars.
-            It follows a curved, Sun-centered elliptical transfer orbit and meets Mars
-            roughly half an orbit later.
-          </span>
-        </div>
-
-        <div class="transfer-orbit-view">
-          <canvas id="orbitCanvas"></canvas>
-          <div class="orbit-key">
-            <span><i class="key-earth"></i>Earth orbit</span>
-            <span><i class="key-transfer"></i>Transfer path</span>
-            <span><i class="key-mars"></i>Mars orbit</span>
-          </div>
-        </div>
-      </div>
+      
 
       <div style="margin-top:12px">
         <div class="progress"><div id="flightBar"></div></div>
@@ -703,111 +691,124 @@ function drawOrbit(){
   const w=orbitCanvas.parentElement.clientWidth;
   const h=orbitCanvas.parentElement.clientHeight;
   const p=clamp(missionProgress,0,1);
+  const totalDays=259;
+  const elapsedDays=totalDays*p;
+
+  $("orbitDayLabel").textContent="Day "+Math.round(elapsedDays)+" of "+totalDays;
 
   octx.clearRect(0,0,w,h);
 
-  const cx=w*.53;
-  const cy=h*.48;
-  const rMars=Math.min(w*.36,h*.39);
+  const cx=w*.52;
+  const cy=h*.52;
+  const rMars=Math.min(w*.34,h*.34);
   const rEarth=rMars/1.524;
 
-  // fixed background stars
-  for(let i=0;i<48;i++){
+  // Sparse fixed stars only as a background reference.
+  for(let i=0;i<34;i++){
     const x=((i*83)%997)/997*w;
     const y=((i*47+29)%991)/991*h;
-    octx.fillStyle="rgba(220,235,255,.32)";
+    octx.fillStyle="rgba(220,235,255,.24)";
     octx.fillRect(x,y,1,1);
   }
 
-  // planetary orbits
-  octx.lineWidth=1.2;
-  octx.strokeStyle="rgba(89,174,248,.34)";
+  // Circular heliocentric orbits.
+  octx.lineWidth=1.1;
+  octx.strokeStyle="rgba(89,174,248,.36)";
   octx.beginPath();
   octx.arc(cx,cy,rEarth,0,Math.PI*2);
   octx.stroke();
 
-  octx.strokeStyle="rgba(216,108,77,.34)";
+  octx.strokeStyle="rgba(216,108,77,.36)";
   octx.beginPath();
   octx.arc(cx,cy,rMars,0,Math.PI*2);
   octx.stroke();
 
-  // Sun
-  const sg=octx.createRadialGradient(cx,cy,1,cx,cy,18);
-  sg.addColorStop(0,"#fff3a3");
-  sg.addColorStop(.32,"#ffd35a");
-  sg.addColorStop(1,"rgba(255,180,55,0)");
+  // Sun at the common focus.
+  const sg=octx.createRadialGradient(cx,cy,1,cx,cy,15);
+  sg.addColorStop(0,"#fff7bd");
+  sg.addColorStop(.30,"#ffd35a");
+  sg.addColorStop(1,"rgba(255,175,45,0)");
   octx.fillStyle=sg;
   octx.beginPath();
-  octx.arc(cx,cy,18,0,Math.PI*2);
+  octx.arc(cx,cy,15,0,Math.PI*2);
   octx.fill();
 
-  // Hohmann transfer ellipse: perihelion at Earth orbit, aphelion at Mars orbit
+  // Hohmann transfer ellipse: perihelion = Earth orbit, aphelion = Mars orbit.
   const a=(rEarth+rMars)/2;
-  const ecc=(rMars-rEarth)/(rMars+rEarth);
-  const focal=a*ecc;
-  const b=a*Math.sqrt(1-ecc*ecc);
-  const centerX=cx-focal;
+  const e=(rMars-rEarth)/(rMars+rEarth);
+  const focusOffset=a*e;
+  const b=a*Math.sqrt(1-e*e);
+  const ellipseCx=cx-focusOffset;
 
-  octx.strokeStyle="rgba(255,211,90,.34)";
-  octx.lineWidth=1.4;
-  octx.setLineDash([5,6]);
+  // Full planned transfer path.
+  octx.strokeStyle="rgba(255,211,90,.28)";
+  octx.lineWidth=1.2;
+  octx.setLineDash([4,5]);
   octx.beginPath();
-  for(let i=0;i<=120;i++){
-    const th=Math.PI*i/120;
-    const x=centerX+a*Math.cos(th);
+  for(let i=0;i<=140;i++){
+    const th=Math.PI*i/140;
+    const x=ellipseCx+a*Math.cos(th);
     const y=cy-b*Math.sin(th);
     if(i===0)octx.moveTo(x,y);else octx.lineTo(x,y);
   }
   octx.stroke();
   octx.setLineDash([]);
 
-  // Earth departure point
-  const earthX=cx+rEarth;
-  const earthY=cy;
-  octx.fillStyle="#59aef8";
-  octx.beginPath();
-  octx.arc(earthX,earthY,6,0,Math.PI*2);
-  octx.fill();
-
-  // Mars arrival point
-  const marsX=cx-rMars;
-  const marsY=cy;
-  octx.fillStyle="#d86c4d";
-  octx.beginPath();
-  octx.arc(marsX,marsY,7,0,Math.PI*2);
-  octx.fill();
-
-  // spacecraft position along transfer arc
-  const th=Math.PI*p;
-  const shipX=centerX+a*Math.cos(th);
-  const shipY=cy-b*Math.sin(th);
-
+  // Mission-traveled part of the transfer.
   octx.strokeStyle="#ffd35a";
-  octx.lineWidth=3;
+  octx.lineWidth=2.6;
   octx.beginPath();
-  for(let i=0;i<=Math.max(1,Math.round(100*p));i++){
-    const t=Math.PI*i/100;
-    const x=centerX+a*Math.cos(t);
-    const y=cy-b*Math.sin(t);
+  const steps=Math.max(1,Math.round(140*p));
+  for(let i=0;i<=steps;i++){
+    const th=Math.PI*i/140;
+    const x=ellipseCx+a*Math.cos(th);
+    const y=cy-b*Math.sin(th);
     if(i===0)octx.moveTo(x,y);else octx.lineTo(x,y);
   }
   octx.stroke();
 
-  octx.fillStyle="#fff";
+  // Earth keeps orbiting after departure.
+  const earthAngle=(Math.PI*2)*(elapsedDays/365.25);
+  const earthX=cx+rEarth*Math.cos(earthAngle);
+  const earthY=cy-rEarth*Math.sin(earthAngle);
+
+  // Mars begins ~44° ahead of Earth and reaches the rendezvous point near 180°.
+  const marsStart=44*Math.PI/180;
+  const marsAngle=marsStart+(Math.PI*2)*(elapsedDays/686.98);
+  const marsX=cx+rMars*Math.cos(marsAngle);
+  const marsY=cy-rMars*Math.sin(marsAngle);
+
+  octx.fillStyle="#59aef8";
   octx.beginPath();
-  octx.arc(shipX,shipY,4.3,0,Math.PI*2);
+  octx.arc(earthX,earthY,4.5,0,Math.PI*2);
   octx.fill();
 
-  // labels
-  octx.font="700 11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif";
-  octx.fillStyle="#d8e7f3";
-  octx.fillText("Sun",cx+12,cy-10);
-  octx.fillText("Earth",earthX+8,earthY-8);
-  octx.fillText("Mars",marsX-38,marsY-8);
-  octx.fillStyle="#ffd35a";
-  octx.fillText("Spacecraft",shipX+8,shipY-8);
-}
+  octx.fillStyle="#d86c4d";
+  octx.beginPath();
+  octx.arc(marsX,marsY,5.2,0,Math.PI*2);
+  octx.fill();
 
+  // Spacecraft moves along the transfer ellipse.
+  const shipTheta=Math.PI*p;
+  const shipX=ellipseCx+a*Math.cos(shipTheta);
+  const shipY=cy-b*Math.sin(shipTheta);
+
+  octx.fillStyle="#fff";
+  octx.beginPath();
+  octx.arc(shipX,shipY,3.8,0,Math.PI*2);
+  octx.fill();
+
+  // Labels.
+  octx.font="700 9px -apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif";
+  octx.fillStyle="#d8e7f3";
+  octx.fillText("Sun",cx+9,cy-8);
+  octx.fillStyle="#79c4ff";
+  octx.fillText("Earth",earthX+6,earthY-5);
+  octx.fillStyle="#ef8a69";
+  octx.fillText("Mars",marsX+6,marsY-5);
+  octx.fillStyle="#ffd35a";
+  octx.fillText("Ship",shipX+6,shipY-5);
+}
 function resizeFlight(){
   const rect=flightCanvas.parentElement.getBoundingClientRect();
   const ratio=Math.min(window.devicePixelRatio||1,2);
