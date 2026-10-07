@@ -230,6 +230,7 @@ footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
       <button class="primary" id="startTour" type="button">Start Saturn Tour</button>
       <button class="secondary" id="ringShortcut" type="button">Explore Rings</button>
       <button class="secondary" id="moonShortcut" type="button">Explore Moons</button>
+      <button class="secondary" id="hiddenGemsTop" type="button">Hidden Gems</button>
     </div>
   </div>
 
@@ -760,6 +761,7 @@ footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
   $("topBtn").onclick=function(){window.scrollTo({top:0,behavior:"smooth"})};
   $("ringShortcut").onclick=function(){scrollToId("rings")};
   $("moonShortcut").onclick=function(){scrollToId("moons")};
+  $("hiddenGemsTop").onclick=function(){scrollToId("hiddenGems")};
   $("startTour").onclick=function(){scrollToId("learn");heroHighlight="rings";setTimeout(function(){heroHighlight=""},2500)};
 
   $("ringAlpha").oninput=function(){ringAlpha=Number(this.value)/100;$("ringAlphaValue").textContent=this.value+"%"};
