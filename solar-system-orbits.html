@@ -633,7 +633,7 @@ footer{
     </div>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="marsStraightPanel">
     <h2 class="section-title">Why not fly straight to Mars?</h2>
     <p class="lead">A spacecraft leaving Earth is already moving around the Sun. The efficient route is another solar orbit that intersects Mars later.</p>
     <div class="explain-grid">
@@ -1223,6 +1223,8 @@ footer{
     $("synodicVal").textContent=syn?Math.round(syn).toLocaleString()+" days":"—";
     $("inclinationVal").textContent=p.inclination.toFixed(2)+"°";
     document.querySelectorAll("#planetButtons button").forEach(b=>b.classList.toggle("active",b.dataset.planet===name));
+    const marsStraightPanel=$("marsStraightPanel");
+    if(marsStraightPanel) marsStraightPanel.hidden=(name!=="Mars");
     updateLevelCopy();
     draw();
   }
