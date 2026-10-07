@@ -228,6 +228,63 @@ h2{margin:0 0 8px;padding-left:10px;border-left:5px solid var(--yellow);font-siz
 .timeline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}
 .small{color:#8faabd;font-size:12px}
 
+.transfer-orbit-card{
+  display:grid;
+  grid-template-columns:minmax(260px,.55fr) minmax(420px,1.45fr);
+  gap:14px;
+  margin-top:14px;
+  padding:14px;
+  border:1px solid #36546c;
+  border-radius:15px;
+  background:#081725;
+}
+.transfer-orbit-copy strong{
+  display:block;
+  margin-bottom:6px;
+  font-size:18px;
+  color:#ffe3cf;
+}
+.transfer-orbit-copy span{
+  display:block;
+  color:#bdd2e1;
+  line-height:1.5;
+}
+.transfer-orbit-view{
+  position:relative;
+  min-height:290px;
+  overflow:hidden;
+  border:1px solid #324d63;
+  border-radius:13px;
+  background:radial-gradient(circle at 50% 50%,#101a25 0%,#040a11 62%,#020508 100%);
+}
+#orbitCanvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+.orbit-key{
+  position:absolute;
+  left:10px;
+  right:10px;
+  bottom:8px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px 14px;
+  padding:7px 9px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:10px;
+  background:rgba(3,8,14,.70);
+  color:#b9cddd;
+  font-size:10px;
+  font-weight:800;
+}
+.orbit-key span{display:flex;align-items:center;gap:5px}
+.orbit-key i{display:inline-block;width:18px;height:2px}
+.key-earth{background:#59aef8}
+.key-transfer{background:#ffd35a}
+.key-mars{background:#d86c4d}
+
 .jump-panel{overflow:hidden}
 .jump-world-buttons{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
 .jump-world-buttons button{
@@ -328,8 +385,9 @@ h2{margin:0 0 8px;padding-left:10px;border-left:5px solid var(--yellow);font-siz
 
 footer{padding:28px 16px;text-align:center;color:#9db6c9}
 @media(max-width:960px){
-  .hero,.grid-two,.jump-layout{grid-template-columns:1fr}
+  .hero,.grid-two,.jump-layout,.transfer-orbit-card{grid-template-columns:1fr}
   .hero-visual{min-height:360px}
+  .transfer-orbit-view{min-height:260px}
 }
 @media(max-width:760px){
   .grid-three,.timeline{grid-template-columns:1fr}
@@ -386,7 +444,7 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
 
             <div class="telemetry">
               <div class="telemetry-grid">
-                <div><span>Distance Remaining</span><strong id="distanceReadout">225 M km</strong></div>
+                <div><span>Transfer Time Remaining</span><strong id="distanceReadout">259 days</strong></div>
                 <div><span>Speed</span><strong id="speedReadout">0 km/s</strong></div>
                 <div><span>Elapsed Time</span><strong id="timeReadout">0 days</strong></div>
                 <div><span>Course</span><strong id="courseReadout">Standby</strong></div>
@@ -418,6 +476,26 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
         <div class="timeline-step"><strong>2. Cruise</strong><p>Cross mostly empty interplanetary space.</p></div>
         <div class="timeline-step"><strong>3. Approach</strong><p>Mars grows from a point into a world.</p></div>
         <div class="timeline-step"><strong>4. Arrival</strong><p>Continue into entry, descent, and landing.</p></div>
+      </div>
+
+      <div class="transfer-orbit-card">
+        <div class="transfer-orbit-copy">
+          <strong>Hohmann Transfer Orbit</strong>
+          <span>
+            The spacecraft does not fly in a straight line from Earth to Mars.
+            It follows a curved, Sun-centered elliptical transfer orbit and meets Mars
+            roughly half an orbit later.
+          </span>
+        </div>
+
+        <div class="transfer-orbit-view">
+          <canvas id="orbitCanvas"></canvas>
+          <div class="orbit-key">
+            <span><i class="key-earth"></i>Earth orbit</span>
+            <span><i class="key-transfer"></i>Transfer path</span>
+            <span><i class="key-mars"></i>Mars orbit</span>
+          </div>
+        </div>
       </div>
 
       <div style="margin-top:12px">
@@ -607,6 +685,129 @@ let missionFrame=0;
 let missionSeconds=28;
 let missionMode="normal";
 
+const orbitCanvas=$("orbitCanvas");
+const octx=orbitCanvas.getContext("2d");
+
+function resizeOrbit(){
+  const rect=orbitCanvas.parentElement.getBoundingClientRect();
+  const ratio=Math.min(window.devicePixelRatio||1,2);
+  orbitCanvas.width=Math.max(1,Math.floor(rect.width*ratio));
+  orbitCanvas.height=Math.max(1,Math.floor(rect.height*ratio));
+  orbitCanvas.style.width=rect.width+"px";
+  orbitCanvas.style.height=rect.height+"px";
+  octx.setTransform(ratio,0,0,ratio,0,0);
+  drawOrbit();
+}
+
+function drawOrbit(){
+  const w=orbitCanvas.parentElement.clientWidth;
+  const h=orbitCanvas.parentElement.clientHeight;
+  const p=clamp(missionProgress,0,1);
+
+  octx.clearRect(0,0,w,h);
+
+  const cx=w*.53;
+  const cy=h*.48;
+  const rMars=Math.min(w*.36,h*.39);
+  const rEarth=rMars/1.524;
+
+  // fixed background stars
+  for(let i=0;i<48;i++){
+    const x=((i*83)%997)/997*w;
+    const y=((i*47+29)%991)/991*h;
+    octx.fillStyle="rgba(220,235,255,.32)";
+    octx.fillRect(x,y,1,1);
+  }
+
+  // planetary orbits
+  octx.lineWidth=1.2;
+  octx.strokeStyle="rgba(89,174,248,.34)";
+  octx.beginPath();
+  octx.arc(cx,cy,rEarth,0,Math.PI*2);
+  octx.stroke();
+
+  octx.strokeStyle="rgba(216,108,77,.34)";
+  octx.beginPath();
+  octx.arc(cx,cy,rMars,0,Math.PI*2);
+  octx.stroke();
+
+  // Sun
+  const sg=octx.createRadialGradient(cx,cy,1,cx,cy,18);
+  sg.addColorStop(0,"#fff3a3");
+  sg.addColorStop(.32,"#ffd35a");
+  sg.addColorStop(1,"rgba(255,180,55,0)");
+  octx.fillStyle=sg;
+  octx.beginPath();
+  octx.arc(cx,cy,18,0,Math.PI*2);
+  octx.fill();
+
+  // Hohmann transfer ellipse: perihelion at Earth orbit, aphelion at Mars orbit
+  const a=(rEarth+rMars)/2;
+  const ecc=(rMars-rEarth)/(rMars+rEarth);
+  const focal=a*ecc;
+  const b=a*Math.sqrt(1-ecc*ecc);
+  const centerX=cx-focal;
+
+  octx.strokeStyle="rgba(255,211,90,.34)";
+  octx.lineWidth=1.4;
+  octx.setLineDash([5,6]);
+  octx.beginPath();
+  for(let i=0;i<=120;i++){
+    const th=Math.PI*i/120;
+    const x=centerX+a*Math.cos(th);
+    const y=cy-b*Math.sin(th);
+    if(i===0)octx.moveTo(x,y);else octx.lineTo(x,y);
+  }
+  octx.stroke();
+  octx.setLineDash([]);
+
+  // Earth departure point
+  const earthX=cx+rEarth;
+  const earthY=cy;
+  octx.fillStyle="#59aef8";
+  octx.beginPath();
+  octx.arc(earthX,earthY,6,0,Math.PI*2);
+  octx.fill();
+
+  // Mars arrival point
+  const marsX=cx-rMars;
+  const marsY=cy;
+  octx.fillStyle="#d86c4d";
+  octx.beginPath();
+  octx.arc(marsX,marsY,7,0,Math.PI*2);
+  octx.fill();
+
+  // spacecraft position along transfer arc
+  const th=Math.PI*p;
+  const shipX=centerX+a*Math.cos(th);
+  const shipY=cy-b*Math.sin(th);
+
+  octx.strokeStyle="#ffd35a";
+  octx.lineWidth=3;
+  octx.beginPath();
+  for(let i=0;i<=Math.max(1,Math.round(100*p));i++){
+    const t=Math.PI*i/100;
+    const x=centerX+a*Math.cos(t);
+    const y=cy-b*Math.sin(t);
+    if(i===0)octx.moveTo(x,y);else octx.lineTo(x,y);
+  }
+  octx.stroke();
+
+  octx.fillStyle="#fff";
+  octx.beginPath();
+  octx.arc(shipX,shipY,4.3,0,Math.PI*2);
+  octx.fill();
+
+  // labels
+  octx.font="700 11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif";
+  octx.fillStyle="#d8e7f3";
+  octx.fillText("Sun",cx+12,cy-10);
+  octx.fillText("Earth",earthX+8,earthY-8);
+  octx.fillText("Mars",marsX-38,marsY-8);
+  octx.fillStyle="#ffd35a";
+  octx.fillText("Spacecraft",shipX+8,shipY-8);
+}
+
 function resizeFlight(){
   const rect=flightCanvas.parentElement.getBoundingClientRect();
   const ratio=Math.min(window.devicePixelRatio||1,2);
@@ -616,14 +817,62 @@ function resizeFlight(){
   flightCanvas.style.height=rect.height+"px";
   fctx.setTransform(ratio,0,0,ratio,0,0);
   drawFlight();
+  drawOrbit();
 }
 function stageFor(p){
-  if(p<.12)return {title:"Leaving Earth", text:"Earth's curved horizon drops lower in the forward window as the spacecraft climbs away and turns onto its Mars trajectory.", course:"Earth Escape", status:"Earth Departure", speed:"11 km/s", days:"0 days", distance:"225 M km"};
-  if(p<.28)return {title:"Earth Falling Away", text:"The blue atmospheric rim slips out of sight below. Ahead is open interplanetary space, with Mars still too distant to look like more than a faint red point.", course:"Outbound", status:"Earth Receding", speed:"24 km/s", days:"12 days", distance:"211 M km"};
-  if(p<.62)return {title:"Interplanetary Cruise", text:"The forward view is now deep space. Mars remains almost motionless near the center while very slowly growing as the spacecraft closes the distance.", course:"Transfer Orbit", status:"Mid-Cruise", speed:"28 km/s", days:"86 days", distance:"142 M km"};
-  if(p<.84)return {title:"Mars Ahead", text:"Mars is now clearly visible as a small world ahead. Surface shading begins to resolve as the remaining distance drops.", course:"Mars Intercept", status:"Approaching Mars", speed:"24 km/s", days:"171 days", distance:"46 M km"};
-  if(p<.97)return {title:"Final Approach", text:"Mars expands across the forward view. Guidance begins aligning the spacecraft with the arrival corridor.", course:"Arrival Corridor", status:"Arrival Ready", speed:"18 km/s", days:"208 days", distance:"6 M km"};
-  return {title:"Mars Arrival", text:"Mars now dominates the window. Continue into atmospheric entry, descent, and landing.", course:"At Mars", status:"At Destination", speed:"12 km/s", days:"214 days", distance:"0 M km"};
+  const totalDays=259;
+  const elapsed=Math.round(totalDays*p);
+  const remaining=Math.max(0,totalDays-elapsed);
+
+  if(p<.12)return {
+    title:"Trans-Mars Injection",
+    text:"The spacecraft leaves Earth orbit with a departure burn that places it onto an elliptical Hohmann transfer orbit around the Sun.",
+    course:"Hohmann Transfer",
+    status:"Departing Earth",
+    speed:"~32.7 km/s heliocentric",
+    days:elapsed+" days",
+    distance:remaining+" days"
+  };
+
+  if(p<.62)return {
+    title:"Heliocentric Transfer",
+    text:"The spacecraft is coasting around the Sun on a curved ellipse. Mars is moving in its own orbit toward the planned rendezvous point.",
+    course:"Hohmann Ellipse",
+    status:"Interplanetary Cruise",
+    speed:"~24–33 km/s",
+    days:elapsed+" days",
+    distance:remaining+" days"
+  };
+
+  if(p<.86)return {
+    title:"Mars Closing",
+    text:"The spacecraft is approaching the outer end of the transfer ellipse as Mars closes on the same point in its orbit.",
+    course:"Mars Rendezvous",
+    status:"Approaching Mars",
+    speed:"~21–25 km/s",
+    days:elapsed+" days",
+    distance:remaining+" days"
+  };
+
+  if(p<.97)return {
+    title:"Arrival Alignment",
+    text:"The transfer orbit reaches Mars' orbital distance and guidance prepares the spacecraft for capture, entry, or another arrival maneuver.",
+    course:"Arrival Geometry",
+    status:"Arrival Ready",
+    speed:"~21 km/s heliocentric",
+    days:elapsed+" days",
+    distance:remaining+" days"
+  };
+
+  return {
+    title:"Mars Arrival",
+    text:"The Hohmann transfer is complete. Continue into Mars entry, descent, and landing.",
+    course:"Mars Encounter",
+    status:"At Destination",
+    speed:"Arrival phase",
+    days:elapsed+" days",
+    distance:"0 days"
+  };
 }
 function drawFlight(){
   const w=flightCanvas.parentElement.clientWidth;
@@ -1251,11 +1500,13 @@ document.querySelectorAll('[data-speed]').forEach(btn=>{
     setTimeout(startMission,120);
   });
 });
-window.addEventListener('resize',resizeFlight);
+window.addEventListener('resize',()=>{resizeFlight();resizeOrbit();});
 setMode('normal');
 updateJumpWorld();
 resizeFlight();
+resizeOrbit();
 drawFlight();
+drawOrbit();
 })();
 </script>
 </body>
