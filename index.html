@@ -585,11 +585,13 @@ function drawFlight(){
 
     /* The cinematic artwork already contains a photographic Moon. Crop that
        source instead of drawing a gray circle. */
-    /* Tight crop around the lit Moon in the source artwork. */
-    const moonCropX=iw*.688;
+    /* Tight square crop around the actual Moon in the source artwork.
+       The source image is very wide, so width/height fractions must differ
+       to preserve a square crop and avoid grabbing nearby dark space. */
+    const moonCropX=iw*.733;
     const moonCropY=ih*.500;
-    const moonCropW=iw*.050;
-    const moonCropH=ih*.205;
+    const moonCropW=iw*.044;
+    const moonCropH=ih*.154;
 
     const moonSize=mix(
       Math.max(22,Math.min(w,h)*.060),
@@ -619,7 +621,7 @@ function drawFlight(){
     fctx.arc(moonX,moonY,moonSize*.50,0,Math.PI*2);
     fctx.clip();
 
-    fctx.filter="brightness(1.55) contrast(1.10)";
+    fctx.filter="brightness(1.22) contrast(1.06)";
     fctx.drawImage(
       flightCinematic,
       moonCropX,moonCropY,moonCropW,moonCropH,
