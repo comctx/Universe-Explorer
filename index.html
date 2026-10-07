@@ -455,7 +455,7 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
           <span id="orbitDayLabel">Day 0 of 259</span>
         </div>
         <canvas id="orbitCanvas"></canvas>
-        <div class="orbit-inset-note">Curved orbit around the Sun — not a straight-line flight</div>
+        <div class="orbit-inset-note">Mars moves around the Sun while the ship follows the curved transfer to the intercept point</div>
       </div>
     </div>
 
@@ -743,29 +743,36 @@ function drawOrbit(){
   octx.clearRect(0,0,w,h);
 
   const cx=w*.52;
-  const cy=h*.52;
-  const rMars=Math.min(w*.34,h*.34);
+  const cy=h*.53;
+  const rMars=Math.min(w*.34,h*.35);
   const rEarth=rMars/1.524;
 
-  // Sparse fixed stars only as a background reference.
+  // Sparse fixed stars for context only.
   for(let i=0;i<34;i++){
     const x=((i*83)%997)/997*w;
     const y=((i*47+29)%991)/991*h;
-    octx.fillStyle="rgba(220,235,255,.24)";
+    octx.fillStyle="rgba(220,235,255,.22)";
     octx.fillRect(x,y,1,1);
   }
 
-  // Circular heliocentric orbits.
-  octx.lineWidth=1.1;
-  octx.strokeStyle="rgba(89,174,248,.36)";
+  // Earth and Mars orbits around the Sun.
+  octx.lineWidth=1.3;
+  octx.strokeStyle="rgba(89,174,248,.52)";
   octx.beginPath();
   octx.arc(cx,cy,rEarth,0,Math.PI*2);
   octx.stroke();
 
-  octx.strokeStyle="rgba(216,108,77,.36)";
+  octx.strokeStyle="rgba(216,108,77,.58)";
   octx.beginPath();
   octx.arc(cx,cy,rMars,0,Math.PI*2);
   octx.stroke();
+
+  // Orbit labels make the two planetary paths obvious.
+  octx.font="700 8px -apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif";
+  octx.fillStyle="rgba(121,196,255,.92)";
+  octx.fillText("EARTH ORBIT · 365 DAYS",cx-rEarth*.95,cy+rEarth*.82);
+  octx.fillStyle="rgba(239,138,105,.95)";
+  octx.fillText("MARS ORBIT · 687 DAYS",cx-rMars*.95,cy-rMars*.78);
 
   // Sun at the common focus.
   const sg=octx.createRadialGradient(cx,cy,1,cx,cy,15);
@@ -785,8 +792,8 @@ function drawOrbit(){
   const ellipseCx=cx-focusOffset;
 
   // Full planned transfer path.
-  octx.strokeStyle="rgba(255,211,90,.28)";
-  octx.lineWidth=1.2;
+  octx.strokeStyle="rgba(255,211,90,.32)";
+  octx.lineWidth=1.25;
   octx.setLineDash([4,5]);
   octx.beginPath();
   for(let i=0;i<=140;i++){
@@ -800,7 +807,7 @@ function drawOrbit(){
 
   // Mission-traveled part of the transfer.
   octx.strokeStyle="#ffd35a";
-  octx.lineWidth=2.6;
+  octx.lineWidth=2.8;
   octx.beginPath();
   const steps=Math.max(1,Math.round(140*p));
   for(let i=0;i<=steps;i++){
@@ -811,25 +818,49 @@ function drawOrbit(){
   }
   octx.stroke();
 
-  // Earth keeps orbiting after departure.
+  // Earth continues around the Sun during the transfer.
   const earthAngle=(Math.PI*2)*(elapsedDays/365.25);
   const earthX=cx+rEarth*Math.cos(earthAngle);
   const earthY=cy-rEarth*Math.sin(earthAngle);
 
-  // Mars begins ~44° ahead of Earth and reaches the rendezvous point near 180°.
+  // Mars starts ~44° ahead of Earth. Over 259 days it moves about 136°,
+  // arriving at the same intercept point as the spacecraft.
   const marsStart=44*Math.PI/180;
   const marsAngle=marsStart+(Math.PI*2)*(elapsedDays/686.98);
   const marsX=cx+rMars*Math.cos(marsAngle);
   const marsY=cy-rMars*Math.sin(marsAngle);
 
+  // Show how far Mars has traveled on its own orbit since launch.
+  octx.strokeStyle="rgba(216,108,77,.90)";
+  octx.lineWidth=2.1;
+  octx.beginPath();
+  const marsTrailSteps=Math.max(1,Math.round(90*p));
+  for(let i=0;i<=marsTrailSteps;i++){
+    const ang=marsStart+(marsAngle-marsStart)*(i/Math.max(1,marsTrailSteps));
+    const x=cx+rMars*Math.cos(ang);
+    const y=cy-rMars*Math.sin(ang);
+    if(i===0)octx.moveTo(x,y);else octx.lineTo(x,y);
+  }
+  octx.stroke();
+
+  // Faint marker showing where Mars was when the spacecraft launched.
+  const marsLaunchX=cx+rMars*Math.cos(marsStart);
+  const marsLaunchY=cy-rMars*Math.sin(marsStart);
+  octx.strokeStyle="rgba(239,138,105,.42)";
+  octx.lineWidth=1;
+  octx.beginPath();
+  octx.arc(marsLaunchX,marsLaunchY,4.5,0,Math.PI*2);
+  octx.stroke();
+
+  // Planet markers.
   octx.fillStyle="#59aef8";
   octx.beginPath();
-  octx.arc(earthX,earthY,4.5,0,Math.PI*2);
+  octx.arc(earthX,earthY,4.6,0,Math.PI*2);
   octx.fill();
 
   octx.fillStyle="#d86c4d";
   octx.beginPath();
-  octx.arc(marsX,marsY,5.2,0,Math.PI*2);
+  octx.arc(marsX,marsY,5.4,0,Math.PI*2);
   octx.fill();
 
   // Spacecraft moves along the transfer ellipse.
@@ -839,17 +870,37 @@ function drawOrbit(){
 
   octx.fillStyle="#fff";
   octx.beginPath();
-  octx.arc(shipX,shipY,3.8,0,Math.PI*2);
+  octx.arc(shipX,shipY,3.9,0,Math.PI*2);
   octx.fill();
 
-  // Labels.
-  octx.font="700 9px -apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif";
+  // Intercept point: where Mars and spacecraft meet at the end of the transfer.
+  const interceptX=cx-rMars;
+  const interceptY=cy;
+  const pulse=5.5+Math.sin(performance.now()/280)*1.3;
+  octx.strokeStyle="rgba(255,211,90,.84)";
+  octx.lineWidth=1.2;
+  octx.beginPath();
+  octx.arc(interceptX,interceptY,pulse,0,Math.PI*2);
+  octx.stroke();
+
+  octx.font="800 7px -apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif";
+  octx.fillStyle="#ffd35a";
+  octx.fillText("INTERCEPT",interceptX-24,interceptY+15);
+
+  // Object labels.
+  octx.font="700 8px -apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif";
   octx.fillStyle="#d8e7f3";
   octx.fillText("Sun",cx+9,cy-8);
+
   octx.fillStyle="#79c4ff";
   octx.fillText("Earth",earthX+6,earthY-5);
+
   octx.fillStyle="#ef8a69";
   octx.fillText("Mars",marsX+6,marsY-5);
+
+  octx.fillStyle="rgba(239,138,105,.58)";
+  octx.fillText("Mars at launch",marsLaunchX+6,marsLaunchY+10);
+
   octx.fillStyle="#ffd35a";
   octx.fillText("Ship",shipX+6,shipY-5);
 }
