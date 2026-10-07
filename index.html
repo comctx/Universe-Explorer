@@ -468,7 +468,7 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
       </div>
 
       <div id="modeStatus" class="mode-status">
-        Normal Mission — a natural Earth departure, quiet forward cruise, and gradual Mars approach.
+        Normal Mission — a Hohmann transfer around the Sun with a forward spacecraft view and gradual Mars approach.
       </div>
 
       <div class="timeline">
@@ -1322,6 +1322,7 @@ function updateMissionUI(){
     target.style.opacity=String(a*.72);
   }
   drawFlight();
+  drawOrbit();
 }
 function missionLoop(time){
   if(!missionLast) missionLast=time;
@@ -1370,7 +1371,7 @@ function setMode(mode){
   if(mode==='tour'){
     missionSeconds=52;
     $("modeReadout").textContent='Scenic Tour';
-    $("modeStatus").textContent='Scenic Tour — a slower forward journey with more time to watch Earth fall away, deep space pass quietly, and Mars gradually grow ahead.';
+    $("modeStatus").textContent='Scenic Tour — a slower Hohmann-transfer simulation with more time to watch the curved orbital path and Mars approach.';
   }
   $("pauseMission").textContent='Pause';
   $("missionState").textContent='Waiting';
