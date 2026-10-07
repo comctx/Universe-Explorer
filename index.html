@@ -906,6 +906,7 @@ function drawFlight(){
   const h=flightCanvas.parentElement.clientHeight;
   const p=clamp(missionProgress,0,1);
   const sp=smooth(p);
+  const scenic=missionMode==="tour";
   fctx.clearRect(0,0,w,h);
 
   /* Deep-space forward view. Keep it dark and uncluttered so the motion comes
@@ -959,15 +960,18 @@ function drawFlight(){
   /* EARTH DEPARTURE
      Show only Earth's real photographic surface inside a curved planetary limb.
      No rectangular crop, title text, spacecraft, or other artwork can leak in. */
-  if(p<.245 && flightCinematic.complete && flightCinematic.naturalWidth){
-    const t=smooth(clamp(p/.245,0,1));
+  const earthDepartureEnd=scenic?.34:.245;
+  if(p<earthDepartureEnd && flightCinematic.complete && flightCinematic.naturalWidth){
+    const t=smooth(clamp(p/earthDepartureEnd,0,1));
     const iw=flightCinematic.naturalWidth;
     const ih=flightCinematic.naturalHeight;
 
     const earthR=mix(Math.max(w,h)*1.02,Math.max(w,h)*.62,t);
     const earthX=mix(w*.18,w*.06,t);
     const earthY=mix(h*1.16,h*1.55,t);
-    const earthAlpha=1-clamp((p-.19)/.055,0,1);
+    const earthFadeStart=scenic?.26:.19;
+    const earthFadeSpan=scenic?.08:.055;
+    const earthAlpha=1-clamp((p-earthFadeStart)/earthFadeSpan,0,1);
 
     fctx.save();
     fctx.globalAlpha=earthAlpha;
@@ -1041,8 +1045,9 @@ function drawFlight(){
   /* EARTH'S MOON
      Draw a small gray cratered Moon rather than enlarging the tiny Moon from
      the header artwork. It remains visually tied to Earth and exits with it. */
-  if(p<.19){
-    const mt=smooth(clamp(p/.19,0,1));
+  const moonEnd=scenic?.28:.19;
+  if(p<moonEnd){
+    const mt=smooth(clamp(p/moonEnd,0,1));
     const moonSize=mix(
       Math.max(18,Math.min(w,h)*.050),
       Math.max(6,Math.min(w,h)*.014),
@@ -1050,7 +1055,9 @@ function drawFlight(){
     );
     const moonX=mix(w*.72,w*.82,mt);
     const moonY=mix(h*.29,h*.83,mt);
-    const moonAlpha=1-clamp((p-.125)/.055,0,1);
+    const moonFadeStart=scenic?.20:.125;
+    const moonFadeSpan=scenic?.08:.055;
+    const moonAlpha=1-clamp((p-moonFadeStart)/moonFadeSpan,0,1);
 
     fctx.save();
     fctx.globalAlpha=.92*moonAlpha;
@@ -1141,11 +1148,13 @@ function drawFlight(){
   /* MARS AHEAD
      It stays very small for most of the cruise, then grows convincingly during
      the final third of the journey. */
-  const marsVisible=clamp((p-.18)/.82,0,1);
-  const marsGrowth=Math.pow(marsVisible,missionMode==="tour"?2.7:2.35);
-  const marsX=w*.5;
-  const marsY=mix(h*.43,h*.47,sp);
-  const maxMars=missionMode==="fast"?Math.min(w,h)*.36:Math.min(w,h)*.31;
+  const marsStart=scenic?.34:.18;
+  const marsVisible=clamp((p-marsStart)/(1-marsStart),0,1);
+  const marsGrowth=Math.pow(marsVisible,scenic?3.15:2.35);
+  const scenicCenter=smooth(clamp((p-.55)/.40,0,1));
+  const marsX=scenic?mix(w*.66,w*.50,scenicCenter):w*.5;
+  const marsY=scenic?mix(h*.34,h*.47,scenicCenter):mix(h*.43,h*.47,sp);
+  const maxMars=missionMode==="fast"?Math.min(w,h)*.36:scenic?Math.min(w,h)*.27:Math.min(w,h)*.31;
   const marsRadius=mix(1.2,maxMars,marsGrowth);
 
   if(marsVisible>.01){
@@ -1345,7 +1354,8 @@ function updateMissionUI(){
   $("missionState").textContent=missionPlaying?"Active":"Waiting";
   const target=document.querySelector(".target-box");
   if(target){
-    const a=clamp((missionProgress-.68)/.18,0,1);
+    const targetStart=missionMode==="tour"?.82:.68;
+    const a=clamp((missionProgress-targetStart)/.14,0,1);
     target.style.opacity=String(a*.72);
   }
   drawFlight();
@@ -1396,9 +1406,9 @@ function setMode(mode){
     $("modeStatus").textContent='Fast Mission — stronger star streaks, faster camera push toward Mars, and a much quicker trip.';
   }
   if(mode==='tour'){
-    missionSeconds=52;
+    missionSeconds=72;
     $("modeReadout").textContent='Scenic Tour';
-    $("modeStatus").textContent='Scenic Tour — a slower Hohmann-transfer simulation with more time to watch the curved orbital path and Mars approach.';
+    $("modeStatus").textContent='Scenic Tour — a 72-second wide-angle journey: Earth and the Moon linger longer, Mars appears later from the upper-right, and the final approach is slower and less instrument-focused.';
   }
   $("pauseMission").textContent='Pause';
   $("missionState").textContent='Waiting';
@@ -1506,11 +1516,22 @@ function toggleJumpTour(){
   },4200);
 }
 
+function focusMissionView(){
+  const flight=document.querySelector('.hero-flight-card');
+  if(!flight)return;
+  const flightTop=flight.getBoundingClientRect().top+window.scrollY;
+  const desiredTop=Math.min(300,window.innerHeight*.36);
+  window.scrollTo({top:Math.max(0,flightTop-desiredTop),behavior:"smooth"});
+}
+
 function openMars(){ window.location.href='mars-surface.html'; }
 
 $("homeBtn").onclick=()=>window.scrollTo({top:0,behavior:"smooth"});
 $("startMission").onclick=startMission;
-$("startMissionHero").onclick=()=>{startMission();};
+$("startMissionHero").onclick=()=>{
+  focusMissionView();
+  setTimeout(startMission,280);
+};
 $("pauseMission").onclick=()=>{missionPlaying=!missionPlaying; $("pauseMission").textContent=missionPlaying?'Pause':'Resume'; $("missionState").textContent=missionPlaying?'Active':'Paused'; if(missionPlaying){missionLast=0; missionFrame=requestAnimationFrame(missionLoop);}};
 $("resetMission").onclick=()=>{missionPlaying=false; missionProgress=0; $("pauseMission").textContent='Pause'; $("missionState").textContent='Waiting'; updateMissionUI();};
 $("goToMars").onclick=openMars;
@@ -1525,7 +1546,8 @@ $("openFullMarsFacts").onclick=()=>window.location.href='mars-surface.html?v=202
 document.querySelectorAll('[data-speed]').forEach(btn=>{
   btn.addEventListener('click',()=>{
     setMode(btn.dataset.speed);
-    setTimeout(startMission,120);
+    focusMissionView();
+    setTimeout(startMission,280);
   });
 });
 window.addEventListener('resize',()=>{resizeFlight();resizeOrbit();});
