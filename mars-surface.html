@@ -1472,6 +1472,11 @@ function drawStars(w,h,alpha){
 function drawPlanetApproach(w,h,d){
   const approach=clamp(arrivalProgress/.22,0,1);
   const a=smoother(approach);
+  const planetFade=1-clamp((arrivalProgress-.28)/.20,0,1);
+  if(planetFade<=.01)return;
+
+  actx.save();
+  actx.globalAlpha=planetFade;
 
   const radius=mix(
     8,
@@ -1549,65 +1554,95 @@ function drawPlanetApproach(w,h,d){
     actx.arc(cx,cy,radius+5,Math.PI*1.08,Math.PI*1.92);
     actx.stroke();
   }
+
+  actx.restore();
 }
 
 function drawAtmosphereAndTerrain(w,h,d){
   if(d.terrain<=0)return;
 
   const terrain=d.terrain;
-  const touchdownBias=clamp((arrivalProgress-.78)/.22,0,1);
-  const horizon=mix(
-    h*.92,
-    mix(h*.48,h*.34,touchdownBias),
-    smoother(terrain)
-  );
+  const touchdownBias=clamp((arrivalProgress-.76)/.24,0,1);
 
+  /* Once the vehicle is low enough, use the same realistic Mars panorama
+     as the surface explorer instead of drawing a flat cartoon landscape. */
+  if(
+    d.terrain>.42 &&
+    typeof marsSurfacePhoto!=="undefined" &&
+    marsSurfacePhoto.complete &&
+    marsSurfacePhoto.naturalWidth
+  ){
+    const iw=marsSurfacePhoto.naturalWidth;
+    const ih=marsSurfacePhoto.naturalHeight;
+
+    const descent=clamp((d.terrain-.42)/.58,0,1);
+    const zoom=1.03+descent*.42;
+    const base=Math.max(w/iw,h/ih);
+    const scale=base*zoom;
+    const dw=iw*scale;
+    const dh=ih*scale;
+
+    const extraX=Math.max(0,dw-w);
+    const extraY=Math.max(0,dh-h);
+
+    /* Camera gradually pitches down and moves toward the landing site. */
+    const dx=-extraX*(.44+descent*.05);
+    const dy=-extraY*(.22+descent*.42);
+
+    actx.save();
+    actx.globalAlpha=clamp((d.terrain-.38)/.18,0,1);
+    actx.drawImage(marsSurfacePhoto,dx,dy,dw,dh);
+
+    /* Thin dusty atmosphere over the real terrain. */
+    const haze=actx.createLinearGradient(0,0,0,h);
+    haze.addColorStop(0,"rgba(207,139,102,"+(.26-descent*.10)+")");
+    haze.addColorStop(.48,"rgba(180,91,61,"+(.08+descent*.03)+")");
+    haze.addColorStop(1,"rgba(53,20,15,"+(.05+descent*.08)+")");
+    actx.fillStyle=haze;
+    actx.fillRect(0,0,w,h);
+
+    /* Darken the edges slightly to keep the forward-camera feel. */
+    const vignette=actx.createRadialGradient(
+      w*.5,h*.48,h*.12,
+      w*.5,h*.5,Math.max(w,h)*.76
+    );
+    vignette.addColorStop(0,"rgba(0,0,0,0)");
+    vignette.addColorStop(.72,"rgba(0,0,0,.02)");
+    vignette.addColorStop(1,"rgba(0,0,0,"+(.16+touchdownBias*.10)+")");
+    actx.fillStyle=vignette;
+    actx.fillRect(0,0,w,h);
+    actx.restore();
+    return;
+  }
+
+  /* High-altitude fallback before the photographic ground fills the view. */
+  const horizon=mix(h*.94,h*.62,smoother(terrain));
   const sky=actx.createLinearGradient(0,0,0,horizon);
-  sky.addColorStop(0,"rgba(118,64,52,"+(.10+terrain*.60)+")");
-  sky.addColorStop(.72,"rgba(201,116,82,"+(.18+terrain*.74)+")");
-  sky.addColorStop(1,"rgba(230,159,112,"+(.24+terrain*.70)+")");
-
+  sky.addColorStop(0,"rgba(108,58,49,"+(.08+terrain*.34)+")");
+  sky.addColorStop(.72,"rgba(181,103,76,"+(.13+terrain*.48)+")");
+  sky.addColorStop(1,"rgba(218,148,107,"+(.18+terrain*.52)+")");
   actx.fillStyle=sky;
   actx.fillRect(0,0,w,horizon);
 
-  const ridgeBase=horizon+5;
-
+  const ridgeBase=horizon+4;
   actx.beginPath();
   actx.moveTo(0,ridgeBase);
-
-  for(let x=0;x<=w;x+=6){
+  for(let x=0;x<=w;x+=8){
     const y=
       ridgeBase
-      -Math.sin(x*.012+arrivalProgress*3.2)*10*terrain
-      -Math.sin(x*.0047+1.1)*24*terrain
-      -Math.sin(x*.027)*4*terrain;
-
+      -Math.sin(x*.006+arrivalProgress*2.1)*7*terrain
+      -Math.sin(x*.0025+1.4)*15*terrain;
     actx.lineTo(x,y);
   }
-
   actx.lineTo(w,h);
   actx.lineTo(0,h);
   actx.closePath();
 
   const ground=actx.createLinearGradient(0,horizon,0,h);
-  ground.addColorStop(0,"#9e5037");
-  ground.addColorStop(.48,"#753526");
-  ground.addColorStop(1,"#391713");
-
+  ground.addColorStop(0,"#8d4935");
+  ground.addColorStop(1,"#4b2119");
   actx.fillStyle=ground;
   actx.fill();
-
-  for(let i=0;i<44;i++){
-    const depth=((i*31)%100)/100;
-    const x=((i*173)%(w+160))-80;
-    const y=horizon+Math.pow(depth,1.65)*(h-horizon);
-    const size=(2+depth*22)*(.25+terrain*.86)*(1+touchdownBias*.75);
-
-    actx.fillStyle="rgba(45,19,15,.74)";
-    actx.beginPath();
-    actx.ellipse(x,y,size,size*.34,0,0,Math.PI*2);
-    actx.fill();
-  }
 }
 
 function drawPlasma(w,h,d){
