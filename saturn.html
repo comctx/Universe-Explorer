@@ -3,11 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Saturn · Universe Explorer</title>
+<meta name="theme-color" content="#070b12">
+<title>Saturn Explorer · Universe Explorer</title>
 <style>
 :root{
-  --bg:#03060b;--panel:#0a131e;--panel2:#07101a;--line:#2e4356;
-  --text:#f2f6fa;--muted:#a8bac9;--gold:#e9c67c;--gold2:#b89454;--blue:#7fc7ff;
+  --bg:#050911;--panel:#0d1826;--panel2:#08111c;--line:#33485c;
+  --text:#eef5fb;--muted:#a9bdcd;--gold:#f2c76e;--gold2:#d8a94f;
+  --blue:#7fc7ff;--ice:#d9f2ff;--warn:#ffcf69;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -16,290 +18,212 @@ body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
   color:var(--text);
   background:
-    radial-gradient(circle at 78% 7%,rgba(217,181,104,.10),transparent 24%),
-    radial-gradient(circle at 18% 1%,rgba(72,112,150,.11),transparent 30%),
-    linear-gradient(#050b13,#02060a 72%,#010305);
+    radial-gradient(circle at 75% 8%,rgba(214,175,98,.12),transparent 27%),
+    radial-gradient(circle at 20% 0%,rgba(72,119,166,.15),transparent 30%),
+    linear-gradient(#06101b,#03070c 70%,#020509);
 }
 button,input,select{font:inherit}
 button{cursor:pointer}
-button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .topbar{
-  width:min(1240px,100%);margin:auto;padding:14px 18px;
+  position:sticky;top:0;z-index:90;
   display:flex;justify-content:space-between;align-items:center;gap:10px;
+  width:100%;padding:10px 16px;
+  border-bottom:1px solid rgba(255,255,255,.1);
+  background:rgba(3,8,13,.86);backdrop-filter:blur(12px)
 }
-.navbtn,.primary,.secondary,.mini-btn{
-  min-height:44px;padding:9px 13px;border-radius:11px;font-weight:850;
+.brand{font-size:12px;font-weight:950;letter-spacing:.12em;color:#d8e6f0;text-align:center}
+.navbtn,.primary,.secondary,.chip-btn{
+  min-height:44px;padding:9px 13px;border-radius:11px;font-weight:900
 }
-.navbtn,.secondary,.mini-btn{border:1px solid #4f6a80;background:#112639;color:#fff}
-.primary{border:1px solid #d4aa58;background:var(--gold);color:#231805}
-.brand{font-size:12px;font-weight:900;letter-spacing:.12em;color:#d8e5ef}
+.navbtn,.secondary,.chip-btn{border:1px solid #506a80;background:#12283a;color:#fff}
+.primary{border:1px solid #e5b652;background:var(--gold);color:#241806}
 .hero{
-  width:min(1240px,100%);margin:auto;padding:6px 18px 30px;
-  display:grid;grid-template-columns:minmax(0,.84fr) minmax(420px,1.16fr);
-  gap:26px;align-items:center;
+  width:min(1250px,100%);margin:auto;padding:24px 18px 18px;
+  display:grid;grid-template-columns:minmax(300px,.82fr) minmax(420px,1.18fr);
+  gap:22px;align-items:center
 }
-.eyebrow{color:var(--gold);font-size:12px;font-weight:900;letter-spacing:.16em}
-h1{margin:8px 0 12px;font-size:clamp(52px,8vw,96px);line-height:.88}
-h1 span{display:block;color:#dbc18b;font-size:.42em;line-height:1.15;margin-top:10px}
-.hero p{max-width:620px;color:#c4d3de;font-size:clamp(16px,2vw,20px);line-height:1.6;margin:0 0 18px}
-.hero-actions{display:flex;flex-wrap:wrap;gap:10px}
-.planet-stage{
-  position:relative;min-height:520px;overflow:hidden;border-radius:28px;
-  border:1px solid rgba(255,255,255,.12);background:#010408;
-  box-shadow:inset 0 0 90px rgba(0,0,0,.72);
+.eyebrow{color:var(--gold);font-size:12px;font-weight:950;letter-spacing:.16em}
+h1{margin:8px 0 12px;font-size:clamp(52px,8vw,94px);line-height:.88}
+h1 span{display:block;margin-top:10px;color:#dfc58e;font-size:.43em;line-height:1.1}
+.hero p{max-width:630px;margin:0 0 16px;color:#c6d6e2;font-size:clamp(16px,2vw,20px);line-height:1.58}
+.hero-actions,.button-row{display:flex;flex-wrap:wrap;gap:9px}
+.stage{
+  position:relative;min-height:540px;overflow:hidden;border-radius:24px;
+  border:1px solid rgba(255,255,255,.13);background:#01050a;
+  box-shadow:0 28px 60px rgba(0,0,0,.34)
 }
-.stars{position:absolute;inset:0;opacity:.8;background-image:
-  radial-gradient(circle at 10% 18%,#fff 0 1px,transparent 1.3px),
-  radial-gradient(circle at 76% 20%,#dbeaff 0 1px,transparent 1.4px),
-  radial-gradient(circle at 66% 74%,#fff 0 1px,transparent 1.4px),
-  radial-gradient(circle at 22% 71%,#cfe4ff 0 1px,transparent 1.4px),
-  radial-gradient(circle at 40% 10%,#fff 0 1px,transparent 1.2px);
-  background-size:127px 119px,173px 167px,211px 197px,251px 233px,307px 293px
+#saturnCanvas{position:absolute;inset:0;width:100%;height:100%}
+.stage-hud{
+  position:absolute;left:12px;right:12px;top:12px;display:flex;
+  justify-content:space-between;gap:8px;pointer-events:none
 }
-.saturn-svg{position:absolute;inset:0;width:100%;height:100%}
-.stage-tools{
-  position:absolute;left:14px;right:14px;bottom:14px;z-index:4;
-  display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;
-  padding:10px 12px;border-radius:13px;
-  background:rgba(2,6,10,.76);border:1px solid rgba(255,255,255,.14);
-  backdrop-filter:blur(7px)
+.hud-chip{
+  padding:7px 10px;border:1px solid rgba(255,255,255,.16);border-radius:9px;
+  background:rgba(2,7,12,.68);font-size:11px;font-weight:900
 }
-.stage-tools label{display:grid;gap:4px;color:#d6e3ec;font-size:11px;font-weight:800}
-.stage-tools input{width:100%;accent-color:#e9c67c}
-.stage-note{
-  position:absolute;right:14px;top:13px;z-index:4;padding:6px 9px;border-radius:9px;
-  background:rgba(2,7,11,.72);border:1px solid rgba(255,255,255,.13);
-  color:#cbd9e3;font-size:10px;font-weight:800
+.stage-control{
+  position:absolute;left:12px;right:12px;bottom:12px;
+  padding:11px;border:1px solid rgba(255,255,255,.14);border-radius:13px;
+  background:rgba(3,9,15,.78);backdrop-filter:blur(8px)
 }
-main{width:min(1240px,100%);margin:auto;padding:0 18px 42px}
-.fact-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:18px}
-.fact,.panel{
-  border:1px solid var(--line);background:linear-gradient(145deg,var(--panel),var(--panel2));
+.stage-control label{display:grid;grid-template-columns:150px 1fr 48px;gap:8px;align-items:center;color:#c9d9e5;font-size:12px;font-weight:850}
+.stage-control input{width:100%}
+main{width:min(1250px,100%);margin:auto;padding:0 18px 40px}
+.fact-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:8px 0 18px}
+.fact,.metric{
+  padding:13px;border:1px solid var(--line);border-radius:13px;
+  background:linear-gradient(145deg,var(--panel),var(--panel2))
 }
-.fact{padding:14px;border-radius:14px}
-.fact span{display:block;color:#8fa7b8;font-size:10px;font-weight:850;text-transform:uppercase;letter-spacing:.05em}
-.fact strong{display:block;margin-top:5px;font-size:18px}
-.panel{margin-bottom:16px;padding:18px;border-radius:18px}
+.fact span,.metric span{display:block;color:#91a7b8;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.05em}
+.fact strong,.metric strong{display:block;margin-top:5px;font-size:17px}
+.panel{
+  margin-bottom:16px;padding:18px;border:1px solid var(--line);border-radius:18px;
+  background:linear-gradient(145deg,var(--panel),var(--panel2));
+  box-shadow:0 13px 30px rgba(0,0,0,.17)
+}
 .section-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:10px;margin-bottom:12px}
 h2{margin:0;font-size:clamp(25px,4vw,34px)}
+h3{margin:0 0 7px}
 .lead{margin:4px 0 0;color:var(--muted);line-height:1.55}
-.levels,.button-row{display:flex;flex-wrap:wrap;gap:8px}
-.levels button{
-  min-height:40px;padding:8px 11px;border:1px solid #506a80;border-radius:10px;
-  background:#112538;color:#fff;font-weight:850
+.small{color:#8fa6b8;font-size:12px;line-height:1.45}
+.explorer-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,.75fr);gap:14px}
+.canvas-card{position:relative;min-height:470px;overflow:hidden;border:1px solid #32495d;border-radius:16px;background:#02060b}
+.canvas-card canvas{position:absolute;inset:0;width:100%;height:100%}
+.control-card{padding:14px;border:1px solid #32495d;border-radius:16px;background:#07131f}
+.control-card label{display:block;margin:12px 0 5px;color:#bcd0dd;font-size:12px;font-weight:900}
+.control-card input[type=range]{width:100%}
+.value-line{display:flex;justify-content:space-between;gap:10px;color:#dce9f2;font-size:13px}
+.ring-key{display:grid;gap:7px;margin-top:12px}
+.ring-key button{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  width:100%;padding:9px 10px;border:1px solid #385166;border-radius:10px;
+  background:#0a1a29;color:#fff;text-align:left;font-weight:850
 }
-.levels button.active{background:var(--gold);border-color:#d7a947;color:#251807}
-.explanation{
-  padding:14px;border-left:5px solid var(--gold);border-radius:10px;background:#06111b;
-  color:#d2e0e9;line-height:1.62;font-size:16px
+.ring-key button.active{background:#453814;border-color:#d6ae51;color:#ffe8ab}
+.stat-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:12px}
+.levels,.viz-tabs,.mission-tabs,.ask-examples,.moon-buttons{display:flex;flex-wrap:wrap;gap:8px}
+.levels button,.viz-tabs button,.mission-tabs button,.ask-examples button,.moon-buttons button{
+  min-height:39px;padding:8px 11px;border:1px solid #506a80;border-radius:10px;background:#112538;color:#fff;font-weight:850
 }
-.rings-layout,.two-col{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,.75fr);gap:14px}
-.rings-box,.viz-card,.moon-card,.mission-card,.compare-card,.ask-box{
-  border:1px solid #31495d;border-radius:15px;background:#06111b
+.levels button.active,.viz-tabs button.active,.mission-tabs button.active,.moon-buttons button.active{background:var(--gold);border-color:#d7a947;color:#251807}
+.explanation,.viz-copy,.ask-answer{
+  padding:14px;border-left:5px solid var(--gold);border-radius:10px;background:#07121d;color:#d1e0ea;line-height:1.6
 }
-.rings-box{padding:12px;overflow:hidden}
-.rings-box svg{display:block;width:100%;height:auto;transform-origin:center;transition:transform .25s ease}
-.ring-controls{display:grid;gap:10px;align-content:start}
-.control-card{padding:13px;border:1px solid #2d4356;border-radius:12px;background:#081621}
-.control-card label{display:grid;gap:6px;color:#d7e4ec;font-weight:850}
-.control-card input{width:100%;accent-color:#e9c67c}
-.ring-key{display:grid;gap:7px;margin-top:10px}
-.ring-key div{display:flex;gap:8px;align-items:center;color:#b9cad6;font-size:13px}
-.swatch{width:22px;height:7px;border-radius:4px;display:inline-block}
-.moon-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.moon-card{padding:14px}
-.moon-card h3{margin:0 0 6px;color:#f0d294;font-size:20px}
-.moon-stats{display:grid;gap:4px;color:#a8bdcc;font-size:12px;line-height:1.45}
-.moon-card p{margin:8px 0 0;color:#c5d3dd;line-height:1.48;font-size:13px}
-.moon-orbit-wrap{position:relative;min-height:330px;border-radius:14px;overflow:hidden;background:#02070b;border:1px solid #2c4253}
-#moonCanvas{position:absolute;inset:0;width:100%;height:100%}
-.timeline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.mission-card{padding:14px;position:relative;overflow:hidden}
-.mission-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:#b89350}
-.mission-card .year{color:#eac87f;font-size:12px;font-weight:900;letter-spacing:.08em}
-.mission-card h3{margin:5px 0 6px}
-.mission-card p{margin:0;color:#b7c9d7;line-height:1.5;font-size:13px}
-.path-viz{margin-top:12px;border:1px solid #2f4557;border-radius:14px;background:#02070b;overflow:hidden}
-.path-viz svg{display:block;width:100%;height:auto}
-.ship-dot{filter:drop-shadow(0 0 5px #fff)}
-.ask-box{padding:14px}
-.ask-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
-.ask-form input{min-height:46px;padding:10px 12px;border:1px solid #4c6980;border-radius:11px;background:#02090f;color:#fff}
-.ask-answer{margin-top:10px;padding:12px;border-left:4px solid var(--gold);border-radius:8px;background:#030b12;color:#d5e3ec;line-height:1.55}
-.ask-examples{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
-.ask-examples button{min-height:38px;padding:7px 10px;border:1px solid #4a657a;border-radius:9px;background:#102436;color:#fff;font-weight:800;font-size:12px}
+.moon-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:14px}
+#moonCanvas{width:100%;height:510px;display:block;border:1px solid #33495c;border-radius:16px;background:#02060b}
+.moon-detail{padding:15px;border:1px solid #33495c;border-radius:16px;background:#07131f}
+.moon-detail h3{font-size:30px;color:#f0d092}
+.moon-data{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.moon-data .metric{background:#0a1b2a}
+.visit-card{
+  margin-top:12px;padding:13px;border:1px solid #465e72;border-radius:13px;
+  background:linear-gradient(135deg,#0a1b2a,#0e2739)
+}
+.timeline{
+  position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px
+}
+.timeline:before{content:"";position:absolute;left:5%;right:5%;top:21px;height:2px;background:#465a6c}
+.mission-step{
+  position:relative;z-index:1;padding:14px;border:1px solid #354c60;border-radius:13px;background:#07131f
+}
+.mission-step .dot{width:16px;height:16px;border:3px solid #07131f;border-radius:50%;background:var(--gold);box-shadow:0 0 0 2px #a8833a;margin-bottom:9px}
+.mission-step strong{display:block;margin-bottom:4px}
+.mission-step span{color:#93aabd;font-size:11px;font-weight:900}
+.mission-step p{margin:7px 0 0;color:#b9cbd8;line-height:1.45;font-size:13px}
+.mission-visual{
+  position:relative;margin-top:13px;min-height:300px;overflow:hidden;border:1px solid #33495c;border-radius:16px;background:#02060b
+}
+#missionCanvas{position:absolute;inset:0;width:100%;height:100%}
 .compare-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.compare-card{padding:14px}
-.compare-card span{display:block;color:#90a7b7;font-size:10px;text-transform:uppercase;font-weight:850}
-.compare-card strong{display:block;margin:6px 0 3px;color:#f0d092;font-size:20px}
-.compare-card p{margin:0;color:#b9cad6;line-height:1.48;font-size:13px}
-.edu-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.viz-card{padding:14px;overflow:hidden}
-.viz-card h3{margin:0 0 5px;color:#f0d092}
-.viz-card p{margin:0 0 10px;color:#afc1cf;line-height:1.48}
-.viz-card svg{display:block;width:100%;height:auto;border-radius:11px;background:#02070b}
-.theory-tabs{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0}
-.theory-tabs button{min-height:38px;padding:7px 10px;border:1px solid #476177;border-radius:9px;background:#102436;color:#fff;font-weight:800}
-.theory-tabs button.active{background:#e9c67c;color:#211705;border-color:#d1aa59}
-.theory-copy{padding:10px;border-radius:10px;background:#030b12;color:#c7d6e0;line-height:1.5}
-.season-control{display:grid;gap:6px;margin-bottom:8px;color:#c8d7e1;font-weight:800}
-.season-control input{width:100%;accent-color:#e9c67c}
-.internal-layers{display:grid;grid-template-columns:210px 1fr;gap:14px;align-items:center}
-.layer-legend{display:grid;gap:7px;color:#c5d4de;font-size:13px}
-.layer-legend span{display:flex;gap:8px;align-items:center}
-.layer-dot{width:12px;height:12px;border-radius:50%;display:inline-block}
-.footer-actions{display:flex;flex-wrap:wrap;gap:10px}
-footer{padding:28px 16px 40px;text-align:center;color:#8198aa;font-size:12px}
-@media(max-width:980px){
-  .hero{grid-template-columns:1fr}.planet-stage{min-height:500px}
-  .fact-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .moon-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .timeline{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .rings-layout,.two-col{grid-template-columns:1fr}
+.compare-card{padding:15px;border:1px solid #33495c;border-radius:14px;background:#07131f}
+.compare-card strong{display:block;color:#f0d092;font-size:22px;margin:4px 0}
+.weight-box{margin-top:12px;padding:14px;border:1px solid #354c60;border-radius:13px;background:#07131f}
+.weight-box input[type=number]{width:120px;min-height:42px;padding:8px;border:1px solid #4a6378;border-radius:9px;background:#03101a;color:#fff}
+.weight-result{margin-left:8px;color:#ffe4a4;font-weight:950}
+.viz-area{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.75fr);gap:14px;margin-top:12px}
+.viz-stage{position:relative;min-height:390px;overflow:hidden;border:1px solid #33495c;border-radius:16px;background:#02060b}
+#vizCanvas{position:absolute;inset:0;width:100%;height:100%}
+.ask-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.7fr);gap:14px}
+.ask-box{padding:14px;border:1px solid #33495c;border-radius:15px;background:#07131f}
+.ask-form{display:grid;grid-template-columns:1fr auto;gap:8px}
+.ask-form input{min-height:46px;padding:10px 12px;border:1px solid #506a80;border-radius:10px;background:#03101a;color:#fff}
+.ask-form button{min-height:46px}
+.ask-examples{margin-top:9px}
+.ask-examples button{font-size:12px}
+.highlight-note{margin-top:10px;color:#91a7b8;font-size:12px}
+.plane-wrap{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);gap:14px}
+.plane-stage{position:relative;min-height:400px;overflow:hidden;border:1px solid #33495c;border-radius:16px;background:#02060b}
+#planeCanvas{position:absolute;inset:0;width:100%;height:100%}
+.plane-controls{padding:14px;border:1px solid #33495c;border-radius:16px;background:#07131f}
+.plane-controls input{width:100%}
+.destination-overlay{
+  position:fixed;inset:0;z-index:200;display:none;place-items:center;padding:18px;background:rgba(0,0,0,.82);backdrop-filter:blur(8px)
 }
-@media(max-width:700px){
-  .edu-grid,.compare-grid{grid-template-columns:1fr 1fr}
-  .internal-layers{grid-template-columns:1fr}
+.destination-overlay.open{display:grid}
+.destination-card{
+  width:min(880px,100%);max-height:92vh;overflow:auto;border:1px solid #506a80;border-radius:20px;background:#06111c;box-shadow:0 30px 80px rgba(0,0,0,.55)
+}
+.destination-scene{position:relative;min-height:360px;overflow:hidden;background:#02060b}
+#destinationCanvas{position:absolute;inset:0;width:100%;height:100%}
+.destination-copy{padding:16px}
+.destination-copy h2{color:#f0d092}
+.close-btn{position:absolute;right:12px;top:12px;z-index:5}
+footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
+@media(max-width:980px){
+  .hero,.explorer-grid,.moon-layout,.viz-area,.ask-grid,.plane-wrap{grid-template-columns:1fr}
+  .fact-grid,.compare-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stage{min-height:500px}
+}
+@media(max-width:720px){
+  .timeline{grid-template-columns:1fr}.timeline:before{display:none}
+  .stat-strip{grid-template-columns:1fr 1fr}
+  #moonCanvas{height:430px}
 }
 @media(max-width:560px){
-  .hero,.topbar,main{padding-left:12px;padding-right:12px}
-  .topbar{align-items:flex-start}.brand{display:none}
-  .planet-stage{min-height:390px}.stage-tools{grid-template-columns:1fr}
-  .fact-grid,.moon-grid,.timeline,.edu-grid,.compare-grid{grid-template-columns:1fr}
-  .ask-form{grid-template-columns:1fr}.ask-form button{width:100%}
-  h1{font-size:62px}
+  .hero,main{padding-left:12px;padding-right:12px}
+  .topbar{padding:8px}.brand{font-size:10px}
+  .fact-grid,.compare-grid,.moon-data{grid-template-columns:1fr 1fr}
+  .stage{min-height:410px}
+  .stage-control label{grid-template-columns:112px 1fr 42px}
+  h1{font-size:58px}
+  .ask-form{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
-<header>
-  <div class="topbar">
-    <button class="navbtn" id="homeBtn" type="button">⌂ Home</button>
-    <div class="brand">DONCO · UNIVERSE EXPLORER</div>
-    <button class="navbtn" id="orbitBtnTop" type="button">Orbital Simulator</button>
+<div class="topbar">
+  <button class="navbtn" id="homeBtn" type="button">⌂ Home</button>
+  <div class="brand">DONCO · UNIVERSE EXPLORER</div>
+  <button class="navbtn" id="orbitBtnTop" type="button">Solar System</button>
+</div>
+
+<header class="hero">
+  <div>
+    <div class="eyebrow">DESTINATION · SATURN</div>
+    <h1>Saturn <span>The Ringed Giant</span></h1>
+    <p>Fly in close to Saturn, watch its cloud bands turn, inspect the rings, cross the ring plane, track the major moons, and explore the missions that revealed this extraordinary world.</p>
+    <div class="hero-actions">
+      <button class="primary" id="startTour" type="button">Start Saturn Tour</button>
+      <button class="secondary" id="ringShortcut" type="button">Explore Rings</button>
+      <button class="secondary" id="moonShortcut" type="button">Explore Moons</button>
+    </div>
   </div>
 
-  <section class="hero">
-    <div>
-      <div class="eyebrow">DESTINATION · SATURN SYSTEM</div>
-      <h1>Saturn <span>The Ringed Giant</span></h1>
-      <p>
-        Explore Saturn as a rotating gas giant with layered cloud bands, a structured ring system,
-        major moons, mission history, and interactive science visualizations.
-      </p>
-      <div class="hero-actions">
-        <button class="primary" id="tourBtn" type="button">Start Saturn Tour</button>
-        <button class="secondary" id="orbitBtnHero" type="button">See Saturn in Orbit</button>
-      </div>
+  <div class="stage" id="saturnStage" aria-label="Animated Saturn with rings">
+    <canvas id="saturnCanvas"></canvas>
+    <div class="stage-hud">
+      <div class="hud-chip" id="viewModeChip">LIVE SATURN VIEW</div>
+      <div class="hud-chip" id="rotationChip">ROTATING CLOUDS</div>
     </div>
-
-    <div class="planet-stage" aria-label="Realistic scientific visualization of Saturn and its rings">
-      <div class="stars"></div>
-      <div class="stage-note">Scientific visualization · proportions compressed for display</div>
-
-      <svg class="saturn-svg" viewBox="0 0 900 620" role="img" aria-label="Saturn with atmospheric bands, ring divisions, and ring shadow">
-        <defs>
-          <radialGradient id="satBody" cx="34%" cy="28%" r="72%">
-            <stop offset="0%" stop-color="#fff2c5"/>
-            <stop offset="24%" stop-color="#ead6a2"/>
-            <stop offset="52%" stop-color="#c8a96f"/>
-            <stop offset="77%" stop-color="#92764a"/>
-            <stop offset="100%" stop-color="#42331f"/>
-          </radialGradient>
-          <linearGradient id="bands" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#e7d4a5"/>
-            <stop offset="10%" stop-color="#b99762"/>
-            <stop offset="18%" stop-color="#dbc18b"/>
-            <stop offset="27%" stop-color="#a78350"/>
-            <stop offset="39%" stop-color="#e0ca99"/>
-            <stop offset="48%" stop-color="#b5905b"/>
-            <stop offset="59%" stop-color="#e7d5aa"/>
-            <stop offset="70%" stop-color="#997443"/>
-            <stop offset="82%" stop-color="#d7bd83"/>
-            <stop offset="100%" stop-color="#8a693c"/>
-          </linearGradient>
-          <linearGradient id="ringA" x1="0" x2="1">
-            <stop offset="0%" stop-color="#766e5b" stop-opacity=".18"/>
-            <stop offset="18%" stop-color="#c9bea0" stop-opacity=".82"/>
-            <stop offset="38%" stop-color="#e9dec1" stop-opacity=".95"/>
-            <stop offset="62%" stop-color="#b7aa8a" stop-opacity=".78"/>
-            <stop offset="82%" stop-color="#eee5cb" stop-opacity=".92"/>
-            <stop offset="100%" stop-color="#6c6453" stop-opacity=".16"/>
-          </linearGradient>
-          <linearGradient id="ringB" x1="0" x2="1">
-            <stop offset="0%" stop-color="#8d8269" stop-opacity=".20"/>
-            <stop offset="35%" stop-color="#f0e6c8" stop-opacity=".94"/>
-            <stop offset="65%" stop-color="#c8b995" stop-opacity=".86"/>
-            <stop offset="100%" stop-color="#6e6655" stop-opacity=".18"/>
-          </linearGradient>
-          <filter id="cloudNoise" x="-20%" y="-20%" width="140%" height="140%">
-            <feTurbulence type="fractalNoise" baseFrequency=".018 .095" numOctaves="3" seed="11" result="noise"/>
-            <feColorMatrix in="noise" type="matrix" values="
-              .34 0 0 0 .52
-              0 .29 0 0 .43
-              0 0 .20 0 .26
-              0 0 0 .26 0" result="tinted"/>
-            <feBlend in="SourceGraphic" in2="tinted" mode="soft-light"/>
-          </filter>
-          <filter id="softShadow"><feGaussianBlur stdDeviation="7"/></filter>
-          <clipPath id="planetClip"><ellipse cx="472" cy="292" rx="154" ry="139"/></clipPath>
-          <clipPath id="frontRingClip"><rect x="0" y="292" width="900" height="328"/></clipPath>
-          <mask id="ringGapMask">
-            <rect width="900" height="620" fill="white"/>
-            <ellipse cx="472" cy="292" rx="300" ry="77" fill="none" stroke="black" stroke-width="10"/>
-          </mask>
-        </defs>
-
-        <g id="ringSystem" transform="rotate(-8 472 292)">
-          <ellipse cx="472" cy="292" rx="360" ry="91" fill="none" stroke="url(#ringA)" stroke-width="35" opacity=".82"/>
-          <ellipse cx="472" cy="292" rx="318" ry="80" fill="none" stroke="url(#ringB)" stroke-width="34" opacity=".95"/>
-          <ellipse cx="472" cy="292" rx="281" ry="70" fill="none" stroke="#9b8d70" stroke-width="22" opacity=".54"/>
-          <ellipse cx="472" cy="292" rx="338" ry="85" fill="none" stroke="#161514" stroke-width="7" opacity=".95"/>
-          <ellipse cx="472" cy="292" rx="256" ry="64" fill="none" stroke="#ded0aa" stroke-width="10" opacity=".33"/>
-        </g>
-
-        <ellipse cx="472" cy="292" rx="154" ry="139" fill="url(#satBody)"/>
-        <g clip-path="url(#planetClip)" filter="url(#cloudNoise)" opacity=".96">
-          <rect x="300" y="150" width="344" height="286" fill="url(#bands)"/>
-          <g id="movingClouds" opacity=".46">
-            <path d="M290 205 C360 194 422 215 510 200 S640 205 670 198" fill="none" stroke="#f7e5b5" stroke-width="8"/>
-            <path d="M285 238 C365 252 430 225 528 243 S625 249 672 236" fill="none" stroke="#8d6b3f" stroke-width="7"/>
-            <path d="M292 282 C370 269 430 296 520 280 S620 270 670 286" fill="none" stroke="#f2dca8" stroke-width="10"/>
-            <path d="M288 325 C365 341 438 310 522 331 S625 338 675 322" fill="none" stroke="#8f6d41" stroke-width="7"/>
-            <path d="M295 365 C365 351 440 379 527 363 S626 354 670 368" fill="none" stroke="#e8ce98" stroke-width="9"/>
-            <animateTransform attributeName="transform" type="translate" values="-18 0;18 0;-18 0" dur="10s" repeatCount="indefinite"/>
-          </g>
-        </g>
-
-        <ellipse cx="425" cy="246" rx="82" ry="95" fill="#fff5ce" opacity=".16"/>
-        <ellipse cx="532" cy="310" rx="115" ry="117" fill="#000" opacity=".22"/>
-
-        <g clip-path="url(#planetClip)" transform="rotate(-8 472 292)">
-          <ellipse cx="472" cy="292" rx="327" ry="82" fill="none" stroke="#090706" stroke-width="19" opacity=".35" filter="url(#softShadow)"/>
-        </g>
-
-        <g id="frontRings" transform="rotate(-8 472 292)" clip-path="url(#frontRingClip)">
-          <ellipse cx="472" cy="292" rx="360" ry="91" fill="none" stroke="url(#ringA)" stroke-width="35" opacity=".88"/>
-          <ellipse cx="472" cy="292" rx="318" ry="80" fill="none" stroke="url(#ringB)" stroke-width="34" opacity=".98"/>
-          <ellipse cx="472" cy="292" rx="281" ry="70" fill="none" stroke="#9b8d70" stroke-width="22" opacity=".58"/>
-          <ellipse cx="472" cy="292" rx="338" ry="85" fill="none" stroke="#171615" stroke-width="7" opacity=".95"/>
-        </g>
-
-        <circle cx="785" cy="132" r="7" fill="#c6a878"/>
-        <circle cx="168" cy="464" r="4.5" fill="#d5dbe0"/>
-        <circle cx="720" cy="470" r="3.5" fill="#eee7d1"/>
-      </svg>
-
-      <div class="stage-tools">
-        <label>Ring transparency
-          <input id="ringOpacity" type="range" min="25" max="100" value="92">
-        </label>
-        <label>Ring zoom
-          <input id="ringZoom" type="range" min="100" max="170" value="100">
-        </label>
-      </div>
+    <div class="stage-control">
+      <label>
+        <span>Ring transparency</span>
+        <input id="ringAlpha" type="range" min="15" max="100" value="78">
+        <strong id="ringAlphaValue">78%</strong>
+      </label>
     </div>
-  </section>
+  </div>
 </header>
 
 <main>
@@ -308,7 +232,7 @@ footer{padding:28px 16px 40px;text-align:center;color:#8198aa;font-size:12px}
     <div class="fact"><span>Position</span><strong>6th from the Sun</strong></div>
     <div class="fact"><span>Equatorial diameter</span><strong>~120,536 km</strong></div>
     <div class="fact"><span>Mass</span><strong>~95 Earth masses</strong></div>
-    <div class="fact"><span>Cloud-top gravity</span><strong>~1.07× Earth</strong></div>
+    <div class="fact"><span>Cloud-top gravity</span><strong>~1.07 × Earth</strong></div>
     <div class="fact"><span>Length of day</span><strong>~10.7 hours</strong></div>
     <div class="fact"><span>Length of year</span><strong>~29.5 Earth years</strong></div>
     <div class="fact"><span>Average Sun distance</span><strong>~1.43 billion km</strong></div>
@@ -316,411 +240,505 @@ footer{padding:28px 16px 40px;text-align:center;color:#8198aa;font-size:12px}
 
   <section class="panel" id="learn">
     <div class="section-head">
-      <div>
-        <h2>Understand Saturn</h2>
-        <p class="lead">Switch between a simple explanation and deeper planetary science.</p>
-      </div>
-      <div class="levels" aria-label="Explanation level">
-        <button class="active" type="button" data-level="beginner">Beginner</button>
-        <button type="button" data-level="technical">Technical</button>
-        <button type="button" data-level="advanced">Advanced</button>
+      <div><h2>Understand Saturn</h2><p class="lead">Switch between a simple explanation and deeper planetary science.</p></div>
+      <div class="levels">
+        <button class="active" data-level="beginner" type="button">Beginner</button>
+        <button data-level="technical" type="button">Technical</button>
+        <button data-level="advanced" type="button">Advanced</button>
       </div>
     </div>
-    <div id="explanation" class="explanation">
-      Saturn is the sixth planet from the Sun. It is a giant world made mostly of hydrogen and helium, with no solid surface you could stand on. Its famous rings are mostly water ice mixed with smaller amounts of rock and dust.
-    </div>
+    <div class="explanation" id="levelExplanation"></div>
   </section>
 
   <section class="panel" id="rings">
     <div class="section-head">
-      <div>
-        <h2>Saturn's Rings</h2>
-        <p class="lead">Explore the A, B, and C rings, the Cassini Division, composition, and the extreme thinness of the system.</p>
-      </div>
+      <div><h2>Interactive Ring Explorer</h2><p class="lead">Move from the complete ring system down toward individual ring particles.</p></div>
+      <button class="secondary" id="autoRingZoom" type="button">Auto Zoom In</button>
     </div>
-    <div class="rings-layout">
-      <div class="rings-box">
-        <svg id="ringDiagram" viewBox="0 0 860 390" role="img" aria-label="Interactive diagram of Saturn ring structure">
-          <rect width="860" height="390" fill="#02070b"/>
-          <g transform="translate(430 195)">
-            <ellipse rx="348" ry="98" fill="none" stroke="#d7caa9" stroke-width="28" opacity=".76"/>
-            <ellipse rx="306" ry="85" fill="none" stroke="#f0e4c7" stroke-width="34" opacity=".92"/>
-            <ellipse rx="263" ry="72" fill="none" stroke="#9d8e70" stroke-width="23" opacity=".62"/>
-            <ellipse rx="326" ry="91" fill="none" stroke="#151515" stroke-width="8"/>
-            <ellipse rx="226" ry="61" fill="none" stroke="#d9caa3" stroke-width="12" opacity=".42"/>
-            <circle r="64" fill="#caaa70"/>
-          </g>
-          <g fill="#dce7ee" font-size="15" font-family="system-ui, sans-serif" font-weight="700">
-            <text x="72" y="67">A Ring</text>
-            <text x="201" y="119">Cassini Division</text>
-            <text x="367" y="148">B Ring</text>
-            <text x="540" y="178">C Ring</text>
-          </g>
-          <g stroke="#8aa0b1" stroke-width="1.5">
-            <path d="M112 72L176 111"/>
-            <path d="M262 123L315 145"/>
-            <path d="M406 151L414 170"/>
-            <path d="M572 181L550 191"/>
-          </g>
-        </svg>
-      </div>
-      <div class="ring-controls">
-        <div class="control-card">
-          <strong>What the rings are made of</strong>
-          <div class="ring-key">
-            <div><i class="swatch" style="background:#e9e4d4"></i>Mostly water ice</div>
-            <div><i class="swatch" style="background:#8f806a"></i>Rocky material</div>
-            <div><i class="swatch" style="background:#59534c"></i>Dust and darker particles</div>
-          </div>
+    <div class="explorer-grid">
+      <div class="canvas-card"><canvas id="ringCanvas"></canvas></div>
+      <aside class="control-card">
+        <div class="value-line"><strong>Ring zoom</strong><span id="ringZoomLabel">Full system</span></div>
+        <input id="ringZoom" type="range" min="0" max="100" value="0">
+        <label>Ring structure</label>
+        <div class="ring-key">
+          <button type="button" data-ring="A"><span>A Ring</span><small>outer main ring</small></button>
+          <button type="button" data-ring="Cassini"><span>Cassini Division</span><small>major gap</small></button>
+          <button type="button" data-ring="B"><span>B Ring</span><small>brightest main ring</small></button>
+          <button type="button" data-ring="C"><span>C Ring</span><small>inner translucent ring</small></button>
         </div>
-        <div class="control-card">
-          <strong>Thin compared with their width</strong>
-          <p class="lead" style="margin-top:6px">The main ring system stretches hundreds of thousands of kilometers across, yet much of it is only tens of meters thick. If the rings were the width of a football field, they would be far thinner than a sheet of paper.</p>
-        </div>
-        <div class="control-card">
-          <label>Zoom into ring structure
-            <input id="ringStructureZoom" type="range" min="100" max="180" value="100">
-          </label>
-        </div>
-      </div>
+        <p class="small" id="ringInfo">The main rings are mostly water ice with smaller amounts of rocky material and dust. They are enormous in width but very thin compared with that width.</p>
+      </aside>
+    </div>
+    <div class="stat-strip">
+      <div class="metric"><span>Composition</span><strong>Mostly water ice</strong></div>
+      <div class="metric"><span>Main groups</span><strong>A · B · C</strong></div>
+      <div class="metric"><span>Famous gap</span><strong>Cassini Division</strong></div>
+      <div class="metric"><span>Thickness</span><strong>Often only tens of meters</strong></div>
+    </div>
+  </section>
+
+  <section class="panel" id="ringPlane">
+    <div class="section-head">
+      <div><h2>Ring Plane Crossing</h2><p class="lead">Tilt the camera down until Saturn's rings become almost edge-on.</p></div>
+      <button class="primary" id="planeAnimate" type="button">Cross the Ring Plane</button>
+    </div>
+    <div class="plane-wrap">
+      <div class="plane-stage"><canvas id="planeCanvas"></canvas></div>
+      <aside class="plane-controls">
+        <div class="value-line"><strong>Viewing angle</strong><span id="planeAngleLabel">28° above plane</span></div>
+        <input id="planeAngle" type="range" min="-28" max="28" value="28">
+        <div class="explanation" style="margin-top:14px">From above, Saturn's rings dominate the view. Near 0°, the rings collapse into a razor-thin line, revealing how tiny their vertical thickness is compared with their enormous width.</div>
+      </aside>
     </div>
   </section>
 
   <section class="panel" id="moons">
     <div class="section-head">
-      <div>
-        <h2>Major Moons</h2>
-        <p class="lead">Seven important moons, with size, orbital distance, orbital speed, and a reason each one matters.</p>
-      </div>
+      <div><h2>Major Moons</h2><p class="lead">Watch them orbit, then choose a moon for size, distance, speed, and key discoveries.</p></div>
     </div>
-    <div class="moon-grid">
-      <article class="moon-card"><h3>Titan</h3><div class="moon-stats"><span>Diameter: 5,150 km</span><span>Distance: 1,221,870 km</span><span>Orbit speed: ~5.57 km/s</span></div><p>Larger than Mercury, with a thick atmosphere and lakes and seas of liquid methane and ethane.</p></article>
-      <article class="moon-card"><h3>Enceladus</h3><div class="moon-stats"><span>Diameter: 504 km</span><span>Distance: 237,948 km</span><span>Orbit speed: ~12.63 km/s</span></div><p>Ice geysers reveal a subsurface ocean, making Enceladus one of the most compelling places to search for habitable conditions.</p></article>
-      <article class="moon-card"><h3>Mimas</h3><div class="moon-stats"><span>Diameter: 396 km</span><span>Distance: 185,539 km</span><span>Orbit speed: ~14.3 km/s</span></div><p>Its huge Herschel crater makes it look strikingly like a fictional battle station.</p></article>
-      <article class="moon-card"><h3>Rhea</h3><div class="moon-stats"><span>Diameter: 1,528 km</span><span>Distance: 527,108 km</span><span>Orbit speed: ~8.48 km/s</span></div><p>An icy, heavily cratered moon and Saturn's second-largest satellite.</p></article>
-      <article class="moon-card"><h3>Dione</h3><div class="moon-stats"><span>Diameter: 1,123 km</span><span>Distance: 377,396 km</span><span>Orbit speed: ~10.0 km/s</span></div><p>Bright ice cliffs and fractures cross a surface that records a long geologic history.</p></article>
-      <article class="moon-card"><h3>Tethys</h3><div class="moon-stats"><span>Diameter: 1,062 km</span><span>Distance: 294,619 km</span><span>Orbit speed: ~11.35 km/s</span></div><p>A low-density icy moon with the enormous Odysseus crater and the Ithaca Chasma canyon system.</p></article>
-      <article class="moon-card"><h3>Iapetus</h3><div class="moon-stats"><span>Diameter: 1,469 km</span><span>Distance: 3,560,820 km</span><span>Orbit speed: ~3.26 km/s</span></div><p>Known for its dramatic two-tone surface and a remarkable ridge running along much of its equator.</p></article>
-    </div>
-
-    <div class="moon-orbit-wrap" style="margin-top:12px">
-      <canvas id="moonCanvas" aria-label="Animated moon orbit visualization"></canvas>
+    <div class="moon-layout">
+      <div><canvas id="moonCanvas" aria-label="Animated major moons of Saturn"></canvas><div class="moon-buttons" id="moonButtons" style="margin-top:10px"></div></div>
+      <aside class="moon-detail">
+        <h3 id="moonName">Titan</h3>
+        <p class="lead" id="moonFact">Larger than Mercury, with a thick atmosphere and lakes and seas of liquid methane and ethane.</p>
+        <div class="moon-data">
+          <div class="metric"><span>Diameter</span><strong id="moonDiameter">5,150 km</strong></div>
+          <div class="metric"><span>Distance from Saturn</span><strong id="moonDistance">1,221,870 km</strong></div>
+          <div class="metric"><span>Orbit speed</span><strong id="moonSpeed">~5.57 km/s</strong></div>
+          <div class="metric"><span>Orbital period</span><strong id="moonPeriod">15.95 days</strong></div>
+        </div>
+        <div class="visit-card">
+          <strong id="visitTitle">Visit Titan</strong>
+          <p class="small" id="visitText">Leave Saturn orbit, descend through Titan's orange haze, and approach a methane-rich landscape.</p>
+          <button class="primary" id="visitMoon" type="button">Begin Titan Approach</button>
+        </div>
+      </aside>
     </div>
   </section>
 
   <section class="panel" id="missions">
     <div class="section-head">
-      <div>
-        <h2>Exploration Missions</h2>
-        <p class="lead">From the first close flyby to years in orbit around Saturn.</p>
-      </div>
+      <div><h2>Exploration Missions</h2><p class="lead">From the first close flyby to Cassini's 13-year orbital study.</p></div>
     </div>
     <div class="timeline">
-      <article class="mission-card"><div class="year">1979</div><h3>Pioneer 11</h3><p>First spacecraft to encounter Saturn up close and the first to fly through the planet's ring plane.</p></article>
-      <article class="mission-card"><div class="year">1980</div><h3>Voyager 1</h3><p>Returned detailed images of Saturn and Titan and made a close Titan flyby.</p></article>
-      <article class="mission-card"><div class="year">1981</div><h3>Voyager 2</h3><p>Studied Saturn, its atmosphere, rings, and moons before continuing to Uranus and Neptune.</p></article>
-      <article class="mission-card"><div class="year">2004–2017</div><h3>Cassini–Huygens</h3><p>Cassini orbited Saturn for 13 years. Huygens landed on Titan in 2005.</p></article>
+      <div class="mission-step"><div class="dot"></div><span>1979</span><strong>Pioneer 11</strong><p>First spacecraft to fly past Saturn and examine the rings up close.</p></div>
+      <div class="mission-step"><div class="dot"></div><span>1980</span><strong>Voyager 1</strong><p>Detailed Saturn and Titan observations transformed our view of the system.</p></div>
+      <div class="mission-step"><div class="dot"></div><span>1981</span><strong>Voyager 2</strong><p>Added new ring, moon, atmosphere, and magnetosphere measurements.</p></div>
+      <div class="mission-step"><div class="dot"></div><span>2004–2017</span><strong>Cassini–Huygens</strong><p>Orbited Saturn for 13 years; Huygens landed on Titan in 2005.</p></div>
     </div>
+    <div class="mission-tabs" style="margin-top:13px">
+      <button class="active" type="button" data-mission="Pioneer">Pioneer 11 Path</button>
+      <button type="button" data-mission="Voyager1">Voyager 1 Path</button>
+      <button type="button" data-mission="Voyager2">Voyager 2 Path</button>
+      <button type="button" data-mission="Cassini">Cassini Orbit</button>
+    </div>
+    <div class="mission-visual"><canvas id="missionCanvas"></canvas></div>
+  </section>
 
-    <div class="path-viz">
-      <svg viewBox="0 0 1000 260" role="img" aria-label="Animated spacecraft flyby and orbital path around Saturn">
-        <rect width="1000" height="260" fill="#02070b"/>
-        <circle cx="520" cy="130" r="52" fill="#b89458"/>
-        <ellipse cx="520" cy="130" rx="120" ry="30" fill="none" stroke="#d7c9a5" stroke-width="13" opacity=".7"/>
-        <path id="missionPath" d="M40 220 C230 85 365 42 505 96 C650 151 758 70 950 36" fill="none" stroke="#6f98ba" stroke-width="2.5" stroke-dasharray="7 6"/>
-        <circle class="ship-dot" r="6" fill="#fff">
-          <animateMotion dur="7s" repeatCount="indefinite" rotate="auto">
-            <mpath href="#missionPath"/>
-          </animateMotion>
-        </circle>
-        <text x="38" y="244" fill="#9fb4c4" font-size="14">Illustrative mission path — not to scale</text>
-      </svg>
+  <section class="panel" id="compare">
+    <div class="section-head">
+      <div><h2>Fun Comparisons</h2><p class="lead">Put Saturn's enormous size and distance into familiar terms.</p></div>
+    </div>
+    <div class="compare-grid">
+      <div class="compare-card"><span class="small">Earths by volume</span><strong>~764</strong><p class="small">About 764 Earth volumes fit inside Saturn.</p></div>
+      <div class="compare-card"><span class="small">Diameter vs Earth</span><strong>~9.45 ×</strong><p class="small">Saturn is nearly ten Earth diameters wide at the equator.</p></div>
+      <div class="compare-card"><span class="small">Light from Sun</span><strong>~79 min</strong><p class="small">Sunlight takes roughly 80 minutes to reach Saturn at its average distance.</p></div>
+      <div class="compare-card"><span class="small">Simple airplane trip</span><strong>~181 years</strong><p class="small">At 900 km/h across 1.43 billion km, ignoring orbital geometry.</p></div>
+    </div>
+    <div class="weight-box">
+      <strong>What would you weigh at Saturn's cloud tops?</strong>
+      <p class="small">Enter an Earth weight. This is a gravity comparison only—Saturn has no solid surface to stand on.</p>
+      <label>Earth weight <input id="earthWeight" type="number" value="180" min="1" max="1000"> lb</label>
+      <span class="weight-result" id="saturnWeight">≈ 193 lb</span>
+    </div>
+    <div class="stat-strip">
+      <div class="metric"><span>Airplane</span><strong>~181 years</strong></div>
+      <div class="metric"><span>Voyager-class speed</span><strong>~2.7 years*</strong></div>
+      <div class="metric"><span>Light</span><strong>~79.5 minutes</strong></div>
+      <div class="metric"><span>Actual missions</span><strong>Trajectory dependent</strong></div>
+    </div>
+    <p class="small">*Straight-line speed comparison only; real spacecraft follow changing interplanetary trajectories and may use gravity assists.</p>
+  </section>
+
+  <section class="panel" id="visualize">
+    <div class="section-head">
+      <div><h2>Educational Visualizations</h2><p class="lead">Switch between five systems that make Saturn more than just a picture.</p></div>
+    </div>
+    <div class="viz-tabs">
+      <button class="active" type="button" data-viz="formation">Ring Formation</button>
+      <button type="button" data-viz="orbits">Moon Orbits</button>
+      <button type="button" data-viz="magnetosphere">Magnetosphere</button>
+      <button type="button" data-viz="seasons">Seasons</button>
+      <button type="button" data-viz="interior">Internal Structure</button>
+    </div>
+    <div class="viz-area">
+      <div class="viz-stage"><canvas id="vizCanvas"></canvas></div>
+      <div class="viz-copy" id="vizCopy"></div>
     </div>
   </section>
 
   <section class="panel" id="ask">
     <div class="section-head">
-      <div>
-        <h2>Ask Saturn</h2>
-        <p class="lead">Offline preview now; an online AI layer can answer broader questions later.</p>
-      </div>
+      <div><h2>Ask Saturn</h2><p class="lead">An offline Saturn guide that can explain the major concepts and highlight the matching visualization.</p></div>
     </div>
-    <div class="ask-box">
-      <form id="askForm" class="ask-form">
-        <input id="askInput" type="text" placeholder="Ask: Why do Saturn's rings stay flat?" aria-label="Ask Saturn a question">
-        <button class="primary" type="submit">Ask</button>
-      </form>
-      <div class="ask-examples">
-        <button type="button" data-question="Why do Saturn's rings stay flat?">Why are the rings flat?</button>
-        <button type="button" data-question="Could humans live on Saturn?">Could humans live there?</button>
-        <button type="button" data-question="Why is Titan interesting?">Why is Titan interesting?</button>
-      </div>
-      <div id="askAnswer" class="ask-answer" aria-live="polite">Ask about the rings, living on Saturn, Titan, Enceladus, or Saturn's atmosphere.</div>
-    </div>
-  </section>
-
-  <section class="panel" id="compare">
-    <div class="section-head">
-      <div><h2>Fun Comparisons</h2><p class="lead">Put Saturn's size and travel times into familiar terms.</p></div>
-    </div>
-    <div class="compare-grid">
-      <div class="compare-card"><span>Saturn vs Earth</span><strong>~9.45× wider</strong><p>Saturn's equatorial diameter is roughly nine and a half times Earth's.</p></div>
-      <div class="compare-card"><span>Earths by volume</span><strong>~760</strong><p>Roughly 760 Earths could fit inside Saturn by volume.</p></div>
-      <div class="compare-card"><span>Cloud-top weight</span><strong>~1.07× Earth</strong><p>A 150 lb Earth weight would correspond to about 160 lb at the reference cloud-top gravity level.</p></div>
-      <div class="compare-card"><span>Light travel</span><strong>~80 minutes</strong><p>At Saturn's average solar distance, sunlight takes about 79–80 minutes to arrive.</p></div>
-      <div class="compare-card"><span>Airplane at 900 km/h</span><strong>~181 years</strong><p>A purely illustrative straight-line trip over 1.43 billion km with no stops.</p></div>
-      <div class="compare-card"><span>Voyager-class trip</span><strong>~3 years</strong><p>Voyager 1 reached Saturn a little over three years after launch.</p></div>
-      <div class="compare-card"><span>Cassini cruise</span><strong>~6.7 years</strong><p>Cassini used gravity assists and arrived at Saturn in 2004 after launching in 1997.</p></div>
-      <div class="compare-card"><span>Solid surface?</span><strong>No</strong><p>Saturn has no solid surface. Pressure and temperature increase dramatically as you descend.</p></div>
-    </div>
-  </section>
-
-  <section class="panel" id="education">
-    <div class="section-head">
-      <div><h2>Educational Visualizations</h2><p class="lead">Five ways to understand how the Saturn system works.</p></div>
-    </div>
-    <div class="edu-grid">
-      <article class="viz-card">
-        <h3>1. Ring Formation Theories</h3>
-        <p>Scientists are still refining when and how Saturn's rings formed.</p>
-        <div class="theory-tabs">
-          <button class="active" type="button" data-theory="moon">Disrupted moon</button>
-          <button type="button" data-theory="leftover">Leftover material</button>
-          <button type="button" data-theory="young">Relatively young rings</button>
+    <div class="ask-grid">
+      <div class="ask-box">
+        <form class="ask-form" id="askForm">
+          <input id="askInput" type="text" autocomplete="off" placeholder="Why do Saturn's rings stay flat?">
+          <button class="primary" type="submit">Ask</button>
+        </form>
+        <div class="ask-examples">
+          <button type="button" data-question="Why do Saturn's rings stay flat?">Why are the rings flat?</button>
+          <button type="button" data-question="Could humans live on Saturn?">Could humans live there?</button>
+          <button type="button" data-question="What is inside Saturn?">What is inside Saturn?</button>
+          <button type="button" data-question="Why is Enceladus exciting?">Why Enceladus?</button>
+          <button type="button" data-question="What is special about Titan?">Why Titan?</button>
         </div>
-        <div id="theoryCopy" class="theory-copy">A moon or icy body could have crossed inside Saturn's Roche limit and been torn apart by tidal forces, spreading debris into orbit.</div>
-      </article>
-
-      <article class="viz-card">
-        <h3>2. Moon Orbits</h3>
-        <p>Inner moons orbit faster; outer moons take much longer to complete a circuit.</p>
-        <svg viewBox="0 0 520 250" aria-label="Simplified moon orbit diagram">
-          <rect width="520" height="250" fill="#02070b"/>
-          <circle cx="260" cy="125" r="31" fill="#b9975f"/>
-          <ellipse cx="260" cy="125" rx="70" ry="38" fill="none" stroke="#5f7890"/>
-          <ellipse cx="260" cy="125" rx="110" ry="61" fill="none" stroke="#4e6579"/>
-          <ellipse cx="260" cy="125" rx="164" ry="89" fill="none" stroke="#3e5265"/>
-          <circle cx="330" cy="125" r="4" fill="#d8dbe0"/>
-          <circle cx="260" cy="64" r="5" fill="#f0d294"/>
-          <circle cx="96" cy="125" r="5" fill="#9fbad0"/>
-          <text x="338" y="121" fill="#c9d8e3" font-size="12">Enceladus</text>
-          <text x="269" y="60" fill="#c9d8e3" font-size="12">Rhea</text>
-          <text x="74" y="113" fill="#c9d8e3" font-size="12">Titan</text>
-        </svg>
-      </article>
-
-      <article class="viz-card">
-        <h3>3. Magnetosphere</h3>
-        <p>Saturn's magnetic field creates a huge cavity in the solar wind.</p>
-        <svg viewBox="0 0 520 250" aria-label="Simplified Saturn magnetosphere visualization">
-          <defs><linearGradient id="magGrad" x1="0" x2="1"><stop stop-color="#29506e" stop-opacity=".15"/><stop offset=".5" stop-color="#69a4d0" stop-opacity=".38"/><stop offset="1" stop-color="#31516a" stop-opacity=".12"/></linearGradient></defs>
-          <rect width="520" height="250" fill="#02070b"/>
-          <path d="M28 125 C110 45 270 42 452 95 C490 107 498 143 452 157 C270 210 110 205 28 125Z" fill="url(#magGrad)" stroke="#6fa9d0"/>
-          <circle cx="224" cy="125" r="29" fill="#b7955c"/>
-          <ellipse cx="224" cy="125" rx="67" ry="18" fill="none" stroke="#d8c9a5" stroke-width="7" opacity=".75"/>
-          <g stroke="#b9d8ef" stroke-width="1.4" opacity=".75"><path d="M10 70H86"/><path d="M10 105H86"/><path d="M10 140H86"/><path d="M10 175H86"/></g>
-          <text x="16" y="56" fill="#b8cddd" font-size="12">Solar wind →</text>
-        </svg>
-      </article>
-
-      <article class="viz-card">
-        <h3>4. Seasonal Changes</h3>
-        <p>Saturn is tilted about 26.7°, so its rings appear more open or more edge-on during its long seasons.</p>
-        <label class="season-control">Season angle
-          <input id="seasonSlider" type="range" min="0" max="360" value="40">
-        </label>
-        <svg viewBox="0 0 520 250" aria-label="Saturn seasonal tilt visualization">
-          <rect width="520" height="250" fill="#02070b"/>
-          <g id="seasonSaturn" transform="translate(260 125) rotate(-27)">
-            <ellipse rx="112" ry="29" fill="none" stroke="#d8c9a5" stroke-width="12" opacity=".78"/>
-            <circle r="48" fill="#b99761"/>
-            <line x1="0" y1="-82" x2="0" y2="82" stroke="#78b2dc" stroke-width="2"/>
-          </g>
-          <text id="seasonLabel" x="18" y="226" fill="#b9cad6" font-size="13">Northern spring / rings opening</text>
-        </svg>
-      </article>
-
-      <article class="viz-card" style="grid-column:1/-1">
-        <h3>5. Internal Structure</h3>
-        <p>Saturn has no sharp solid surface. The atmosphere gradually becomes denser and transitions into deeper layers under enormous pressure.</p>
-        <div class="internal-layers">
-          <svg viewBox="0 0 230 230" aria-label="Cross-section of Saturn interior">
-            <rect width="230" height="230" fill="#02070b"/>
-            <circle cx="115" cy="115" r="92" fill="#d5b87d"/>
-            <circle cx="115" cy="115" r="70" fill="#b78b51"/>
-            <circle cx="115" cy="115" r="48" fill="#7d5b36"/>
-            <circle cx="115" cy="115" r="25" fill="#d18a52"/>
-          </svg>
-          <div class="layer-legend">
-            <span><i class="layer-dot" style="background:#d5b87d"></i>Hydrogen-helium atmosphere and molecular hydrogen</span>
-            <span><i class="layer-dot" style="background:#b78b51"></i>Metallic hydrogen under extreme pressure</span>
-            <span><i class="layer-dot" style="background:#7d5b36"></i>Dense fluid region enriched in heavier elements</span>
-            <span><i class="layer-dot" style="background:#d18a52"></i>Rock-ice-rich central region / diffuse core</span>
-          </div>
-        </div>
-      </article>
+      </div>
+      <div class="ask-answer" id="askAnswer">Ask a Saturn question. The guide can explain rings, Titan, Enceladus, gravity, atmosphere, the interior, seasons, missions, and the magnetosphere.</div>
     </div>
+    <p class="highlight-note" id="highlightNote">Visual highlighting will follow the answer when a matching interactive section is available.</p>
   </section>
 
   <section class="panel">
-    <div class="section-head"><div><h2>Where next?</h2><p class="lead">Return to the orbital simulator or head back to Universe Explorer.</p></div></div>
-    <div class="footer-actions">
-      <button class="primary" id="orbitBtnBottom" type="button">See Saturn in the Orbital Simulator</button>
+    <div class="section-head"><div><h2>Continue Exploring</h2><p class="lead">Jump back to the orbital view or return to the main Universe Explorer.</p></div></div>
+    <div class="button-row">
+      <button class="primary" id="orbitBtnBottom" type="button">See Saturn in the Solar System</button>
       <button class="secondary" id="topBtn" type="button">Back to Saturn</button>
       <button class="secondary" id="homeBtnBottom" type="button">Home</button>
     </div>
   </section>
 </main>
 
+<div class="destination-overlay" id="destinationOverlay" role="dialog" aria-modal="true" aria-labelledby="destinationTitle">
+  <div class="destination-card">
+    <div class="destination-scene">
+      <canvas id="destinationCanvas"></canvas>
+      <button class="secondary close-btn" id="closeDestination" type="button">Close</button>
+    </div>
+    <div class="destination-copy">
+      <h2 id="destinationTitle">Titan Approach</h2>
+      <p class="lead" id="destinationDescription"></p>
+    </div>
+  </div>
+</div>
+
 <footer>A DONCO-BAYCITY App · Universe Explorer</footer>
 
 <script>
-(()=>{
-  const byId=id=>document.getElementById(id);
-
-  const levelCopy={
-    beginner:"Saturn is the sixth planet from the Sun. It is a giant world made mostly of hydrogen and helium, with no solid surface you could stand on. Its famous rings are mostly water ice mixed with smaller amounts of rock and dust.",
-    technical:"Saturn is a rapidly rotating gas giant with a deep hydrogen-helium atmosphere, an equatorial diameter of about 120,536 km, a year lasting about 29.5 Earth years, and a ring system made of countless orbiting particles. The visible atmosphere forms bands and storms because heat, rotation, and winds move gases at different speeds.",
-    advanced:"Saturn is strongly oblate because of rapid rotation and low mean density. Increasing pressure with depth transforms hydrogen from molecular to metallic states, while a diffuse heavy-element-rich central region is thought to extend through a substantial fraction of the planet. Ring waves, gaps, resonances, shepherd moons, and meteoroid interactions make the ring system a dynamic orbital laboratory."
-  };
-  document.querySelectorAll("[data-level]").forEach(b=>{
-    b.addEventListener("click",()=>{
-      document.querySelectorAll("[data-level]").forEach(x=>x.classList.toggle("active",x===b));
-      byId("explanation").textContent=levelCopy[b.dataset.level];
-    });
-  });
-
-  const ringOpacity=byId("ringOpacity");
-  const ringZoom=byId("ringZoom");
-  function updateHeroRings(){
-    const opacity=Number(ringOpacity.value)/100;
-    const scale=Number(ringZoom.value)/100;
-    byId("ringSystem").style.opacity=String(opacity);
-    byId("frontRings").style.opacity=String(opacity);
-    byId("ringSystem").style.transformOrigin="472px 292px";
-    byId("frontRings").style.transformOrigin="472px 292px";
-    byId("ringSystem").style.scale=String(scale);
-    byId("frontRings").style.scale=String(scale);
-  }
-  ringOpacity.addEventListener("input",updateHeroRings);
-  ringZoom.addEventListener("input",updateHeroRings);
-  updateHeroRings();
-
-  const ringStructureZoom=byId("ringStructureZoom");
-  ringStructureZoom.addEventListener("input",()=>{
-    byId("ringDiagram").style.transform="scale("+(Number(ringStructureZoom.value)/100)+")";
-  });
-
-  const theoryText={
-    moon:"A moon or icy body could have crossed inside Saturn's Roche limit and been torn apart by tidal forces, spreading debris into orbit.",
-    leftover:"Some ring material may be related to material that never assembled into a moon or to repeated destruction and recycling of small bodies.",
-    young:"The brightness and mass of the rings have led to debate about whether much of the visible ring system is relatively young compared with Saturn itself. Ring age remains an active research topic."
-  };
-  document.querySelectorAll("[data-theory]").forEach(b=>{
-    b.addEventListener("click",()=>{
-      document.querySelectorAll("[data-theory]").forEach(x=>x.classList.toggle("active",x===b));
-      byId("theoryCopy").textContent=theoryText[b.dataset.theory];
-    });
-  });
-
-  const seasonSlider=byId("seasonSlider");
-  function updateSeason(){
-    const a=Number(seasonSlider.value);
-    byId("seasonSaturn").setAttribute("transform","translate(260 125) rotate("+(-27+a*.08)+")");
-    let text="Northern spring / rings opening";
-    if(a>=90&&a<180)text="Northern summer / rings strongly open";
-    else if(a>=180&&a<270)text="Northern autumn / rings narrowing";
-    else if(a>=270)text="Northern winter / opposite ring face favored";
-    byId("seasonLabel").textContent=text;
-  }
-  seasonSlider.addEventListener("input",updateSeason);
-  updateSeason();
-
-  function answerQuestion(raw){
-    const q=String(raw||"").toLowerCase();
-    let ans="";
-    if(q.includes("ring")&&q.includes("flat")){
-      ans="Saturn's rings stay flat because the particles are all orbiting Saturn. Collisions between particles remove most motion above and below the common orbital plane. Over time, those collisions flatten the system into a thin disk while the particles continue circling Saturn.";
-      byId("rings").scrollIntoView({behavior:"smooth",block:"start"});
-    }else if(q.includes("human")||q.includes("live on saturn")||q.includes("stand")){
-      ans="Humans could not live on Saturn itself because Saturn has no solid surface. A descending spacecraft would meet increasing pressure, temperature, and violent atmospheric conditions. Titan is a more realistic place to discuss a future surface base, although its extreme cold and atmosphere would still require heavy life support.";
-    }else if(q.includes("titan")){
-      ans="Titan is Saturn's largest moon and is larger than Mercury. It has a thick nitrogen-rich atmosphere and stable lakes and seas of liquid methane and ethane. Its chemistry and active surface make it one of the most scientifically interesting worlds in the solar system.";
-    }else if(q.includes("encelad")){
-      ans="Enceladus is a small icy moon with jets of water-rich material erupting from its south polar region. Those plumes point to a global subsurface ocean, making Enceladus a major target in the search for potentially habitable environments.";
-    }else if(q.includes("atmosphere")||q.includes("cloud")){
-      ans="Saturn's visible atmosphere is dominated by hydrogen and helium, with traces of compounds such as methane and ammonia. Rapid rotation, internal heat, and atmospheric circulation create the banded appearance and powerful winds.";
-    }else{
-      ans="This offline preview knows several Saturn topics. Try asking why the rings are flat, whether humans could live on Saturn, why Titan is interesting, what makes Enceladus special, or what Saturn's atmosphere is made of. The online AI layer can later handle open-ended questions.";
-    }
-    byId("askAnswer").textContent=ans;
-  }
-  byId("askForm").addEventListener("submit",e=>{
-    e.preventDefault();
-    answerQuestion(byId("askInput").value);
-  });
-  document.querySelectorAll("[data-question]").forEach(b=>{
-    b.addEventListener("click",()=>{
-      byId("askInput").value=b.dataset.question;
-      answerQuestion(b.dataset.question);
-    });
-  });
-
-  const canvas=byId("moonCanvas");
-  const ctx=canvas.getContext("2d");
-  const moonData=[
-    {name:"Mimas",r:.19,s:1.00,c:"#cfd4d8",z:3},
-    {name:"Enceladus",r:.24,s:.82,c:"#f0f3f5",z:3.5},
-    {name:"Tethys",r:.31,s:.65,c:"#d7dde0",z:4},
-    {name:"Dione",r:.39,s:.54,c:"#c7d0d6",z:4.2},
-    {name:"Rhea",r:.52,s:.40,c:"#bbbfc4",z:4.6},
-    {name:"Titan",r:.72,s:.24,c:"#d5a85f",z:7},
-    {name:"Iapetus",r:.90,s:.11,c:"#9b8e79",z:4.4}
-  ];
-  let moonStart=performance.now();
-  function resizeMoonCanvas(){
-    const rect=canvas.parentElement.getBoundingClientRect();
-    const dpr=Math.min(devicePixelRatio||1,2);
-    canvas.width=Math.max(1,Math.round(rect.width*dpr));
-    canvas.height=Math.max(1,Math.round(rect.height*dpr));
-    canvas.style.width=rect.width+"px";
-    canvas.style.height=rect.height+"px";
+(function(){
+  function $(id){return document.getElementById(id)}
+  function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+  function mix(a,b,t){return a+(b-a)*t}
+  function fitCanvas(canvas){
+    var dpr=Math.min(2,window.devicePixelRatio||1);
+    var r=canvas.getBoundingClientRect();
+    var w=Math.max(10,Math.round(r.width*dpr));
+    var h=Math.max(10,Math.round(r.height*dpr));
+    if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h}
+    var ctx=canvas.getContext("2d");
     ctx.setTransform(dpr,0,0,dpr,0,0);
+    return {ctx:ctx,w:r.width,h:r.height,dpr:dpr};
   }
-  function drawMoons(t){
-    const w=canvas.parentElement.clientWidth,h=canvas.parentElement.clientHeight;
-    ctx.clearRect(0,0,w,h);
-    const g=ctx.createRadialGradient(w*.5,h*.5,5,w*.5,h*.5,Math.max(w,h)*.65);
-    g.addColorStop(0,"#0b1722");g.addColorStop(1,"#010408");ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
-    const cx=w*.5,cy=h*.5;
-    const maxR=Math.min(w,h)*.43;
-    ctx.strokeStyle="rgba(130,158,180,.26)";ctx.lineWidth=1;
-    moonData.forEach(m=>{ctx.beginPath();ctx.ellipse(cx,cy,maxR*m.r,maxR*m.r*.42,0,0,Math.PI*2);ctx.stroke()});
-    ctx.fillStyle="#b89761";ctx.beginPath();ctx.arc(cx,cy,24,0,Math.PI*2);ctx.fill();
-    ctx.strokeStyle="rgba(226,211,174,.68)";ctx.lineWidth=7;ctx.beginPath();ctx.ellipse(cx,cy,50,12,-.12,0,Math.PI*2);ctx.stroke();
-    const sec=(t-moonStart)/1000;
-    moonData.forEach((m,i)=>{
-      const a=sec*m.s+i*.78;
-      const x=cx+Math.cos(a)*maxR*m.r;
-      const y=cy+Math.sin(a)*maxR*m.r*.42;
-      ctx.fillStyle=m.c;ctx.beginPath();ctx.arc(x,y,m.z,0,Math.PI*2);ctx.fill();
-      if(m.name==="Titan"){ctx.fillStyle="#dce8ef";ctx.font="11px system-ui";ctx.fillText("Titan",x+9,y-5)}
-    });
-    requestAnimationFrame(drawMoons);
+  function stars(ctx,w,h,count,seed){
+    var s=seed||1;
+    function rnd(){s=(s*9301+49297)%233280;return s/233280}
+    for(var i=0;i<count;i++){
+      var x=rnd()*w,y=rnd()*h,r=.35+rnd()*1.1,a=.18+rnd()*.65;
+      ctx.fillStyle="rgba(225,239,255,"+a+")";ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()
+    }
   }
-  resizeMoonCanvas();
-  addEventListener("resize",resizeMoonCanvas);
-  requestAnimationFrame(drawMoons);
 
-  const goHome=()=>location.href="index.html";
-  const goOrbit=()=>location.href="solar-system-orbits.html?planet=Saturn";
-  byId("homeBtn").addEventListener("click",goHome);
-  byId("homeBtnBottom").addEventListener("click",goHome);
-  byId("orbitBtnTop").addEventListener("click",goOrbit);
-  byId("orbitBtnHero").addEventListener("click",goOrbit);
-  byId("orbitBtnBottom").addEventListener("click",goOrbit);
-  byId("tourBtn").addEventListener("click",()=>byId("learn").scrollIntoView({behavior:"smooth",block:"start"}));
-  byId("topBtn").addEventListener("click",()=>scrollTo({top:0,behavior:"smooth"}));
+  var saturnCanvas=$("saturnCanvas"), saturnTime=0, ringAlpha=.78, heroHighlight="";
+  function drawSaturnFrame(){
+    var f=fitCanvas(saturnCanvas),ctx=f.ctx,w=f.w,h=f.h;
+    ctx.clearRect(0,0,w,h);ctx.fillStyle="#01050a";ctx.fillRect(0,0,w,h);stars(ctx,w,h,115,4);
+    var cx=w*.54,cy=h*.46,R=Math.min(w,h)*.235,tilt=-.17;
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(tilt);
+    var alpha=ringAlpha;
+    function ringEllipse(rx,ry,line,stroke,a){
+      ctx.strokeStyle=stroke;ctx.globalAlpha=a*alpha;ctx.lineWidth=line;ctx.beginPath();ctx.ellipse(0,0,rx,ry,0,Math.PI,Math.PI*2);ctx.stroke();ctx.globalAlpha=1
+    }
+    ringEllipse(R*2.20,R*.55,R*.25,"#cbbd94",.76);
+    ringEllipse(R*1.88,R*.46,R*.19,"#eee0b5",.86);
+    ringEllipse(R*1.60,R*.38,R*.13,"#8d8165",.63);
+    ctx.restore();
+
+    ctx.save();ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.clip();
+    var g=ctx.createRadialGradient(cx-R*.32,cy-R*.36,R*.08,cx,cy,R*1.1);
+    g.addColorStop(0,"#fff0b9");g.addColorStop(.36,"#dfc786");g.addColorStop(.72,"#b08d51");g.addColorStop(1,"#4f3b22");
+    ctx.fillStyle=g;ctx.fillRect(cx-R,cy-R,R*2,R*2);
+    var bandH=R*.09,offset=(saturnTime*7)%bandH;
+    var colors=["rgba(250,225,167,.22)","rgba(96,69,38,.18)","rgba(240,205,135,.16)","rgba(118,84,45,.22)"];
+    for(var y=cy-R-bandH+offset,idx=0;y<cy+R+bandH;y+=bandH,idx++){
+      ctx.fillStyle=colors[idx%colors.length];
+      ctx.fillRect(cx-R,y,R*2,bandH*.46)
+    }
+    for(var s=0;s<12;s++){
+      var sy=cy-R*.7+(s%6)*R*.28;
+      var sx=cx-R*.7+((s*67+saturnTime*18)%(R*1.4));
+      ctx.fillStyle="rgba(255,239,199,.07)";ctx.beginPath();ctx.ellipse(sx,sy,R*.18,R*.025,0,0,Math.PI*2);ctx.fill()
+    }
+    var limb=ctx.createRadialGradient(cx-R*.30,cy-R*.30,R*.05,cx,cy,R);
+    limb.addColorStop(0,"rgba(255,255,255,.08)");limb.addColorStop(.62,"rgba(0,0,0,0)");limb.addColorStop(1,"rgba(0,0,0,.42)");
+    ctx.fillStyle=limb;ctx.fillRect(cx-R,cy-R,R*2,R*2);
+    ctx.restore();
+
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(tilt);
+    ctx.globalAlpha=.20*alpha;
+    ctx.fillStyle="#342715";ctx.beginPath();ctx.ellipse(R*.42,R*.02,R*.83,R*.10,0,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+    function front(rx,ry,line,stroke,a){
+      ctx.strokeStyle=stroke;ctx.globalAlpha=a*alpha;ctx.lineWidth=line;ctx.beginPath();ctx.ellipse(0,0,rx,ry,0,0,Math.PI);ctx.stroke();ctx.globalAlpha=1
+    }
+    front(R*2.20,R*.55,R*.25,"#cbbd94",.82);
+    front(R*1.88,R*.46,R*.19,"#f0dfb0",.92);
+    front(R*1.60,R*.38,R*.13,"#8d8165",.68);
+    if(heroHighlight==="rings"){ctx.strokeStyle="rgba(255,214,91,.92)";ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(0,0,R*2.33,R*.60,0,0,Math.PI*2);ctx.stroke()}
+    ctx.restore();
+    if(heroHighlight==="titan"){
+      ctx.fillStyle="#efcc8b";ctx.beginPath();ctx.arc(cx+R*2.5,cy-R*.52,7,0,Math.PI*2);ctx.fill()
+    }
+  }
+
+  var ringCanvas=$("ringCanvas"), ringZoom=0, selectedRing="";
+  function drawRingExplorer(){
+    var f=fitCanvas(ringCanvas),ctx=f.ctx,w=f.w,h=f.h;ctx.clearRect(0,0,w,h);ctx.fillStyle="#02060b";ctx.fillRect(0,0,w,h);stars(ctx,w,h,70,8);
+    var z=ringZoom/100;
+    if(z<.67){
+      var cx=w*.52,cy=h*.50,R=Math.min(w,h)*.18,scale=1+z*1.9;
+      var bands=[
+        {name:"A",rx:2.55,ry:.64,l:.34,c:"#d8caa4"},
+        {name:"Cassini",rx:2.15,ry:.53,l:.12,c:"#28241e"},
+        {name:"B",rx:1.88,ry:.46,l:.42,c:"#f0dfb3"},
+        {name:"C",rx:1.42,ry:.35,l:.24,c:"#8f856e"}
+      ];
+      ctx.save();ctx.translate(cx,cy);ctx.rotate(-.12);ctx.scale(scale,scale);
+      for(var i=0;i<bands.length;i++){
+        var b=bands[i];ctx.strokeStyle=b.c;ctx.globalAlpha=selectedRing&&selectedRing!==b.name?.24:.84;ctx.lineWidth=R*b.l;ctx.beginPath();ctx.ellipse(0,0,R*b.rx,R*b.ry,0,0,Math.PI*2);ctx.stroke()
+      }
+      ctx.globalAlpha=1;
+      var pg=ctx.createRadialGradient(-R*.25,-R*.25,R*.08,0,0,R);
+      pg.addColorStop(0,"#f7df9e");pg.addColorStop(.55,"#c4a363");pg.addColorStop(1,"#594126");
+      ctx.fillStyle=pg;ctx.beginPath();ctx.arc(0,0,R,0,Math.PI*2);ctx.fill();ctx.restore()
+    }else{
+      var close=(z-.67)/.33;
+      var bandY=h*.5,th=mix(70,160,close);
+      ctx.fillStyle="rgba(210,197,160,.15)";ctx.fillRect(0,bandY-th/2,w,th);
+      var count=Math.round(mix(220,750,close)),seed=11;
+      function rnd(){seed=(seed*9301+49297)%233280;return seed/233280}
+      for(var p=0;p<count;p++){
+        var px=rnd()*w,py=bandY+(rnd()-.5)*th,pr=mix(.5,4.5,rnd())*(.7+close*.5);
+        var ice=rnd();ctx.fillStyle=ice>.25?"rgba(232,242,247,.86)":"rgba(133,118,95,.82)";
+        ctx.beginPath();ctx.arc(px,py,pr,0,Math.PI*2);ctx.fill()
+      }
+      ctx.fillStyle="rgba(3,6,10,.88)";ctx.fillRect(0,0,w,bandY-th/2);ctx.fillRect(0,bandY+th/2,w,h);
+      ctx.fillStyle="#d8e6ef";ctx.font="800 13px system-ui";ctx.fillText(close>.55?"INDIVIDUAL ICE AND ROCK PARTICLES":"RINGLET SCALE",18,26)
+    }
+  }
+
+  var planeCanvas=$("planeCanvas"),planeAngle=28,planeAnimating=false;
+  function drawPlane(){
+    var f=fitCanvas(planeCanvas),ctx=f.ctx,w=f.w,h=f.h;ctx.clearRect(0,0,w,h);ctx.fillStyle="#02060b";ctx.fillRect(0,0,w,h);stars(ctx,w,h,85,14);
+    var cx=w*.51,cy=h*.50,R=Math.min(w,h)*.20,rad=planeAngle*Math.PI/180;
+    var ry=Math.max(1.8,Math.abs(Math.sin(rad))*R*.72);
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(-.08);
+    ctx.strokeStyle="rgba(224,207,164,.75)";ctx.lineWidth=R*.24;ctx.beginPath();ctx.ellipse(0,0,R*2.35,ry,0,0,Math.PI*2);ctx.stroke();
+    ctx.strokeStyle="rgba(248,229,182,.78)";ctx.lineWidth=R*.11;ctx.beginPath();ctx.ellipse(0,0,R*1.95,ry*.83,0,0,Math.PI*2);ctx.stroke();
+    var g=ctx.createRadialGradient(-R*.30,-R*.3,R*.04,0,0,R);g.addColorStop(0,"#ffe9ae");g.addColorStop(.58,"#c4a165");g.addColorStop(1,"#533e24");ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,R,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle="rgba(247,230,187,.88)";ctx.lineWidth=R*.11;ctx.beginPath();ctx.ellipse(0,0,R*1.95,ry*.83,0,0,Math.PI);ctx.stroke();ctx.restore();
+    if(Math.abs(planeAngle)<2){ctx.fillStyle="#ffe3a1";ctx.font="900 14px system-ui";ctx.fillText("EDGE-ON: THE RINGS BECOME A THIN LINE",18,h-22)}
+  }
+
+  var moons=[
+    {name:"Titan",diam:"5,150 km",dist:"1,221,870 km",speed:"~5.57 km/s",period:"15.95 days",r:1.00,color:"#e8c16d",fact:"Larger than Mercury, with a thick nitrogen-rich atmosphere and lakes and seas of liquid methane and ethane.",visit:"Leave Saturn orbit, descend through Titan's orange haze, and approach a methane-rich landscape."},
+    {name:"Enceladus",diam:"504 km",dist:"238,020 km",speed:"~12.63 km/s",period:"1.37 days",r:.34,color:"#e8f6ff",fact:"An icy moon with powerful geysers and a global subsurface ocean. It is one of the most compelling places to search for habitable conditions.",visit:"Fly through bright ice plumes erupting from the south polar fractures and look down toward the hidden ocean below."},
+    {name:"Mimas",diam:"396 km",dist:"185,539 km",speed:"~14.28 km/s",period:"0.94 day",r:.27,color:"#cfd5d6",fact:"A small icy moon dominated by the enormous Herschel impact crater.",visit:"Sweep past the Herschel crater and see how one impact nearly reshaped this tiny moon."},
+    {name:"Rhea",diam:"1,528 km",dist:"527,108 km",speed:"~8.48 km/s",period:"4.52 days",r:.58,color:"#d8d9d2",fact:"Saturn's second-largest moon, an icy, heavily cratered world with bright wispy terrain.",visit:"Pass over ancient cratered plains and bright fractures on this cold icy world."},
+    {name:"Dione",diam:"1,123 km",dist:"377,396 km",speed:"~10.03 km/s",period:"2.74 days",r:.48,color:"#e2e0d8",fact:"An icy moon with bright cliffs and evidence that a subsurface ocean may exist.",visit:"Cross Dione's bright fractured terrain and inspect long icy scarps."},
+    {name:"Tethys",diam:"1,062 km",dist:"294,619 km",speed:"~11.35 km/s",period:"1.89 days",r:.44,color:"#dce1de",fact:"A low-density icy moon marked by the giant Odysseus crater and the immense Ithaca Chasma.",visit:"Glide above Odysseus crater and trace the giant canyon system around Tethys."},
+    {name:"Iapetus",diam:"1,469 km",dist:"3,560,820 km",speed:"~3.26 km/s",period:"79.3 days",r:1.33,color:"#b9a98a",fact:"Famous for its dramatic two-tone surface and a huge equatorial ridge.",visit:"Approach the striking boundary between Iapetus's bright and dark hemispheres."}
+  ];
+  var moonIndex=0,moonCanvas=$("moonCanvas"),moonClock=0;
+  function renderMoonButtons(){
+    var box=$("moonButtons");box.innerHTML="";
+    moons.forEach(function(m,i){
+      var b=document.createElement("button");b.type="button";b.textContent=m.name;b.className=i===moonIndex?"active":"";
+      b.onclick=function(){moonIndex=i;updateMoonDetail();renderMoonButtons()};box.appendChild(b)
+    })
+  }
+  function updateMoonDetail(){
+    var m=moons[moonIndex];$("moonName").textContent=m.name;$("moonFact").textContent=m.fact;$("moonDiameter").textContent=m.diam;$("moonDistance").textContent=m.dist;$("moonSpeed").textContent=m.speed;$("moonPeriod").textContent=m.period;
+    $("visitTitle").textContent="Visit "+m.name;$("visitText").textContent=m.visit;$("visitMoon").textContent="Begin "+m.name+" Approach"
+  }
+  function drawMoons(){
+    var f=fitCanvas(moonCanvas),ctx=f.ctx,w=f.w,h=f.h;ctx.clearRect(0,0,w,h);ctx.fillStyle="#02060b";ctx.fillRect(0,0,w,h);stars(ctx,w,h,80,6);
+    var cx=w*.5,cy=h*.5,R=Math.min(w,h)*.105;
+    for(var i=0;i<moons.length;i++){
+      var rr=R*(1.65+i*.45);ctx.strokeStyle="rgba(130,160,183,.16)";ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(cx,cy,rr,rr*.64,0,0,Math.PI*2);ctx.stroke();
+      var ang=moonClock*(.24+(.9/(i+1)))+i*.83;
+      var x=cx+Math.cos(ang)*rr,y=cy+Math.sin(ang)*rr*.64,size=3+moons[i].r*3.6;
+      ctx.fillStyle=moons[i].color;ctx.globalAlpha=i===moonIndex?1:.72;ctx.beginPath();ctx.arc(x,y,size,0,Math.PI*2);ctx.fill();
+      if(i===moonIndex){ctx.strokeStyle="#ffd35a";ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,size+6,0,Math.PI*2);ctx.stroke()}
+      ctx.globalAlpha=1
+    }
+    var g=ctx.createRadialGradient(cx-R*.3,cy-R*.3,R*.03,cx,cy,R);g.addColorStop(0,"#ffe6a6");g.addColorStop(.58,"#c6a367");g.addColorStop(1,"#594126");ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle="rgba(230,215,177,.65)";ctx.lineWidth=R*.18;ctx.beginPath();ctx.ellipse(cx,cy,R*2.1,R*.48,-.1,0,Math.PI*2);ctx.stroke()
+  }
+
+  var missionCanvas=$("missionCanvas"),missionType="Pioneer",missionClock=0;
+  function drawMission(){
+    var f=fitCanvas(missionCanvas),ctx=f.ctx,w=f.w,h=f.h;ctx.clearRect(0,0,w,h);ctx.fillStyle="#02060b";ctx.fillRect(0,0,w,h);stars(ctx,w,h,75,17);
+    var cx=w*.62,cy=h*.52,R=Math.min(w,h)*.16;
+    ctx.strokeStyle="rgba(224,207,164,.55)";ctx.lineWidth=R*.16;ctx.beginPath();ctx.ellipse(cx,cy,R*2.2,R*.53,-.08,0,Math.PI*2);ctx.stroke();
+    var g=ctx.createRadialGradient(cx-R*.25,cy-R*.25,R*.04,cx,cy,R);g.addColorStop(0,"#ffe7a8");g.addColorStop(.6,"#c4a064");g.addColorStop(1,"#5c4428");ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=missionType==="Cassini"?"#ffd35a":"#79c4ff";ctx.lineWidth=2;
+    ctx.beginPath();
+    if(missionType==="Cassini"){
+      for(var a=0;a<Math.PI*6;a+=.05){var rr=R*(1.5+.23*Math.sin(a*.55));var x=cx+Math.cos(a)*rr*1.35,y=cy+Math.sin(a)*rr*.72;if(a===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)}
+    }else{
+      var yoff=missionType==="Voyager1"?-.23:missionType==="Voyager2"?.24:0;
+      ctx.moveTo(-20,h*(.74+yoff));ctx.quadraticCurveTo(w*.40,h*(.25-yoff),cx+R*2.5,h*(.42+yoff))
+    }
+    ctx.stroke();
+    var t=(missionClock*.12)%1,px,py;
+    if(missionType==="Cassini"){
+      var a=t*Math.PI*6,rr=R*(1.5+.23*Math.sin(a*.55));px=cx+Math.cos(a)*rr*1.35;py=cy+Math.sin(a)*rr*.72
+    }else{
+      var yo=missionType==="Voyager1"?-.23:missionType==="Voyager2"?.24:0;
+      var x0=-20,y0=h*(.74+yo),x1=w*.40,y1=h*(.25-yo),x2=cx+R*2.5,y2=h*(.42+yo),u=1-t;
+      px=u*u*x0+2*u*t*x1+t*t*x2;py=u*u*y0+2*u*t*y1+t*t*y2
+    }
+    ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(px,py,4,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#c9d9e5";ctx.font="900 13px system-ui";ctx.fillText(missionType==="Cassini"?"CASSINI ORBITAL TOUR":missionType.toUpperCase()+" FLYBY",16,25)
+  }
+
+  var vizCanvas=$("vizCanvas"),vizType="formation",vizClock=0;
+  var vizText={
+    formation:"Saturn's ring origin is still being studied. Leading ideas involve icy material from a disrupted moon or other body, followed by countless collisions that spread and flatten debris into a disk. The age of the rings remains an active scientific question.",
+    orbits:"Saturn's moons occupy many different orbits. Their gravity can create gaps, waves, and resonances in the rings. Small shepherd moons can help confine narrow ring structures.",
+    magnetosphere:"Saturn's magnetic field carves out a huge magnetosphere in the solar wind. Charged particles interact with the rings, atmosphere, and moons, while Enceladus supplies material that helps populate the environment around Saturn.",
+    seasons:"Saturn's axis is tilted about 26.7°. Because one Saturn year lasts about 29.5 Earth years, each season lasts roughly seven Earth years. The changing Sun angle also changes how we see the rings.",
+    interior:"Saturn has no solid surface. Pressure rises with depth through molecular hydrogen into metallic hydrogen, surrounding a dense central region thought to contain heavier elements, rock, and ice. The exact interior structure is still being refined."
+  };
+  function drawViz(){
+    var f=fitCanvas(vizCanvas),ctx=f.ctx,w=f.w,h=f.h;ctx.clearRect(0,0,w,h);ctx.fillStyle="#02060b";ctx.fillRect(0,0,w,h);stars(ctx,w,h,55,21);
+    var cx=w*.5,cy=h*.5,R=Math.min(w,h)*.22;
+    if(vizType==="formation"){
+      for(var i=0;i<170;i++){var a=i*.71+vizClock*.08,rr=R*(1.25+(i%17)/15);var x=cx+Math.cos(a)*rr*1.55,y=cy+Math.sin(a)*rr*.38;ctx.fillStyle=i%4?"#dfeaf0":"#9f8c6b";ctx.globalAlpha=.35+(i%8)/14;ctx.beginPath();ctx.arc(x,y,1+(i%4)*.6,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1
+    }else if(vizType==="orbits"){
+      for(var m=0;m<7;m++){var rr=R*(1.25+m*.22);ctx.strokeStyle="rgba(123,161,190,.22)";ctx.beginPath();ctx.ellipse(cx,cy,rr*1.5,rr*.7,0,0,Math.PI*2);ctx.stroke();var a=vizClock*(.2+.7/(m+1))+m;ctx.fillStyle=moons[m].color;ctx.beginPath();ctx.arc(cx+Math.cos(a)*rr*1.5,cy+Math.sin(a)*rr*.7,3+m*.25,0,Math.PI*2);ctx.fill()}
+    }else if(vizType==="magnetosphere"){
+      for(var l=0;l<6;l++){ctx.strokeStyle="rgba(79,183,255,"+(.14+l*.04)+")";ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(cx-R*.38,cy,R*(1.4+l*.34),R*(.66+l*.19),0,0,Math.PI*2);ctx.stroke()}ctx.fillStyle="rgba(84,164,255,.12)";ctx.beginPath();ctx.ellipse(cx-R*.8,cy,R*3.3,R*1.45,0,0,Math.PI*2);ctx.fill()
+    }else if(vizType==="seasons"){
+      var sunx=w*.15,suny=h*.5;ctx.fillStyle="#ffd35a";ctx.beginPath();ctx.arc(sunx,suny,R*.23,0,Math.PI*2);ctx.fill();ctx.strokeStyle="rgba(255,211,90,.30)";ctx.beginPath();ctx.ellipse(cx,cy,R*1.65,R*.82,0,0,Math.PI*2);ctx.stroke();var a=vizClock*.12;cx=cx+Math.cos(a)*R*1.65;cy=cy+Math.sin(a)*R*.82
+    }else if(vizType==="interior"){
+      var layers=[["#6a5130",1],["#ad8a4d",.80],["#cdb77f",.59],["#e5d3a3",.38],["#8e6c46",.19]];
+      for(var q=0;q<layers.length;q++){ctx.fillStyle=layers[q][0];ctx.beginPath();ctx.arc(cx,cy,R*layers[q][1],0,Math.PI*2);ctx.fill()}
+      ctx.fillStyle="#101820";ctx.fillRect(cx,cy-R-3,R+4,R*2+6);ctx.strokeStyle="#e7d5a8";ctx.beginPath();ctx.arc(cx,cy,R,Math.PI/2,Math.PI*1.5);ctx.stroke()
+    }
+    if(vizType!=="interior"||true){
+      if(vizType!=="seasons"){var pg=ctx.createRadialGradient(cx-R*.28,cy-R*.28,R*.05,cx,cy,R);pg.addColorStop(0,"rgba(255,236,181,.95)");pg.addColorStop(.58,"rgba(199,164,101,.82)");pg.addColorStop(1,"rgba(76,55,31,.92)");ctx.fillStyle=pg;ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fill();ctx.strokeStyle="rgba(228,211,171,.55)";ctx.lineWidth=R*.12;ctx.beginPath();ctx.ellipse(cx,cy,R*2,R*.45,-.08,0,Math.PI*2);ctx.stroke()}
+      else{var pg2=ctx.createRadialGradient(cx-R*.28,cy-R*.28,R*.05,cx,cy,R*.55);pg2.addColorStop(0,"#ffeab1");pg2.addColorStop(1,"#765735");ctx.fillStyle=pg2;ctx.beginPath();ctx.arc(cx,cy,R*.55,0,Math.PI*2);ctx.fill();ctx.strokeStyle="#e0cf9f";ctx.lineWidth=R*.08;ctx.beginPath();ctx.ellipse(cx,cy,R*1.1,R*.24,-.08,0,Math.PI*2);ctx.stroke();ctx.strokeStyle="#79c4ff";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(cx-R*.5,cy+R*.65);ctx.lineTo(cx+R*.5,cy-R*.65);ctx.stroke()}
+    }
+  }
+
+  var destinationCanvas=$("destinationCanvas"),destinationMode="Titan",destinationClock=0;
+  function drawDestination(){
+    if(!$("destinationOverlay").classList.contains("open"))return;
+    var f=fitCanvas(destinationCanvas),ctx=f.ctx,w=f.w,h=f.h;ctx.clearRect(0,0,w,h);
+    if(destinationMode==="Titan"){
+      var sky=ctx.createLinearGradient(0,0,0,h);sky.addColorStop(0,"#211307");sky.addColorStop(.55,"#8d5424");sky.addColorStop(1,"#d18a3d");ctx.fillStyle=sky;ctx.fillRect(0,0,w,h);
+      ctx.fillStyle="rgba(235,174,89,.11)";for(var i=0;i<12;i++)ctx.fillRect(0,(i*37+destinationClock*7)%h,w,16);
+      ctx.fillStyle="#1a1712";ctx.beginPath();ctx.moveTo(0,h*.72);ctx.lineTo(w*.25,h*.64);ctx.lineTo(w*.5,h*.73);ctx.lineTo(w*.75,h*.61);ctx.lineTo(w,h*.69);ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.fill();
+      ctx.fillStyle="#59421f";ctx.beginPath();ctx.ellipse(w*.56,h*.82,w*.34,h*.085,0,0,Math.PI*2);ctx.fill()
+    }else if(destinationMode==="Enceladus"){
+      ctx.fillStyle="#02070d";ctx.fillRect(0,0,w,h);stars(ctx,w,h,80,44);ctx.fillStyle="#dcecf2";ctx.beginPath();ctx.arc(w*.5,h*.60,Math.min(w,h)*.30,Math.PI,Math.PI*2);ctx.fill();
+      for(var p=0;p<10;p++){var x=w*.35+p*w*.03;ctx.strokeStyle="rgba(205,240,255,.55)";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,h*.58);ctx.quadraticCurveTo(x+(p-5)*5,h*.25-destinationClock%30,x+(p-5)*10,h*.08);ctx.stroke()}
+    }else{
+      ctx.fillStyle="#02060b";ctx.fillRect(0,0,w,h);stars(ctx,w,h,90,31);
+      var colors={Mimas:"#bfc5c6",Rhea:"#d4d4cd",Dione:"#deddd5",Tethys:"#dde3df",Iapetus:"#a8977a"};
+      var c=colors[destinationMode]||"#d8d8d3",R=Math.min(w,h)*.28;var g=ctx.createRadialGradient(w*.43,h*.42,R*.05,w*.5,h*.5,R);g.addColorStop(0,"#f1f1e9");g.addColorStop(.6,c);g.addColorStop(1,"#44433d");ctx.fillStyle=g;ctx.beginPath();ctx.arc(w*.5,h*.5,R,0,Math.PI*2);ctx.fill()
+    }
+  }
+
+  function scrollToId(id){document.getElementById(id).scrollIntoView({behavior:"smooth",block:"start"})}
+  $("homeBtn").onclick=function(){location.href="index.html"};
+  $("homeBtnBottom").onclick=function(){location.href="index.html"};
+  $("orbitBtnTop").onclick=function(){location.href="solar-system-orbits.html?planet=Saturn"};
+  $("orbitBtnBottom").onclick=function(){location.href="solar-system-orbits.html?planet=Saturn"};
+  $("topBtn").onclick=function(){window.scrollTo({top:0,behavior:"smooth"})};
+  $("ringShortcut").onclick=function(){scrollToId("rings")};
+  $("moonShortcut").onclick=function(){scrollToId("moons")};
+  $("startTour").onclick=function(){scrollToId("learn");heroHighlight="rings";setTimeout(function(){heroHighlight=""},2500)};
+
+  $("ringAlpha").oninput=function(){ringAlpha=Number(this.value)/100;$("ringAlphaValue").textContent=this.value+"%"};
+  $("ringZoom").oninput=function(){ringZoom=Number(this.value);$("ringZoomLabel").textContent=ringZoom<30?"Full system":ringZoom<67?"Ring structure":"Particle scale";drawRingExplorer()};
+  document.querySelectorAll("[data-ring]").forEach(function(b){b.onclick=function(){selectedRing=b.dataset.ring;document.querySelectorAll("[data-ring]").forEach(function(x){x.classList.toggle("active",x===b)});var copy={A:"The A Ring is the outermost of Saturn's bright main rings. The Encke Gap and other fine structures are shaped by embedded and nearby moons.",Cassini:"The Cassini Division is the prominent gap between the A and B rings. It is not empty; it contains thinner ring material and structure influenced by orbital resonances.",B:"The B Ring is the brightest and most optically dense of Saturn's main rings, packed with icy particles and complex waves.",C:"The C Ring lies inward of the B Ring and is more translucent, making it useful for studying waves and Saturn's interior through ring seismology."};$("ringInfo").textContent=copy[selectedRing];drawRingExplorer()}});
+  var ringTimer=null;$("autoRingZoom").onclick=function(){if(ringTimer){clearInterval(ringTimer);ringTimer=null;this.textContent="Auto Zoom In";return}var b=this;ringZoom=0;$("ringZoom").value=0;b.textContent="Stop Zoom";ringTimer=setInterval(function(){ringZoom=Math.min(100,ringZoom+2);$("ringZoom").value=ringZoom;$("ringZoomLabel").textContent=ringZoom<30?"Full system":ringZoom<67?"Ring structure":"Particle scale";drawRingExplorer();if(ringZoom>=100){clearInterval(ringTimer);ringTimer=null;b.textContent="Auto Zoom In"}},55)};
+
+  $("planeAngle").oninput=function(){planeAngle=Number(this.value);$("planeAngleLabel").textContent=Math.abs(planeAngle)<1?"Ring plane · 0°":Math.abs(planeAngle)+"° "+(planeAngle>0?"above":"below")+" plane";drawPlane()};
+  $("planeAnimate").onclick=function(){planeAnimating=!planeAnimating;this.textContent=planeAnimating?"Stop Crossing":"Cross the Ring Plane"};
+
+  var levels={
+    beginner:"Saturn is the sixth planet from the Sun and the second-largest planet. It is made mostly of hydrogen and helium and has no solid surface like Earth. Its famous rings are made of countless pieces of ice, rock, and dust.",
+    technical:"Saturn is a rapidly rotating gas giant with an equatorial diameter of about 120,536 km, a day of roughly 10.7 hours, and an orbital period of about 29.5 Earth years. Its low average density, ring system, complex atmosphere, magnetic field, and diverse moons make it a major laboratory for planetary science.",
+    advanced:"Saturn's rapid rotation produces strong oblateness and atmospheric jet structure. Deep inside, hydrogen transitions from molecular to metallic behavior under immense pressure. Ring particles exchange angular momentum through collisions, resonances, and gravitational interactions with moons, creating gaps, density waves, spokes, and sharp edges."
+  };
+  function setLevel(level){document.querySelectorAll("[data-level]").forEach(function(b){b.classList.toggle("active",b.dataset.level===level)});$("levelExplanation").textContent=levels[level]}
+  document.querySelectorAll("[data-level]").forEach(function(b){b.onclick=function(){setLevel(b.dataset.level)}});setLevel("beginner");
+
+  renderMoonButtons();updateMoonDetail();
+  $("visitMoon").onclick=function(){var m=moons[moonIndex];destinationMode=m.name;$("destinationTitle").textContent=m.name+" Approach";$("destinationDescription").textContent=m.visit;$("destinationOverlay").classList.add("open")};
+  $("closeDestination").onclick=function(){$("destinationOverlay").classList.remove("open")};
+  $("destinationOverlay").onclick=function(e){if(e.target===$("destinationOverlay"))$("destinationOverlay").classList.remove("open")};
+
+  document.querySelectorAll("[data-mission]").forEach(function(b){b.onclick=function(){missionType=b.dataset.mission;document.querySelectorAll("[data-mission]").forEach(function(x){x.classList.toggle("active",x===b)})}});
+
+  function setViz(type){vizType=type;document.querySelectorAll("[data-viz]").forEach(function(b){b.classList.toggle("active",b.dataset.viz===type)});$("vizCopy").textContent=vizText[type];drawViz()}
+  document.querySelectorAll("[data-viz]").forEach(function(b){b.onclick=function(){setViz(b.dataset.viz)}});setViz("formation");
+
+  function answerQuestion(q){
+    var s=q.toLowerCase(),answer="",target="";
+    if(s.includes("flat")||s.includes("ring")){
+      answer="Saturn's rings stay flat because the particles all orbit Saturn. When particles collide, vertical motion is gradually damped while orbital motion remains. Over time the debris settles into a thin rotating disk around Saturn's equatorial plane.";target="rings";heroHighlight="rings"
+    }else if(s.includes("human")||s.includes("live")||s.includes("stand")){
+      answer="Humans could not live on Saturn itself: there is no solid surface, and pressure, winds, cold, and deeper temperatures become extreme. Titan is a more realistic physical destination because it has solid ground and a thick atmosphere, although it is extremely cold and still requires full life support.";target="moons";moonIndex=0;updateMoonDetail();renderMoonButtons();heroHighlight="titan"
+    }else if(s.includes("enceladus")||s.includes("life")){
+      answer="Enceladus is exciting because jets erupt from fractures near its south pole and contain material from a global subsurface ocean. That ocean appears to interact with rock and contains ingredients that make it a major target in the search for habitable environments.";target="moons";moonIndex=1;updateMoonDetail();renderMoonButtons()
+    }else if(s.includes("titan")||s.includes("methane")){
+      answer="Titan is Saturn's largest moon. It has a thick nitrogen-rich atmosphere, weather, dunes, rivers, lakes, and seas—but its surface liquids are mostly methane and ethane rather than water. Beneath its icy crust, scientists also expect a water-rich ocean.";target="moons";moonIndex=0;updateMoonDetail();renderMoonButtons();heroHighlight="titan"
+    }else if(s.includes("inside")||s.includes("core")||s.includes("metallic")){
+      answer="Saturn has no solid surface. Descending inward, hydrogen becomes denser until extreme pressure creates metallic hydrogen. Deeper still is a dense central region enriched in heavier elements, rock, and ice. Scientists continue refining the exact structure.";target="visualize";setViz("interior")
+    }else if(s.includes("season")||s.includes("tilt")){
+      answer="Saturn is tilted by about 26.7 degrees, so it has seasons. Because Saturn takes about 29.5 Earth years to orbit the Sun, each season lasts roughly seven Earth years. The changing viewing angle also makes the rings appear more open or nearly edge-on.";target="visualize";setViz("seasons")
+    }else if(s.includes("magnet")){
+      answer="Saturn's magnetic field creates a huge magnetosphere that deflects the solar wind. Charged particles interact with the rings, moons, and upper atmosphere, and Enceladus supplies water-rich material to Saturn's space environment.";target="visualize";setViz("magnetosphere")
+    }else if(s.includes("gravity")||s.includes("weigh")){
+      answer="At Saturn's cloud tops the effective gravity is about 1.07 times Earth's, surprisingly close to what we feel here. But there is no solid surface to stand on; a person would descend into increasingly dense atmosphere and extreme pressure.";target="compare"
+    }else if(s.includes("cassini")||s.includes("voyager")||s.includes("pioneer")||s.includes("mission")){
+      answer="Pioneer 11 made the first Saturn flyby in 1979, Voyager 1 followed in 1980, Voyager 2 in 1981, and Cassini arrived in 2004. Cassini studied Saturn for 13 years, while the Huygens probe landed on Titan in 2005.";target="missions"
+    }else{
+      answer="Saturn is a hydrogen-helium gas giant with a fast 10.7-hour rotation, an enormous ice-rich ring system, and a family of remarkable moons. Try asking about the rings, Titan, Enceladus, gravity, the interior, seasons, missions, or the magnetosphere."
+    }
+    $("askAnswer").textContent=answer;
+    $("highlightNote").textContent=target?"Matching section highlighted: "+target+".":"Ask about a specific Saturn system to jump to the matching visualization.";
+    if(target){scrollToId(target);setTimeout(function(){heroHighlight=""},3000)}
+  }
+  $("askForm").onsubmit=function(e){e.preventDefault();answerQuestion($("askInput").value)};
+  document.querySelectorAll("[data-question]").forEach(function(b){b.onclick=function(){$("askInput").value=b.dataset.question;answerQuestion(b.dataset.question)}});
+
+  function updateWeight(){var v=parseFloat($("earthWeight").value)||0;$("saturnWeight").textContent="≈ "+Math.round(v*1.07)+" lb"}
+  $("earthWeight").oninput=updateWeight;updateWeight();
+
+  var last=0;
+  function loop(t){
+    var dt=Math.min(.05,(t-last)/1000||.016);last=t;saturnTime+=dt;moonClock+=dt;missionClock+=dt;vizClock+=dt;destinationClock+=dt;
+    if(planeAnimating){planeAngle-=dt*16;if(planeAngle<-28)planeAngle=28;$("planeAngle").value=planeAngle;$("planeAngleLabel").textContent=Math.abs(planeAngle)<1?"Ring plane · 0°":Math.abs(planeAngle).toFixed(0)+"° "+(planeAngle>0?"above":"below")+" plane"}
+    drawSaturnFrame();drawMoons();drawMission();drawViz();drawPlane();drawDestination();requestAnimationFrame(loop)
+  }
+  drawRingExplorer();drawPlane();requestAnimationFrame(loop);
+  window.addEventListener("resize",function(){drawRingExplorer();drawPlane();drawViz();drawMission();drawMoons();drawSaturnFrame();drawDestination()})
 })();
 </script>
 </body>
