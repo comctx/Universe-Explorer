@@ -126,7 +126,7 @@ button.primary{background:var(--yellow)!important;border-color:#deb22c!important
   background:#02060c;
 }
 .hero-flight-window{
-  min-height:460px;
+  min-height:520px;
   border:0;
   border-radius:0;
   box-shadow:none;
@@ -513,132 +513,183 @@ function drawFlight(){
   fctx.fillRect(0,0,w,h);
 
   /* EARTH DEPARTURE
-     Use the photographic Earth already bundled in the cinematic artwork.
-     Only the curved limb fills the lower window, so it feels like a spacecraft
-     climbing away from the planet rather than looking at a painted globe. */
+     Show only Earth's real photographic surface inside a curved planetary limb.
+     No rectangular crop, title text, spacecraft, or other artwork can leak in. */
   if(p<.245 && flightCinematic.complete && flightCinematic.naturalWidth){
     const t=smooth(clamp(p/.245,0,1));
     const iw=flightCinematic.naturalWidth;
     const ih=flightCinematic.naturalHeight;
 
-    /* Crop the Earth side of the source artwork and push it down as we depart. */
-    const sx=0;
-    const sy=0;
-    const sw=iw*.47;
-    const sh=ih;
-    const dw=w*1.06;
-    const dh=h*.93;
-    const dx=mix(-w*.07,-w*.22,t);
-    const dy=mix(h*.24,h*.84,t);
+    const earthR=mix(Math.max(w,h)*1.02,Math.max(w,h)*.62,t);
+    const earthX=mix(w*.18,w*.06,t);
+    const earthY=mix(h*1.16,h*1.55,t);
+    const earthAlpha=1-clamp((p-.19)/.055,0,1);
 
     fctx.save();
-    fctx.globalAlpha=1-clamp((p-.19)/.055,0,1);
+    fctx.globalAlpha=earthAlpha;
 
-    /* Soft atmospheric bloom above the real photographic limb. */
-    const glow=fctx.createLinearGradient(0,h*.43,0,h);
-    glow.addColorStop(0,"rgba(74,164,231,0)");
-    glow.addColorStop(.66,`rgba(74,164,231,${.08*(1-t)})`);
-    glow.addColorStop(1,`rgba(97,190,255,${.18*(1-t)})`);
-    fctx.fillStyle=glow;
-    fctx.fillRect(0,0,w,h);
+    /* Blue atmospheric glow follows the actual curved limb. */
+    const atmo=fctx.createRadialGradient(
+      earthX,earthY,earthR*.94,
+      earthX,earthY,earthR*1.025
+    );
+    atmo.addColorStop(0,"rgba(74,164,231,0)");
+    atmo.addColorStop(.78,"rgba(86,184,246,.10)");
+    atmo.addColorStop(.93,"rgba(111,204,255,.48)");
+    atmo.addColorStop(1,"rgba(111,204,255,0)");
+    fctx.fillStyle=atmo;
+    fctx.beginPath();
+    fctx.arc(earthX,earthY,earthR*1.03,0,Math.PI*2);
+    fctx.fill();
+
+    /* Planet mask removes the old hard horizontal photo edge. */
+    fctx.save();
+    fctx.beginPath();
+    fctx.arc(earthX,earthY,earthR,0,Math.PI*2);
+    fctx.clip();
+
+    /* Use only the clean left-side Earth portion of the source artwork.
+       This crop contains Earth only — not the DONCO text, ship, Moon, or Mars. */
+    const srcX=0;
+    const srcY=0;
+    const srcW=Math.min(iw*.39,ih*1.34);
+    const srcH=ih;
+
+    const drawW=earthR*2.05;
+    const drawH=earthR*1.52;
+    const drawX=earthX-earthR*1.02;
+    const drawY=earthY-earthR*1.08;
 
     fctx.drawImage(
       flightCinematic,
-      sx,sy,sw,sh,
-      dx,dy,dw,dh
+      srcX,srcY,srcW,srcH,
+      drawX,drawY,drawW,drawH
     );
 
-    /* Fade the lower edge into the spacecraft window instead of showing a hard crop. */
-    const fade=fctx.createLinearGradient(0,h*.66,0,h);
-    fade.addColorStop(0,"rgba(2,6,10,0)");
-    fade.addColorStop(1,"rgba(2,6,10,.50)");
-    fctx.fillStyle=fade;
-    fctx.fillRect(0,0,w,h);
+    /* Natural spherical shading: sunlight upper-right, darker lower-left. */
+    const earthShade=fctx.createRadialGradient(
+      earthX+earthR*.34,
+      earthY-earthR*.42,
+      earthR*.10,
+      earthX,
+      earthY,
+      earthR*1.02
+    );
+    earthShade.addColorStop(0,"rgba(255,255,255,.04)");
+    earthShade.addColorStop(.58,"rgba(0,0,0,0)");
+    earthShade.addColorStop(.86,"rgba(0,8,18,.10)");
+    earthShade.addColorStop(1,"rgba(0,4,10,.40)");
+    fctx.fillStyle=earthShade;
+    fctx.fillRect(earthX-earthR,earthY-earthR,earthR*2,earthR*2);
+
+    fctx.restore();
+
+    /* Thin crisp atmosphere along the visible limb. */
+    fctx.strokeStyle=`rgba(126,207,255,${.72*(1-t*.45)})`;
+    fctx.lineWidth=Math.max(1.5,Math.min(w,h)*.0045);
+    fctx.beginPath();
+    fctx.arc(earthX,earthY,earthR,Math.PI*1.05,Math.PI*1.95);
+    fctx.stroke();
 
     fctx.restore();
   }
 
   /* EARTH'S MOON
-     Keep it visible during departure as a small, realistic companion to Earth,
-     then let it shrink and fade as both worlds fall behind. */
-  if(p<.19 && flightCinematic.complete && flightCinematic.naturalWidth){
-    const mt=smooth(clamp(p/.255,0,1));
-    const iw=flightCinematic.naturalWidth;
-    const ih=flightCinematic.naturalHeight;
-
-    /* The cinematic artwork already contains a photographic Moon. Crop that
-       source instead of drawing a gray circle. */
-    /* Tight square crop around the actual Moon in the source artwork.
-       The source image is very wide, so width/height fractions must differ
-       to preserve a square crop and avoid grabbing nearby dark space. */
-    const moonCropX=iw*.733;
-    const moonCropY=ih*.500;
-    const moonCropW=iw*.044;
-    const moonCropH=ih*.154;
-
+     Draw a small gray cratered Moon rather than enlarging the tiny Moon from
+     the header artwork. It remains visually tied to Earth and exits with it. */
+  if(p<.19){
+    const mt=smooth(clamp(p/.19,0,1));
     const moonSize=mix(
-      Math.max(22,Math.min(w,h)*.060),
-      Math.max(7,Math.min(w,h)*.018),
+      Math.max(18,Math.min(w,h)*.050),
+      Math.max(6,Math.min(w,h)*.014),
       mt
     );
-
-    /* Keep the Moon visually with Earth: it starts above Earth's limb, then
-       drops lower and outward with Earth instead of drifting toward Mars. */
-    const moonX=mix(w*.70,w*.80,mt);
-    const moonY=mix(h*.28,h*.82,mt);
-
-    /* Remove it before Mars becomes a meaningful visible target. */
+    const moonX=mix(w*.72,w*.82,mt);
+    const moonY=mix(h*.29,h*.83,mt);
     const moonAlpha=1-clamp((p-.125)/.055,0,1);
 
     fctx.save();
-    fctx.globalAlpha=.94*moonAlpha;
+    fctx.globalAlpha=.92*moonAlpha;
 
-    /* Faint reflected sunlight around the Moon. */
-    const mg=fctx.createRadialGradient(
-      moonX,moonY,moonSize*.35,
+    const moonGlow=fctx.createRadialGradient(
+      moonX,moonY,moonSize*.38,
       moonX,moonY,moonSize*.75
     );
-    mg.addColorStop(0,"rgba(225,232,238,.08)");
-    mg.addColorStop(1,"rgba(225,232,238,0)");
-    fctx.fillStyle=mg;
+    moonGlow.addColorStop(0,"rgba(230,235,238,.06)");
+    moonGlow.addColorStop(1,"rgba(230,235,238,0)");
+    fctx.fillStyle=moonGlow;
     fctx.beginPath();
     fctx.arc(moonX,moonY,moonSize*.78,0,Math.PI*2);
     fctx.fill();
 
+    fctx.save();
     fctx.beginPath();
     fctx.arc(moonX,moonY,moonSize*.50,0,Math.PI*2);
     fctx.clip();
 
-    fctx.filter="brightness(1.22) contrast(1.06)";
-    fctx.drawImage(
-      flightCinematic,
-      moonCropX,moonCropY,moonCropW,moonCropH,
-      moonX-moonSize*.50,
-      moonY-moonSize*.50,
-      moonSize,
-      moonSize
-    );
-    fctx.filter="none";
-
-    /* Subtle sunlit highlight so the Moon reads clearly against black space. */
-    const moonLight=fctx.createRadialGradient(
+    const moonSurface=fctx.createRadialGradient(
       moonX-moonSize*.16,
       moonY-moonSize*.18,
-      0,
+      moonSize*.03,
       moonX,
       moonY,
-      moonSize*.52
+      moonSize*.54
     );
-    moonLight.addColorStop(0,"rgba(255,248,230,.14)");
-    moonLight.addColorStop(.58,"rgba(255,248,230,.035)");
-    moonLight.addColorStop(1,"rgba(255,248,230,0)");
-    fctx.fillStyle=moonLight;
+    moonSurface.addColorStop(0,"#d8d8d1");
+    moonSurface.addColorStop(.40,"#a9aaa6");
+    moonSurface.addColorStop(.76,"#747774");
+    moonSurface.addColorStop(1,"#34383a");
+    fctx.fillStyle=moonSurface;
     fctx.fillRect(
-      moonX-moonSize*.55,
-      moonY-moonSize*.55,
-      moonSize*1.10,
-      moonSize*1.10
+      moonX-moonSize*.52,
+      moonY-moonSize*.52,
+      moonSize*1.04,
+      moonSize*1.04
     );
+
+    /* A few subdued craters give the small disk recognizable lunar texture. */
+    const craters=[
+      [-.18,-.13,.10,.18],
+      [.15,-.06,.075,.15],
+      [-.04,.19,.085,.13],
+      [.22,.19,.045,.11],
+      [-.24,.16,.045,.10]
+    ];
+    craters.forEach(([ox,oy,rr,a])=>{
+      fctx.fillStyle=`rgba(42,45,45,${a})`;
+      fctx.beginPath();
+      fctx.arc(
+        moonX+moonSize*ox,
+        moonY+moonSize*oy,
+        moonSize*rr,
+        0,Math.PI*2
+      );
+      fctx.fill();
+    });
+
+    /* Shadowed right limb keeps the Moon spherical. */
+    const moonShade=fctx.createLinearGradient(
+      moonX-moonSize*.45,moonY,
+      moonX+moonSize*.48,moonY
+    );
+    moonShade.addColorStop(0,"rgba(255,255,255,.04)");
+    moonShade.addColorStop(.58,"rgba(0,0,0,0)");
+    moonShade.addColorStop(1,"rgba(0,0,0,.44)");
+    fctx.fillStyle=moonShade;
+    fctx.fillRect(
+      moonX-moonSize*.52,
+      moonY-moonSize*.52,
+      moonSize*1.04,
+      moonSize*1.04
+    );
+
+    fctx.restore();
+
+    fctx.strokeStyle="rgba(220,224,223,.28)";
+    fctx.lineWidth=1;
+    fctx.beginPath();
+    fctx.arc(moonX,moonY,moonSize*.50,0,Math.PI*2);
+    fctx.stroke();
 
     fctx.restore();
   }
