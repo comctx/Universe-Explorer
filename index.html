@@ -203,6 +203,23 @@ h2{margin:0 0 8px;padding-left:10px;border-left:5px solid var(--yellow);font-siz
 .target-box:before,.target-box:after{content:"";position:absolute;background:rgba(178,219,255,.34)}
 .target-box:before{left:-24px;right:-24px;top:50%;height:1px}
 .target-box:after{top:-24px;bottom:-24px;left:50%;width:1px}
+.scenic-badge{
+  display:none;
+  position:absolute;
+  top:14px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:6;
+  padding:7px 12px;
+  border:1px solid rgba(255,211,90,.45);
+  border-radius:999px;
+  background:rgba(31,24,5,.78);
+  color:#ffd35a;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.06em;
+  box-shadow:0 6px 18px rgba(0,0,0,.28);
+}
 .hud-bottom{position:absolute;left:14px;right:14px;bottom:14px;display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:12px;align-items:end}
 .stage-box,.telemetry{
   padding:12px 13px;
@@ -462,11 +479,12 @@ footer{padding:28px 16px;text-align:center;color:#9db6c9}
 
         <div class="flight-hud">
           <div class="hud-top">
-            <div class="hud-chip">FORWARD FLIGHT VIEW</div>
+            <div id="viewChip" class="hud-chip">NORMAL FLIGHT VIEW</div>
             <div id="percentChip" class="hud-chip">0%</div>
           </div>
 
           <div class="target-box"></div>
+          <div id="scenicBadge" class="scenic-badge">SCENIC TOUR · WIDE VIEW</div>
 
           <div class="hud-bottom">
             <div class="stage-box">
@@ -1148,13 +1166,14 @@ function drawFlight(){
   /* MARS AHEAD
      It stays very small for most of the cruise, then grows convincingly during
      the final third of the journey. */
-  const marsStart=scenic?.34:.18;
+  // Scenic Tour intentionally delays Mars and starts it well off-center.
+  const marsStart=scenic?.42:.18;
   const marsVisible=clamp((p-marsStart)/(1-marsStart),0,1);
   const marsGrowth=Math.pow(marsVisible,scenic?3.15:2.35);
-  const scenicCenter=smooth(clamp((p-.55)/.40,0,1));
-  const marsX=scenic?mix(w*.66,w*.50,scenicCenter):w*.5;
-  const marsY=scenic?mix(h*.34,h*.47,scenicCenter):mix(h*.43,h*.47,sp);
-  const maxMars=missionMode==="fast"?Math.min(w,h)*.36:scenic?Math.min(w,h)*.27:Math.min(w,h)*.31;
+  const scenicCenter=smooth(clamp((p-.66)/.30,0,1));
+  const marsX=scenic?mix(w*.78,w*.50,scenicCenter):w*.5;
+  const marsY=scenic?mix(h*.24,h*.47,scenicCenter):mix(h*.43,h*.47,sp);
+  const maxMars=missionMode==="fast"?Math.min(w,h)*.36:scenic?Math.min(w,h)*.24:Math.min(w,h)*.31;
   const marsRadius=mix(1.2,maxMars,marsGrowth);
 
   if(marsVisible>.01){
@@ -1311,7 +1330,14 @@ function drawFlight(){
     });
   }
 
-  /* quiet window reflections */
+  if(scenic){
+    const barH=Math.max(14,h*.045);
+    fctx.fillStyle="rgba(0,0,0,.46)";
+    fctx.fillRect(0,0,w,barH);
+    fctx.fillRect(0,h-barH,w,barH);
+  }
+
+    /* quiet window reflections */
   const glass=fctx.createLinearGradient(0,0,w,h);
   glass.addColorStop(0,"rgba(8,18,30,.06)");
   glass.addColorStop(.52,"rgba(5,10,17,.01)");
@@ -1390,26 +1416,40 @@ function setMode(mode){
   missionPlaying=false;
   missionProgress=0;
   missionLast=0;
+
   document.querySelectorAll('[data-speed]').forEach(btn=>{
     const active=btn.dataset.speed===mode;
     btn.classList.toggle('active',active);
     btn.classList.toggle('primary',active);
   });
+
+  const scenicBadge=$("scenicBadge");
+  const viewChip=$("viewChip");
+
   if(mode==='normal'){
     missionSeconds=30;
     $("modeReadout").textContent='Normal Mission';
-    $("modeStatus").textContent='Normal Mission — a natural Earth departure, quiet forward cruise, and gradual Mars approach.';
+    $("modeStatus").textContent='Normal Mission — standard forward flight view with a 30-second Earth-to-Mars simulation.';
+    viewChip.textContent='NORMAL FLIGHT VIEW';
+    scenicBadge.style.display='none';
   }
+
   if(mode==='fast'){
     missionSeconds=11;
     $("modeReadout").textContent='Fast Mission';
-    $("modeStatus").textContent='Fast Mission — stronger star streaks, faster camera push toward Mars, and a much quicker trip.';
+    $("modeStatus").textContent='Fast Mission — the same mission compressed to 11 seconds with a much quicker Mars approach.';
+    viewChip.textContent='FAST FLIGHT VIEW';
+    scenicBadge.style.display='none';
   }
+
   if(mode==='tour'){
     missionSeconds=72;
     $("modeReadout").textContent='Scenic Tour';
-    $("modeStatus").textContent='Scenic Tour — a 72-second wide-angle journey: Earth and the Moon linger longer, Mars appears later from the upper-right, and the final approach is slower and less instrument-focused.';
+    $("modeStatus").textContent='Scenic Tour — 72 seconds, wide-angle view, Earth and Moon linger longer, Mars appears later from the upper-right, and targeting waits until final approach.';
+    viewChip.textContent='SCENIC WIDE VIEW';
+    scenicBadge.style.display='block';
   }
+
   $("pauseMission").textContent='Pause';
   $("missionState").textContent='Waiting';
   updateMissionUI();
@@ -1520,8 +1560,7 @@ function focusMissionView(){
   const flight=document.querySelector('.hero-flight-card');
   if(!flight)return;
   const flightTop=flight.getBoundingClientRect().top+window.scrollY;
-  const desiredTop=Math.min(300,window.innerHeight*.36);
-  window.scrollTo({top:Math.max(0,flightTop-desiredTop),behavior:"smooth"});
+  window.scrollTo({top:Math.max(0,flightTop-10),behavior:"smooth"});
 }
 
 function openMars(){ window.location.href='mars-surface.html'; }
@@ -1530,7 +1569,7 @@ $("homeBtn").onclick=()=>window.scrollTo({top:0,behavior:"smooth"});
 $("startMission").onclick=startMission;
 $("startMissionHero").onclick=()=>{
   focusMissionView();
-  setTimeout(startMission,280);
+  setTimeout(startMission,320);
 };
 $("pauseMission").onclick=()=>{missionPlaying=!missionPlaying; $("pauseMission").textContent=missionPlaying?'Pause':'Resume'; $("missionState").textContent=missionPlaying?'Active':'Paused'; if(missionPlaying){missionLast=0; missionFrame=requestAnimationFrame(missionLoop);}};
 $("resetMission").onclick=()=>{missionPlaying=false; missionProgress=0; $("pauseMission").textContent='Pause'; $("missionState").textContent='Waiting'; updateMissionUI();};
@@ -1547,7 +1586,7 @@ document.querySelectorAll('[data-speed]').forEach(btn=>{
   btn.addEventListener('click',()=>{
     setMode(btn.dataset.speed);
     focusMissionView();
-    setTimeout(startMission,280);
+    setTimeout(startMission,320);
   });
 });
 window.addEventListener('resize',()=>{resizeFlight();resizeOrbit();});
