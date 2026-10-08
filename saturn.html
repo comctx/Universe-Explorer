@@ -882,34 +882,59 @@ footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
   function drawJourney(){
     var f=fitCanvas(journeyCanvas),ctx=f.ctx,w=f.w,h=f.h;ctx.clearRect(0,0,w,h);
     var stage=journeyStage;
-    ctx.fillStyle="#000";ctx.fillRect(0,0,w,h);stars(ctx,w,h,130,73);
+    ctx.fillStyle="#000";ctx.fillRect(0,0,w,h);stars(ctx,w,h,140,73);
 
-    /* First-person spacecraft view. Saturn itself is a real Cassini image, not a drawn planet. */
+    /* subtle forward-view framing */
+    ctx.strokeStyle="rgba(130,150,165,.14)";ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(0,h*.92);ctx.quadraticCurveTo(w*.16,h*.84,w*.29,h*.97);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(w,h*.92);ctx.quadraticCurveTo(w*.84,h*.84,w*.71,h*.97);ctx.stroke();
+
+    /* Earth recedes during departure */
     if(stage<=2){
-      var er=stage===0?Math.min(w,h)*.17:stage===1?Math.min(w,h)*.075:Math.min(w,h)*.025,ex=w*.14,ey=h*.72;
+      var er=stage===0?Math.min(w,h)*.17:stage===1?Math.min(w,h)*.075:Math.min(w,h)*.025;
+      var ex=w*.14,ey=h*.72;
       var eg=ctx.createRadialGradient(ex-er*.3,ey-er*.35,1,ex,ey,er);
       eg.addColorStop(0,"#f3ffff");eg.addColorStop(.25,"#67c7ee");eg.addColorStop(.58,"#277bab");eg.addColorStop(1,"#03101c");
       ctx.fillStyle=eg;ctx.beginPath();ctx.arc(ex,ey,er,0,Math.PI*2);ctx.fill();
     }
 
-    var img=window._cassiniSaturnImg;
+    /* Saturn is ALWAYS visible ahead */
+    var tx=w*.57,ty=h*.43;
+    var img=window._missionSaturnImg;
     if(!img){
-      img=window._cassiniSaturnImg=new Image();
+      img=window._missionSaturnImg=new Image();
       img.onload=function(){drawJourney()};
-      img.src="assets/cassini-saturn-approach.jpg";
-    }
-    if(stage<4){
-      var px=w*.57,py=h*.43,pr=stage<2?1.5:2.5;
-      ctx.fillStyle="#fff1c8";ctx.beginPath();ctx.arc(px,py,pr,0,Math.PI*2);ctx.fill();
-    }else if(img.complete&&img.naturalWidth){
-      var scale=stage===4?.10:stage===5?.18:stage===6?.32:stage===7?.58:1.02;
-      var maxW=w*.92*scale,maxH=h*.88*scale,ratio=img.naturalWidth/img.naturalHeight;
-      var dw=maxW,dh=dw/ratio;if(dh>maxH){dh=maxH;dw=dh*ratio}
-      ctx.save();ctx.globalAlpha=stage===4?.78:stage===5?.88:1;
-      ctx.drawImage(img,w*.57-dw/2,h*.47-dh/2,dw,dh);ctx.restore();
+      img.src="images/saturn/saturn-hero-realistic.svg?v=20261007-6";
     }
 
-    ctx.strokeStyle="rgba(205,222,232,.18)";ctx.lineWidth=1;
+    if(stage<=2){
+      var dot=[3,5,8][stage];
+      ctx.fillStyle="#fff4cf";ctx.beginPath();ctx.arc(tx,ty,dot/2,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle="rgba(255,240,195,.12)";ctx.beginPath();ctx.arc(tx,ty,dot*2.2,0,Math.PI*2);ctx.fill();
+    }else if(img.complete&&img.naturalWidth){
+      var widths=[0,0,0,.055,.10,.18,.32,.58,.98];
+      var dw=w*widths[stage],ratio=img.naturalWidth/img.naturalHeight,dh=dw/ratio;
+      if(dh>h*.90){dh=h*.90;dw=dh*ratio}
+      ctx.save();
+      ctx.globalAlpha=stage===3?.72:stage===4?.82:stage===5?.90:1;
+      ctx.drawImage(img,tx-dw/2,ty-dh/2,dw,dh);
+      ctx.restore();
+    }else{
+      /* visible fallback so the mission never looks broken */
+      var fr=[0,0,0,5,9,16,28,50,82][stage];
+      ctx.fillStyle="#e4c990";ctx.beginPath();ctx.arc(tx,ty,fr,0,Math.PI*2);ctx.fill();
+      if(stage>=5){
+        ctx.strokeStyle="rgba(220,205,170,.8)";ctx.lineWidth=Math.max(1,fr*.16);
+        ctx.beginPath();ctx.ellipse(tx,ty,fr*2.1,fr*.48,-.08,0,Math.PI*2);ctx.stroke();
+      }
+    }
+
+    /* target cue keeps destination obvious without clutter */
+    ctx.strokeStyle="rgba(240,210,150,.28)";ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(tx,ty,stage<3?13:20,0,Math.PI*2);ctx.stroke();
+
+    /* minimal mission-camera instrumentation */
+    ctx.strokeStyle="rgba(210,224,232,.20)";ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(w*.5-12,h*.5);ctx.lineTo(w*.5-4,h*.5);ctx.moveTo(w*.5+4,h*.5);ctx.lineTo(w*.5+12,h*.5);ctx.moveTo(w*.5,h*.5-12);ctx.lineTo(w*.5,h*.5-4);ctx.moveTo(w*.5,h*.5+4);ctx.lineTo(w*.5,h*.5+12);ctx.stroke();
     ctx.fillStyle="rgba(215,229,237,.8)";ctx.font="800 10px system-ui";ctx.fillText("SPACECRAFT CAMERA · FORWARD",15,24);
     ctx.textAlign="right";ctx.fillStyle="rgba(225,207,171,.9)";
