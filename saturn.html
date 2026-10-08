@@ -465,7 +465,7 @@ footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
       <button class="primary" id="launchSaturnMission" type="button">Launch Mission</button>
     </div>
     <div class="journey-layout">
-      <div class="journey-stage"><canvas id="journeyCanvas"></canvas><div class="journey-hud"><span id="journeyTimeHud">MISSION TIME · T+0</span><span id="journeyDistanceHud">DISTANCE · 0 km</span></div></div>
+      <div class="journey-stage" aria-label="Forward-facing spacecraft view toward Saturn"><canvas id="journeyCanvas"></canvas><div class="journey-hud"><span id="journeyTimeHud">MISSION TIME · T+0</span><span id="journeyDistanceHud">DISTANCE · 0 km</span></div></div>
       <aside class="journey-card">
         <div class="journey-kicker" id="journeyKicker">T-10 SECONDS · EARTH</div>
         <h3 id="journeyTitle">Ready for Liftoff</h3>
@@ -881,24 +881,44 @@ footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
   }
   function drawJourney(){
     var f=fitCanvas(journeyCanvas),ctx=f.ctx,w=f.w,h=f.h;ctx.clearRect(0,0,w,h);
-    var darkness=Math.min(.78,journeyStage*.075),sky=ctx.createLinearGradient(0,0,w,h);sky.addColorStop(0,"rgb("+(7-Math.min(5,journeyStage))+",12,20)");sky.addColorStop(1,"#010307");ctx.fillStyle=sky;ctx.fillRect(0,0,w,h);stars(ctx,w,h,70+journeyStage*9,73);
-    var cx=w*.46,cy=h*.54,base=Math.min(w,h)*.085;
-    var orbitAU=[1,1.35,1.8,2.6,3.7,5.1,6.8,8.2,9.5];
-    ctx.save();ctx.translate(cx,cy);ctx.scale(1,.43);
-    for(var o=0;o<orbitAU.length;o++){var rr=base*(.6+o*.55);ctx.strokeStyle=o===8?"rgba(242,199,110,.28)":"rgba(120,150,175,.11)";ctx.lineWidth=o===8?2:1;ctx.beginPath();ctx.arc(0,0,rr,0,Math.PI*2);ctx.stroke()}
-    ctx.restore();
-    var sunR=Math.max(7,16-journeyStage*.8),sunG=ctx.createRadialGradient(cx,cy,1,cx,cy,sunR*2.4);sunG.addColorStop(0,"rgba(255,250,210,1)");sunG.addColorStop(.3,"rgba(255,208,83,.95)");sunG.addColorStop(1,"rgba(255,190,50,0)");ctx.fillStyle=sunG;ctx.beginPath();ctx.arc(cx,cy,sunR*2.4,0,Math.PI*2);ctx.fill();
-    var earthA=3.8,earthR=base*.6,ex=cx+Math.cos(earthA)*earthR,ey=cy+Math.sin(earthA)*earthR*.43;
-    if(journeyStage<5){var er=Math.max(2,12-journeyStage*2);var eg=ctx.createRadialGradient(ex-er*.3,ey-er*.3,1,ex,ey,er);eg.addColorStop(0,"#e5fbff");eg.addColorStop(.45,"#3ba5e8");eg.addColorStop(1,"#123b70");ctx.fillStyle=eg;ctx.beginPath();ctx.arc(ex,ey,er,0,Math.PI*2);ctx.fill();ctx.fillStyle="#9fdcff";ctx.font="900 10px system-ui";ctx.fillText("EARTH",ex+10,ey-9)}
-    var satA=.22,satOrbit=base*(.6+8*.55),sx=cx+Math.cos(satA)*satOrbit,sy=cy+Math.sin(satA)*satOrbit*.43;
-    var sr=journeyStage<6?Math.max(2,3+journeyStage*.3):7+(journeyStage-6)*15;if(journeyStage===8)sr=Math.min(48,Math.min(w,h)*.12);
-    var sg=ctx.createRadialGradient(sx-sr*.3,sy-sr*.3,1,sx,sy,sr);sg.addColorStop(0,"#ffe8a8");sg.addColorStop(.65,"#c9a263");sg.addColorStop(1,"#61462b");ctx.fillStyle=sg;ctx.beginPath();ctx.arc(sx,sy,sr,0,Math.PI*2);ctx.fill();
-    if(journeyStage>=6){ctx.strokeStyle="#e7d39a";ctx.lineWidth=Math.max(2,sr*.13);ctx.beginPath();ctx.ellipse(sx,sy,sr*2.1,sr*.46,-.12,0,Math.PI*2);ctx.stroke()}
-    ctx.fillStyle="#f0d092";ctx.font="900 10px system-ui";ctx.fillText("SATURN",sx+sr+8,sy-sr-4);
-    var t=journeyStage/8,ang=3.8+(satA-3.8)*t,rr=earthR+(satOrbit-earthR)*(.08+.92*t),shipX=cx+Math.cos(ang)*rr,shipY=cy+Math.sin(ang)*rr*.43;
-    ctx.save();ctx.translate(cx,cy);ctx.scale(1,.43);ctx.strokeStyle="rgba(242,199,110,.58)";ctx.lineWidth=2;ctx.beginPath();for(var k=0;k<=80;k++){var u=k/80,a=3.8+(satA-3.8)*u,r=earthR+(satOrbit-earthR)*(.08+.92*u),x=Math.cos(a)*r,y=Math.sin(a)*r;if(k===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.stroke();ctx.restore();
-    ctx.save();ctx.translate(shipX,shipY);ctx.rotate(ang+.5);ctx.fillStyle="#f5f7f8";ctx.beginPath();ctx.moveTo(11,0);ctx.lineTo(-8,-5);ctx.lineTo(-4,0);ctx.lineTo(-8,5);ctx.closePath();ctx.fill();ctx.fillStyle="#f2c76e";ctx.beginPath();ctx.moveTo(-7,-3);ctx.lineTo(-16,0);ctx.lineTo(-7,3);ctx.fill();ctx.restore();
-    ctx.fillStyle="#c9d9e5";ctx.font="900 11px system-ui";ctx.fillText(journeyStages[journeyStage].au,16,26)
+    var stage=journeyStage,progress=stage/8;
+    var bg=ctx.createLinearGradient(0,0,0,h);bg.addColorStop(0,"#01050a");bg.addColorStop(1,"#000207");ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+    stars(ctx,w,h,125,73);
+
+    /* faint cockpit/window framing keeps the view first-person without blocking space */
+    ctx.strokeStyle="rgba(115,145,165,.22)";ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(0,h*.88);ctx.quadraticCurveTo(w*.18,h*.80,w*.31,h*.94);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(w,h*.88);ctx.quadraticCurveTo(w*.82,h*.80,w*.69,h*.94);ctx.stroke();
+
+    /* Saturn starts as a point and grows dramatically during approach */
+    var satX=w*.56,satY=h*.43;
+    var satR;
+    if(stage<=2) satR=1.8+stage*.8;
+    else if(stage<=5) satR=4+(stage-2)*3.2;
+    else if(stage===6) satR=Math.min(w,h)*.055;
+    else if(stage===7) satR=Math.min(w,h)*.13;
+    else satR=Math.min(w,h)*.255;
+    var glow=ctx.createRadialGradient(satX,satY,0,satX,satY,Math.max(12,satR*1.8));glow.addColorStop(0,"rgba(255,231,165,.9)");glow.addColorStop(.45,"rgba(222,181,105,.32)");glow.addColorStop(1,"rgba(222,181,105,0)");ctx.fillStyle=glow;ctx.beginPath();ctx.arc(satX,satY,Math.max(12,satR*1.8),0,Math.PI*2);ctx.fill();
+    if(stage>=6){
+      var sg=ctx.createLinearGradient(satX-satR,satY-satR,satX+satR,satY+satR);sg.addColorStop(0,"#f3d798");sg.addColorStop(.35,"#d7b46e");sg.addColorStop(.58,"#b98f54");sg.addColorStop(1,"#5b412b");ctx.fillStyle=sg;ctx.beginPath();ctx.arc(satX,satY,satR,0,Math.PI*2);ctx.fill();
+      ctx.save();ctx.translate(satX,satY);ctx.rotate(-.12);ctx.strokeStyle="rgba(248,222,158,.92)";ctx.lineWidth=Math.max(2,satR*.13);ctx.beginPath();ctx.ellipse(0,0,satR*2.15,satR*.48,0,0,Math.PI*2);ctx.stroke();ctx.strokeStyle="rgba(120,89,48,.75)";ctx.lineWidth=Math.max(1,satR*.035);ctx.beginPath();ctx.ellipse(0,0,satR*1.72,satR*.37,0,0,Math.PI*2);ctx.stroke();ctx.restore();
+      if(stage>=8){ctx.fillStyle="rgba(71,52,33,.18)";ctx.beginPath();ctx.ellipse(satX,satY+satR*.08,satR*.98,satR*.18,0,0,Math.PI*2);ctx.fill()}
+    }else{
+      ctx.fillStyle="#ffe9a8";ctx.beginPath();ctx.arc(satX,satY,Math.max(1.8,satR),0,Math.PI*2);ctx.fill();
+    }
+
+    /* Earth is behind the traveler only during launch/departure */
+    if(stage<=2){
+      var er=stage===0?Math.min(w,h)*.18:stage===1?Math.min(w,h)*.085:Math.min(w,h)*.035;
+      var ex=w*.14,ey=h*.72;
+      var eg=ctx.createRadialGradient(ex-er*.3,ey-er*.35,2,ex,ey,er);eg.addColorStop(0,"#e8fbff");eg.addColorStop(.28,"#4cb4ec");eg.addColorStop(.68,"#1766a5");eg.addColorStop(1,"#061d3a");ctx.fillStyle=eg;ctx.beginPath();ctx.arc(ex,ey,er,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle="rgba(205,244,255,.82)";ctx.font="900 10px system-ui";ctx.fillText(stage===0?"EARTH · DEPARTURE":"EARTH · RECEDING",Math.max(16,ex-er),Math.min(h-22,ey+er+18));
+    }
+
+    /* forward-looking crosshair and tiny spacecraft HUD */
+    ctx.strokeStyle="rgba(218,232,240,.25)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(w*.5-16,h*.5);ctx.lineTo(w*.5-5,h*.5);ctx.moveTo(w*.5+5,h*.5);ctx.lineTo(w*.5+16,h*.5);ctx.moveTo(w*.5,h*.5-16);ctx.lineTo(w*.5,h*.5-5);ctx.moveTo(w*.5,h*.5+5);ctx.lineTo(w*.5,h*.5+16);ctx.stroke();
+    ctx.fillStyle="#d7e5ee";ctx.font="900 11px system-ui";ctx.fillText("FORWARD VIEW · SATURN MISSION",16,25);
+    ctx.fillStyle="#f0d092";ctx.font="900 11px system-ui";ctx.textAlign="right";ctx.fillText(stage<3?"SATURN · DISTANT TARGET":stage<6?"DEEP-SPACE CRUISE":stage<8?"SATURN · APPROACH":"SATURN · ORBIT INSERTION",w-16,25);ctx.textAlign="left";
   }
 
   var dropCanvas=$("dropCanvas"),dropDepth=0,dropClock=0,dropTimer=null;
