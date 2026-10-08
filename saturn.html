@@ -192,7 +192,7 @@ h3{margin:0 0 7px}
 
 /* Mission to Saturn */
 .journey-layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:14px}
-.journey-stage{position:relative;min-height:430px;overflow:hidden;border:1px solid #33495c;border-radius:16px;background:#02060b}
+.journey-stage{position:relative;min-height:430px;overflow:hidden;border:1px solid #33495c;border-radius:16px;background:#02060b}.journey-hud{position:absolute;left:12px;right:12px;bottom:12px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}.journey-hud span{padding:7px 9px;border:1px solid rgba(255,255,255,.15);border-radius:8px;background:rgba(2,7,12,.78);color:#d8e6f0;font-size:10px;font-weight:950;letter-spacing:.05em}
 #journeyCanvas{position:absolute;inset:0;width:100%;height:100%}
 .journey-card{padding:16px;border:1px solid #33495c;border-radius:16px;background:#07131f}
 .journey-kicker{color:var(--gold);font-size:11px;font-weight:950;letter-spacing:.12em;text-transform:uppercase}
@@ -460,12 +460,12 @@ footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
     <div class="section-head">
       <div>
         <h2>Mission to Saturn</h2>
-        <p class="lead">Launch from Earth and travel outward through the Solar System to Saturn. The route is simplified for learning and does not imply flybys of every inner planet.</p>
+        <p class="lead">Follow a Cassini-inspired, story-driven mission from Earth to Saturn. The visualization emphasizes realistic mission phases, immense distance, changing sunlight, and a multi-year interplanetary cruise rather than a straight-line flight.</p>
       </div>
       <button class="primary" id="launchSaturnMission" type="button">Launch Mission</button>
     </div>
     <div class="journey-layout">
-      <div class="journey-stage"><canvas id="journeyCanvas"></canvas></div>
+      <div class="journey-stage"><canvas id="journeyCanvas"></canvas><div class="journey-hud"><span id="journeyTimeHud">MISSION TIME · T+0</span><span id="journeyDistanceHud">DISTANCE · 0 km</span></div></div>
       <aside class="journey-card">
         <div class="journey-kicker" id="journeyKicker">T-10 SECONDS · EARTH</div>
         <h3 id="journeyTitle">Ready for Liftoff</h3>
@@ -856,15 +856,15 @@ footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
 
   var journeyCanvas=$("journeyCanvas"),journeyStage=0,journeyClock=0,journeyTimer=null;
   var journeyStages=[
-    {short:"Earth",kicker:"T-10 SECONDS · EARTH",title:"Ready for Liftoff",text:"Engines ignite and Earth begins to fall away. Within minutes the blue atmosphere fades into black space.",facts:["Destination: Saturn","Closest Earth-Saturn separation: about 1.2 billion km"]},
-    {short:"Orbit",kicker:"LEAVING EARTH",title:"Earth Orbit",text:"Cities disappear beneath cloud cover as the spacecraft reaches orbit. Earth becomes a small blue world behind you.",facts:["Earth escape begins","Interplanetary navigation takes over"]},
-    {short:"Moon",kicker:"BEYOND THE MOON",title:"Passing Lunar Distance",text:"A few days into the journey, the spacecraft travels beyond the Moon's orbit. The Moon is now another distant world behind you.",facts:["Moon distance: about 384,400 km","Saturn is vastly farther away"]},
-    {short:"Mars",kicker:"INNER SOLAR SYSTEM",title:"Crossing the Rocky-Planet Region",text:"The spacecraft travels outward across the inner Solar System. This educational route shows the orbital region of Mars without claiming a close Mars flyby.",facts:["Real routes are curved solar orbits","Gravity assists may change the exact path"]},
-    {short:"Belt",kicker:"ASTEROID BELT",title:"Between Mars and Jupiter",text:"The spacecraft crosses the asteroid belt. Despite movie depictions, the objects are generally separated by enormous distances.",facts:["Most of the belt is empty space","Careful navigation keeps the spacecraft safe"]},
-    {short:"Outer",kicker:"OUTER SOLAR SYSTEM",title:"Sunlight Fades",text:"The Sun grows smaller and weaker as the spacecraft travels into the cold outer Solar System. At Saturn's distance, sunlight takes about 80 minutes to arrive.",facts:["Solar intensity is far weaker than at Earth","Saturn orbits about 1.43 billion km from the Sun on average"]},
-    {short:"Sight",kicker:"FIRST SIGHT OF SATURN",title:"The Ringed World Appears",text:"Saturn grows from a star-like point into a tiny disk. Soon the rings become unmistakable and widen across the view.",facts:["Saturn is the sixth planet from the Sun","The main rings span hundreds of thousands of kilometers"]},
-    {short:"Moons",kicker:"RING & MOON APPROACH",title:"Titan and Enceladus",text:"The spacecraft enters Saturn's moon system. Titan's dense atmosphere and Enceladus's water-rich plumes make them two of the most compelling destinations.",facts:["Titan: dense nitrogen-rich atmosphere","Enceladus: global subsurface ocean and icy plumes"]},
-    {short:"Orbit",kicker:"SATURN ORBIT",title:"Arrival at Saturn",text:"Orbital insertion is complete. Golden cloud bands, ring shadows, storms, and the north-polar hexagon fill the view. The next step is a simulated descent into Saturn.",facts:["Saturn has no solid surface","Ready: Drop Through Saturn"]}
+    {short:"Launch",kicker:"LAUNCH · EARTH",title:"Launch from Earth",time:"T+0 to 12 minutes",distance:"0–2,000 km",au:"0 AU from Earth",text:"The mission begins at Earth. The launch vehicle climbs through the atmosphere and accelerates the spacecraft toward a temporary parking orbit.",facts:["Mission begins at Earth","First goal: stable Earth parking orbit"]},
+    {short:"Orbit",kicker:"EARTH PARKING ORBIT",title:"Earth Orbit",time:"First hours",distance:"Thousands of km traveled",au:"Near Earth",text:"The spacecraft coasts in Earth orbit while navigation and spacecraft systems are checked. Earth still fills much of the view.",facts:["Bright sunlight and a large Earth dominate the view","Next maneuver: departure from Earth"]},
+    {short:"Depart",kicker:"TRANS-SATURN DEPARTURE",title:"Leaving Earth",time:"First days",distance:"0.01 AU scale",au:"Millions of km",text:"A major engine burn sends the spacecraft onto a heliocentric interplanetary trajectory. Earth quickly shrinks from a world into a bright point.",facts:["The craft now orbits the Sun, not Earth","Trajectory is a curved solar orbit—not a straight line to Saturn"]},
+    {short:"Cruise",kicker:"INNER-SYSTEM CRUISE",title:"Long-Duration Cruise",time:"Months into mission",distance:"0.5–1 AU scale",au:"Tens to hundreds of millions of km",text:"The spacecraft spends months crossing the inner Solar System. It may cross the orbital distance of Mars, but that does not mean Mars is nearby or that the spacecraft flies past it.",facts:["Planet positions change continuously","Most of the journey is empty interplanetary space"]},
+    {short:"Belt",kicker:"ASTEROID-BELT REGION",title:"Beyond Mars' Orbit",time:"~1–2 years",distance:"2–3 AU from Sun",au:"Hundreds of millions of km",text:"The spacecraft crosses the broad asteroid-belt region between Mars and Jupiter. Asteroids are usually separated by enormous distances.",facts:["No arcade-style asteroid dodging","Sunlight is already noticeably weaker than near Earth"]},
+    {short:"Deep",kicker:"DEEP-SPACE CRUISE",title:"Years into the Mission",time:"~2–5 years",distance:"3–7 AU from Sun",au:"Approaching a billion km from Earth",text:"Earth is no longer visually prominent. The Sun looks smaller, solar energy is much weaker, and the spacecraft spends years navigating through deep space.",facts:["Course corrections are small and precise","Radio signals take many minutes to cross the distance"]},
+    {short:"Sight",kicker:"FIRST SATURN SIGHT",title:"Saturn Appears",time:"~6 years",distance:"Closing on Saturn",au:"Near Saturn's orbital region",text:"Saturn first appears as a bright point. With approach, it becomes a tiny disk and its rings gradually resolve from a thin line into a broad system.",facts:["Saturn orbits about 9.5 AU from the Sun on average","Sunlight at Saturn is only about 1% as intense as at Earth"]},
+    {short:"Approach",kicker:"SATURN APPROACH",title:"Rings and Moons Fill the View",time:"Final months and days",distance:"Millions → thousands of km",au:"Saturn system",text:"Saturn now grows dramatically in the window. Titan and other moons become navigation targets while the rings expand across the view.",facts:["Approach geometry matters enormously","The spacecraft must arrive at the right speed and angle"]},
+    {short:"Orbit",kicker:"SATURN ORBIT INSERTION",title:"Arrival at Saturn",time:"Cassini example: ~6.7 years",distance:"~1.2+ billion km journey scale",au:"Saturn · ~9.5 AU from Sun",text:"The spacecraft performs a critical Saturn-orbit insertion maneuver. The seven-year scale of a Cassini-class journey is compressed here into a story-driven visualization.",facts:["Cassini launched in 1997 and arrived in 2004","Next: explore Saturn or begin the Drop Through Saturn simulation"]}
   ];
   function renderJourneyProgress(){
     var box=$("journeyProgress");box.innerHTML="";
@@ -874,19 +874,31 @@ footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
     journeyStage=Math.max(0,Math.min(journeyStages.length-1,i));var s=journeyStages[journeyStage];
     $("journeyKicker").textContent=s.kicker;$("journeyTitle").textContent=s.title;$("journeyText").textContent=s.text;
     $("journeyFacts").innerHTML=s.facts.map(function(x){return '<div class="journey-fact">'+x+'</div>'}).join("");
+    $("journeyTimeHud").textContent="MISSION TIME · "+s.time;$("journeyDistanceHud").textContent="SCALE · "+s.distance;
     $("journeyBack").disabled=journeyStage===0;
-    $("journeyNext").textContent=journeyStage===journeyStages.length-1?"Begin Drop Through Saturn":journeyStage===0?"Begin Liftoff":"Next Stage";
+    $("journeyNext").textContent=journeyStage===journeyStages.length-1?"Begin Drop Through Saturn":journeyStage===0?"Begin Liftoff":"Next Mission Phase";
     renderJourneyProgress();drawJourney()
   }
   function drawJourney(){
-    var f=fitCanvas(journeyCanvas),ctx=f.ctx,w=f.w,h=f.h;ctx.clearRect(0,0,w,h);ctx.fillStyle="#02060b";ctx.fillRect(0,0,w,h);stars(ctx,w,h,90,73);
-    var y=h*.55,positions=[.09,.18,.28,.39,.50,.62,.75,.86,.94];
-    ctx.strokeStyle="rgba(242,199,110,.28)";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(w*.07,y);ctx.bezierCurveTo(w*.35,h*.24,w*.68,h*.78,w*.95,y);ctx.stroke();
-    positions.forEach(function(p,i){var active=i<=journeyStage;ctx.fillStyle=active?"#f2c76e":"#40505d";ctx.beginPath();ctx.arc(w*p,y+(i%2?18:-18),i===journeyStage?9:5,0,Math.PI*2);ctx.fill()});
-    var earthX=w*.09,earthY=y-18,eg=ctx.createRadialGradient(earthX-8,earthY-8,2,earthX,earthY,25);eg.addColorStop(0,"#d8f3ff");eg.addColorStop(.4,"#3b9ddd");eg.addColorStop(1,"#123a69");ctx.fillStyle=eg;ctx.beginPath();ctx.arc(earthX,earthY,24,0,Math.PI*2);ctx.fill();
-    var sx=w*.92,sy=y-18,R=Math.min(w,h)*(.07+journeyStage*.008);var sg=ctx.createRadialGradient(sx-R*.3,sy-R*.3,3,sx,sy,R);sg.addColorStop(0,"#ffe7a9");sg.addColorStop(.65,"#c7a263");sg.addColorStop(1,"#5b4126");ctx.fillStyle=sg;ctx.beginPath();ctx.arc(sx,sy,R,0,Math.PI*2);ctx.fill();ctx.strokeStyle="#dfc995";ctx.lineWidth=Math.max(3,R*.16);ctx.beginPath();ctx.ellipse(sx,sy,R*2.1,R*.48,-.12,0,Math.PI*2);ctx.stroke();
-    var p=positions[journeyStage],shipX=w*p,shipY=y+(journeyStage%2?18:-18);ctx.save();ctx.translate(shipX,shipY-24);ctx.rotate(-.25);ctx.fillStyle="#f3f6f8";ctx.beginPath();ctx.moveTo(12,0);ctx.lineTo(-9,-5);ctx.lineTo(-5,0);ctx.lineTo(-9,5);ctx.closePath();ctx.fill();ctx.fillStyle="#f2c76e";ctx.beginPath();ctx.moveTo(-8,-3);ctx.lineTo(-20,0);ctx.lineTo(-8,3);ctx.fill();ctx.restore();
-    ctx.fillStyle="#c9d9e5";ctx.font="900 12px system-ui";ctx.fillText("EARTH",18,26);ctx.textAlign="right";ctx.fillText("SATURN",w-18,26);ctx.textAlign="left"
+    var f=fitCanvas(journeyCanvas),ctx=f.ctx,w=f.w,h=f.h;ctx.clearRect(0,0,w,h);
+    var darkness=Math.min(.78,journeyStage*.075),sky=ctx.createLinearGradient(0,0,w,h);sky.addColorStop(0,"rgb("+(7-Math.min(5,journeyStage))+",12,20)");sky.addColorStop(1,"#010307");ctx.fillStyle=sky;ctx.fillRect(0,0,w,h);stars(ctx,w,h,70+journeyStage*9,73);
+    var cx=w*.46,cy=h*.54,base=Math.min(w,h)*.085;
+    var orbitAU=[1,1.35,1.8,2.6,3.7,5.1,6.8,8.2,9.5];
+    ctx.save();ctx.translate(cx,cy);ctx.scale(1,.43);
+    for(var o=0;o<orbitAU.length;o++){var rr=base*(.6+o*.55);ctx.strokeStyle=o===8?"rgba(242,199,110,.28)":"rgba(120,150,175,.11)";ctx.lineWidth=o===8?2:1;ctx.beginPath();ctx.arc(0,0,rr,0,Math.PI*2);ctx.stroke()}
+    ctx.restore();
+    var sunR=Math.max(7,16-journeyStage*.8),sunG=ctx.createRadialGradient(cx,cy,1,cx,cy,sunR*2.4);sunG.addColorStop(0,"rgba(255,250,210,1)");sunG.addColorStop(.3,"rgba(255,208,83,.95)");sunG.addColorStop(1,"rgba(255,190,50,0)");ctx.fillStyle=sunG;ctx.beginPath();ctx.arc(cx,cy,sunR*2.4,0,Math.PI*2);ctx.fill();
+    var earthA=3.8,earthR=base*.6,ex=cx+Math.cos(earthA)*earthR,ey=cy+Math.sin(earthA)*earthR*.43;
+    if(journeyStage<5){var er=Math.max(2,12-journeyStage*2);var eg=ctx.createRadialGradient(ex-er*.3,ey-er*.3,1,ex,ey,er);eg.addColorStop(0,"#e5fbff");eg.addColorStop(.45,"#3ba5e8");eg.addColorStop(1,"#123b70");ctx.fillStyle=eg;ctx.beginPath();ctx.arc(ex,ey,er,0,Math.PI*2);ctx.fill();ctx.fillStyle="#9fdcff";ctx.font="900 10px system-ui";ctx.fillText("EARTH",ex+10,ey-9)}
+    var satA=.22,satOrbit=base*(.6+8*.55),sx=cx+Math.cos(satA)*satOrbit,sy=cy+Math.sin(satA)*satOrbit*.43;
+    var sr=journeyStage<6?Math.max(2,3+journeyStage*.3):7+(journeyStage-6)*15;if(journeyStage===8)sr=Math.min(48,Math.min(w,h)*.12);
+    var sg=ctx.createRadialGradient(sx-sr*.3,sy-sr*.3,1,sx,sy,sr);sg.addColorStop(0,"#ffe8a8");sg.addColorStop(.65,"#c9a263");sg.addColorStop(1,"#61462b");ctx.fillStyle=sg;ctx.beginPath();ctx.arc(sx,sy,sr,0,Math.PI*2);ctx.fill();
+    if(journeyStage>=6){ctx.strokeStyle="#e7d39a";ctx.lineWidth=Math.max(2,sr*.13);ctx.beginPath();ctx.ellipse(sx,sy,sr*2.1,sr*.46,-.12,0,Math.PI*2);ctx.stroke()}
+    ctx.fillStyle="#f0d092";ctx.font="900 10px system-ui";ctx.fillText("SATURN",sx+sr+8,sy-sr-4);
+    var t=journeyStage/8,ang=3.8+(satA-3.8)*t,rr=earthR+(satOrbit-earthR)*(.08+.92*t),shipX=cx+Math.cos(ang)*rr,shipY=cy+Math.sin(ang)*rr*.43;
+    ctx.save();ctx.translate(cx,cy);ctx.scale(1,.43);ctx.strokeStyle="rgba(242,199,110,.58)";ctx.lineWidth=2;ctx.beginPath();for(var k=0;k<=80;k++){var u=k/80,a=3.8+(satA-3.8)*u,r=earthR+(satOrbit-earthR)*(.08+.92*u),x=Math.cos(a)*r,y=Math.sin(a)*r;if(k===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.stroke();ctx.restore();
+    ctx.save();ctx.translate(shipX,shipY);ctx.rotate(ang+.5);ctx.fillStyle="#f5f7f8";ctx.beginPath();ctx.moveTo(11,0);ctx.lineTo(-8,-5);ctx.lineTo(-4,0);ctx.lineTo(-8,5);ctx.closePath();ctx.fill();ctx.fillStyle="#f2c76e";ctx.beginPath();ctx.moveTo(-7,-3);ctx.lineTo(-16,0);ctx.lineTo(-7,3);ctx.fill();ctx.restore();
+    ctx.fillStyle="#c9d9e5";ctx.font="900 11px system-ui";ctx.fillText(journeyStages[journeyStage].au,16,26)
   }
 
   var dropCanvas=$("dropCanvas"),dropDepth=0,dropClock=0,dropTimer=null;
