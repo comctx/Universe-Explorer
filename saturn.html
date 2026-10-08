@@ -189,6 +189,30 @@ h3{margin:0 0 7px}
 #planeCanvas{position:absolute;inset:0;width:100%;height:100%}
 .plane-controls{padding:14px;border:1px solid #33495c;border-radius:16px;background:#07131f}
 .plane-controls input{width:100%}
+
+/* Mission to Saturn */
+.journey-layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:14px}
+.journey-stage{position:relative;min-height:430px;overflow:hidden;border:1px solid #33495c;border-radius:16px;background:#02060b}
+#journeyCanvas{position:absolute;inset:0;width:100%;height:100%}
+.journey-card{padding:16px;border:1px solid #33495c;border-radius:16px;background:#07131f}
+.journey-kicker{color:var(--gold);font-size:11px;font-weight:950;letter-spacing:.12em;text-transform:uppercase}
+.journey-card h3{margin:7px 0 9px;color:#f0d092;font-size:28px}
+.journey-card p{color:#c5d6e2;line-height:1.6}
+.journey-facts{display:grid;gap:7px;margin:12px 0}
+.journey-fact{padding:9px 10px;border:1px solid #32495d;border-radius:10px;background:#091a29;color:#dbe8f1;font-size:13px}
+.journey-progress{display:grid;grid-template-columns:repeat(9,1fr);gap:5px;margin:14px 0}
+.journey-progress button{min-height:36px;padding:5px 3px;border:1px solid #3c5367;border-radius:8px;background:#0b1b29;color:#a9bdcd;font-size:10px;font-weight:900}
+.journey-progress button.active{background:var(--gold);border-color:#d7a947;color:#251807}
+.journey-controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.drop-layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(300px,.8fr);gap:14px}
+.drop-stage{position:relative;min-height:430px;overflow:hidden;border:1px solid #33495c;border-radius:16px;background:#02060b}
+#dropCanvas{position:absolute;inset:0;width:100%;height:100%}
+.drop-card{padding:16px;border:1px solid #33495c;border-radius:16px;background:#07131f}
+.drop-card input[type=range]{width:100%;margin:14px 0}
+.drop-depth{display:flex;justify-content:space-between;gap:10px;color:#b9cbd8;font-size:12px}
+.drop-readout{margin-top:12px;padding:13px;border-left:5px solid var(--gold);border-radius:10px;background:#091723;color:#d6e5ee;line-height:1.55}
+@media(max-width:980px){.journey-layout,.drop-layout{grid-template-columns:1fr}}
+@media(max-width:720px){.journey-progress{grid-template-columns:repeat(3,1fr)}.journey-stage,.drop-stage{min-height:360px}}
 .destination-overlay{
   position:fixed;inset:0;z-index:200;display:none;place-items:center;padding:18px;background:rgba(0,0,0,.82);backdrop-filter:blur(8px)
 }
@@ -427,6 +451,58 @@ footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
           <p class="small" id="visitText">Leave Saturn orbit, descend through Titan's orange haze, and approach a methane-rich landscape.</p>
           <button class="primary" id="visitMoon" type="button">Begin Titan Approach</button>
         </div>
+      </aside>
+    </div>
+  </section>
+
+
+  <section class="panel" id="missionToSaturn">
+    <div class="section-head">
+      <div>
+        <h2>Mission to Saturn</h2>
+        <p class="lead">Launch from Earth and travel outward through the Solar System to Saturn. The route is simplified for learning and does not imply flybys of every inner planet.</p>
+      </div>
+      <button class="primary" id="launchSaturnMission" type="button">Launch Mission</button>
+    </div>
+    <div class="journey-layout">
+      <div class="journey-stage"><canvas id="journeyCanvas"></canvas></div>
+      <aside class="journey-card">
+        <div class="journey-kicker" id="journeyKicker">T-10 SECONDS · EARTH</div>
+        <h3 id="journeyTitle">Ready for Liftoff</h3>
+        <p id="journeyText">Engines are ready. Your destination is Saturn, roughly 1.2 billion km from Earth at closest approach. Real missions follow curved interplanetary trajectories and may use gravity assists.</p>
+        <div class="journey-facts" id="journeyFacts">
+          <div class="journey-fact">Destination: Saturn</div>
+          <div class="journey-fact">Mission profile: simplified educational journey</div>
+        </div>
+        <div class="journey-progress" id="journeyProgress" aria-label="Mission stages"></div>
+        <div class="journey-controls">
+          <button class="secondary" id="journeyBack" type="button">Previous</button>
+          <button class="primary" id="journeyNext" type="button">Begin Liftoff</button>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="panel" id="dropThroughSaturn">
+    <div class="section-head">
+      <div>
+        <h2>Drop Through Saturn</h2>
+        <p class="lead">After reaching Saturn orbit, descend through the cloud tops toward the deep interior. Saturn has no solid surface; every deeper layer becomes more extreme.</p>
+      </div>
+    </div>
+    <div class="drop-layout">
+      <div class="drop-stage"><canvas id="dropCanvas"></canvas></div>
+      <aside class="drop-card">
+        <div class="journey-kicker">DESCENT SIMULATION</div>
+        <h3 id="dropTitle">Upper Cloud Tops</h3>
+        <div class="drop-depth"><span>Cloud tops</span><strong id="dropPercent">0% depth</strong><span>Deep interior</span></div>
+        <input id="dropSlider" type="range" min="0" max="100" value="0" aria-label="Saturn descent depth">
+        <div class="drop-readout" id="dropReadout">Ammonia-rich clouds, powerful winds, and no solid ground. The visible atmosphere is only the beginning.</div>
+        <div class="journey-controls">
+          <button class="primary" id="autoDrop" type="button">Start Descent</button>
+          <button class="secondary" id="resetDrop" type="button">Return to Cloud Tops</button>
+        </div>
+        <p class="small">Layer boundaries are illustrative. Saturn's exact deep structure is still an active area of planetary science.</p>
       </aside>
     </div>
   </section>
@@ -777,6 +853,63 @@ footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
     }
   }
 
+
+  var journeyCanvas=$("journeyCanvas"),journeyStage=0,journeyClock=0,journeyTimer=null;
+  var journeyStages=[
+    {short:"Earth",kicker:"T-10 SECONDS · EARTH",title:"Ready for Liftoff",text:"Engines ignite and Earth begins to fall away. Within minutes the blue atmosphere fades into black space.",facts:["Destination: Saturn","Closest Earth-Saturn separation: about 1.2 billion km"]},
+    {short:"Orbit",kicker:"LEAVING EARTH",title:"Earth Orbit",text:"Cities disappear beneath cloud cover as the spacecraft reaches orbit. Earth becomes a small blue world behind you.",facts:["Earth escape begins","Interplanetary navigation takes over"]},
+    {short:"Moon",kicker:"BEYOND THE MOON",title:"Passing Lunar Distance",text:"A few days into the journey, the spacecraft travels beyond the Moon's orbit. The Moon is now another distant world behind you.",facts:["Moon distance: about 384,400 km","Saturn is vastly farther away"]},
+    {short:"Mars",kicker:"INNER SOLAR SYSTEM",title:"Crossing the Rocky-Planet Region",text:"The spacecraft travels outward across the inner Solar System. This educational route shows the orbital region of Mars without claiming a close Mars flyby.",facts:["Real routes are curved solar orbits","Gravity assists may change the exact path"]},
+    {short:"Belt",kicker:"ASTEROID BELT",title:"Between Mars and Jupiter",text:"The spacecraft crosses the asteroid belt. Despite movie depictions, the objects are generally separated by enormous distances.",facts:["Most of the belt is empty space","Careful navigation keeps the spacecraft safe"]},
+    {short:"Outer",kicker:"OUTER SOLAR SYSTEM",title:"Sunlight Fades",text:"The Sun grows smaller and weaker as the spacecraft travels into the cold outer Solar System. At Saturn's distance, sunlight takes about 80 minutes to arrive.",facts:["Solar intensity is far weaker than at Earth","Saturn orbits about 1.43 billion km from the Sun on average"]},
+    {short:"Sight",kicker:"FIRST SIGHT OF SATURN",title:"The Ringed World Appears",text:"Saturn grows from a star-like point into a tiny disk. Soon the rings become unmistakable and widen across the view.",facts:["Saturn is the sixth planet from the Sun","The main rings span hundreds of thousands of kilometers"]},
+    {short:"Moons",kicker:"RING & MOON APPROACH",title:"Titan and Enceladus",text:"The spacecraft enters Saturn's moon system. Titan's dense atmosphere and Enceladus's water-rich plumes make them two of the most compelling destinations.",facts:["Titan: dense nitrogen-rich atmosphere","Enceladus: global subsurface ocean and icy plumes"]},
+    {short:"Orbit",kicker:"SATURN ORBIT",title:"Arrival at Saturn",text:"Orbital insertion is complete. Golden cloud bands, ring shadows, storms, and the north-polar hexagon fill the view. The next step is a simulated descent into Saturn.",facts:["Saturn has no solid surface","Ready: Drop Through Saturn"]}
+  ];
+  function renderJourneyProgress(){
+    var box=$("journeyProgress");box.innerHTML="";
+    journeyStages.forEach(function(s,i){var b=document.createElement("button");b.type="button";b.textContent=(i+1)+" "+s.short;b.classList.toggle("active",i===journeyStage);b.onclick=function(){setJourneyStage(i)};box.appendChild(b)})
+  }
+  function setJourneyStage(i){
+    journeyStage=Math.max(0,Math.min(journeyStages.length-1,i));var s=journeyStages[journeyStage];
+    $("journeyKicker").textContent=s.kicker;$("journeyTitle").textContent=s.title;$("journeyText").textContent=s.text;
+    $("journeyFacts").innerHTML=s.facts.map(function(x){return '<div class="journey-fact">'+x+'</div>'}).join("");
+    $("journeyBack").disabled=journeyStage===0;
+    $("journeyNext").textContent=journeyStage===journeyStages.length-1?"Begin Drop Through Saturn":journeyStage===0?"Begin Liftoff":"Next Stage";
+    renderJourneyProgress();drawJourney()
+  }
+  function drawJourney(){
+    var f=fitCanvas(journeyCanvas),ctx=f.ctx,w=f.w,h=f.h;ctx.clearRect(0,0,w,h);ctx.fillStyle="#02060b";ctx.fillRect(0,0,w,h);stars(ctx,w,h,90,73);
+    var y=h*.55,positions=[.09,.18,.28,.39,.50,.62,.75,.86,.94];
+    ctx.strokeStyle="rgba(242,199,110,.28)";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(w*.07,y);ctx.bezierCurveTo(w*.35,h*.24,w*.68,h*.78,w*.95,y);ctx.stroke();
+    positions.forEach(function(p,i){var active=i<=journeyStage;ctx.fillStyle=active?"#f2c76e":"#40505d";ctx.beginPath();ctx.arc(w*p,y+(i%2?18:-18),i===journeyStage?9:5,0,Math.PI*2);ctx.fill()});
+    var earthX=w*.09,earthY=y-18,eg=ctx.createRadialGradient(earthX-8,earthY-8,2,earthX,earthY,25);eg.addColorStop(0,"#d8f3ff");eg.addColorStop(.4,"#3b9ddd");eg.addColorStop(1,"#123a69");ctx.fillStyle=eg;ctx.beginPath();ctx.arc(earthX,earthY,24,0,Math.PI*2);ctx.fill();
+    var sx=w*.92,sy=y-18,R=Math.min(w,h)*(.07+journeyStage*.008);var sg=ctx.createRadialGradient(sx-R*.3,sy-R*.3,3,sx,sy,R);sg.addColorStop(0,"#ffe7a9");sg.addColorStop(.65,"#c7a263");sg.addColorStop(1,"#5b4126");ctx.fillStyle=sg;ctx.beginPath();ctx.arc(sx,sy,R,0,Math.PI*2);ctx.fill();ctx.strokeStyle="#dfc995";ctx.lineWidth=Math.max(3,R*.16);ctx.beginPath();ctx.ellipse(sx,sy,R*2.1,R*.48,-.12,0,Math.PI*2);ctx.stroke();
+    var p=positions[journeyStage],shipX=w*p,shipY=y+(journeyStage%2?18:-18);ctx.save();ctx.translate(shipX,shipY-24);ctx.rotate(-.25);ctx.fillStyle="#f3f6f8";ctx.beginPath();ctx.moveTo(12,0);ctx.lineTo(-9,-5);ctx.lineTo(-5,0);ctx.lineTo(-9,5);ctx.closePath();ctx.fill();ctx.fillStyle="#f2c76e";ctx.beginPath();ctx.moveTo(-8,-3);ctx.lineTo(-20,0);ctx.lineTo(-8,3);ctx.fill();ctx.restore();
+    ctx.fillStyle="#c9d9e5";ctx.font="900 12px system-ui";ctx.fillText("EARTH",18,26);ctx.textAlign="right";ctx.fillText("SATURN",w-18,26);ctx.textAlign="left"
+  }
+
+  var dropCanvas=$("dropCanvas"),dropDepth=0,dropClock=0,dropTimer=null;
+  var dropStages=[
+    {max:18,title:"Upper Cloud Tops",text:"Ammonia-rich clouds, powerful winds, and no solid ground. The visible atmosphere is only the beginning.",color:"#d9bd7b"},
+    {max:38,title:"Deep Atmosphere",text:"Pressure rises rapidly. Clouds and gases become denser while sunlight fades away.",color:"#b48352"},
+    {max:58,title:"Water-Cloud & Storm Region",text:"Models place deeper water-rich cloud layers and intense convection below the visible atmosphere. Lightning and storms may occur here.",color:"#79543f"},
+    {max:76,title:"Molecular Hydrogen",text:"Hydrogen dominates. With increasing depth, temperature and pressure become enormous and the gas behaves more like a dense fluid.",color:"#5c5260"},
+    {max:91,title:"Metallic Hydrogen",text:"At immense pressure, hydrogen enters a metallic state that conducts electricity and helps generate Saturn's magnetic field.",color:"#34475c"},
+    {max:101,title:"Dense Central Region",text:"Near Saturn's center is a dense region enriched in heavier elements, rock, and ice. Modern models suggest the core may be diffuse rather than sharply bounded.",color:"#7a6048"}
+  ];
+  function currentDropStage(){for(var i=0;i<dropStages.length;i++)if(dropDepth<dropStages[i].max)return dropStages[i];return dropStages[dropStages.length-1]}
+  function updateDrop(){
+    var s=currentDropStage();$("dropTitle").textContent=s.title;$("dropReadout").textContent=s.text;$("dropPercent").textContent=Math.round(dropDepth)+"% depth";$("dropSlider").value=dropDepth;drawDrop()
+  }
+  function drawDrop(){
+    var f=fitCanvas(dropCanvas),ctx=f.ctx,w=f.w,h=f.h;ctx.clearRect(0,0,w,h);var s=currentDropStage();
+    var g=ctx.createLinearGradient(0,0,0,h);g.addColorStop(0,s.color);g.addColorStop(1,"#05070a");ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+    for(var i=0;i<45;i++){var x=(i*83+dropClock*13)%w,y=(i*47+dropDepth*6)%h,r=1+(i%4);ctx.fillStyle="rgba(255,245,220,"+(0.05+(i%5)*.025)+")";ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()}
+    var cx=w*.5,cy=h*.50;ctx.strokeStyle="rgba(255,255,255,.15)";for(var q=0;q<5;q++){ctx.beginPath();ctx.arc(cx,cy,40+q*45,0,Math.PI*2);ctx.stroke()}
+    ctx.fillStyle="#f3f6f8";ctx.save();ctx.translate(cx,cy);ctx.rotate(Math.PI/2);ctx.beginPath();ctx.moveTo(16,0);ctx.lineTo(-10,-7);ctx.lineTo(-5,0);ctx.lineTo(-10,7);ctx.closePath();ctx.fill();ctx.restore();
+    ctx.fillStyle="#fff";ctx.font="900 14px system-ui";ctx.fillText(s.title,18,28);ctx.fillStyle="#c9d9e5";ctx.font="12px system-ui";ctx.fillText("Illustrative depth: "+Math.round(dropDepth)+"%",18,48)
+  }
   var destinationCanvas=$("destinationCanvas"),destinationMode="Titan",destinationClock=0;
   function drawDestination(){
     if(!$("destinationOverlay").classList.contains("open"))return;
@@ -802,6 +935,13 @@ footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
   $("orbitBtnTop").onclick=function(){location.href="solar-system-orbits.html?planet=Saturn"};
   $("orbitBtnBottom").onclick=function(){location.href="solar-system-orbits.html?planet=Saturn"};
   $("topBtn").onclick=function(){window.scrollTo({top:0,behavior:"smooth"})};
+
+  $("launchSaturnMission").onclick=function(){setJourneyStage(0);scrollToId("missionToSaturn");if(journeyTimer)clearInterval(journeyTimer);journeyTimer=setInterval(function(){if(journeyStage>=journeyStages.length-1){clearInterval(journeyTimer);journeyTimer=null;return}setJourneyStage(journeyStage+1)},2200)};
+  $("journeyBack").onclick=function(){if(journeyTimer){clearInterval(journeyTimer);journeyTimer=null}setJourneyStage(journeyStage-1)};
+  $("journeyNext").onclick=function(){if(journeyTimer){clearInterval(journeyTimer);journeyTimer=null}if(journeyStage>=journeyStages.length-1){scrollToId("dropThroughSaturn")}else setJourneyStage(journeyStage+1)};
+  $("dropSlider").oninput=function(){dropDepth=Number(this.value);updateDrop()};
+  $("autoDrop").onclick=function(){var b=this;if(dropTimer){clearInterval(dropTimer);dropTimer=null;b.textContent="Start Descent";return}if(dropDepth>=100)dropDepth=0;b.textContent="Pause Descent";dropTimer=setInterval(function(){dropDepth=Math.min(100,dropDepth+1);updateDrop();if(dropDepth>=100){clearInterval(dropTimer);dropTimer=null;b.textContent="Start Descent"}},90)};
+  $("resetDrop").onclick=function(){if(dropTimer){clearInterval(dropTimer);dropTimer=null}$("autoDrop").textContent="Start Descent";dropDepth=0;updateDrop()};
   $("ringShortcut").onclick=function(){scrollToId("rings")};
   $("moonShortcut").onclick=function(){scrollToId("moons")};
   $("hiddenGemsTop").onclick=function(){scrollToId("hiddenGems")};
@@ -824,7 +964,8 @@ footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
   function setLevel(level){document.querySelectorAll("[data-level]").forEach(function(b){b.classList.toggle("active",b.dataset.level===level)});$("levelExplanation").textContent=levels[level]}
   document.querySelectorAll("[data-level]").forEach(function(b){b.onclick=function(){setLevel(b.dataset.level)}});setLevel("beginner");
 
-  renderMoonButtons();updateMoonDetail();
+  renderJourneyProgress();setJourneyStage(0);updateDrop();
+    renderMoonButtons();updateMoonDetail();
   $("visitMoon").onclick=function(){var m=moons[moonIndex];destinationMode=m.name;$("destinationTitle").textContent=m.name+" Approach";$("destinationDescription").textContent=m.visit;$("destinationOverlay").classList.add("open")};
   $("closeDestination").onclick=function(){$("destinationOverlay").classList.remove("open")};
   $("destinationOverlay").onclick=function(e){if(e.target===$("destinationOverlay"))$("destinationOverlay").classList.remove("open")};
@@ -904,12 +1045,12 @@ footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
 
   var last=0;
   function loop(t){
-    var dt=Math.min(.05,(t-last)/1000||.016);last=t;saturnTime+=dt;moonClock+=dt;missionClock+=dt;vizClock+=dt;destinationClock+=dt;
+    var dt=Math.min(.05,(t-last)/1000||.016);last=t;saturnTime+=dt;moonClock+=dt;missionClock+=dt;vizClock+=dt;destinationClock+=dt;journeyClock+=dt;dropClock+=dt;
     if(planeAnimating){planeAngle-=dt*16;if(planeAngle<-28)planeAngle=28;$("planeAngle").value=planeAngle;$("planeAngleLabel").textContent=Math.abs(planeAngle)<1?"Ring plane · 0°":Math.abs(planeAngle).toFixed(0)+"° "+(planeAngle>0?"above":"below")+" plane"}
-    drawSaturnFrame();drawMoons();drawMission();drawViz();drawPlane();drawDestination();requestAnimationFrame(loop)
+    drawSaturnFrame();drawMoons();drawMission();drawViz();drawPlane();drawDestination();drawJourney();drawDrop();requestAnimationFrame(loop)
   }
   drawRingExplorer();drawPlane();requestAnimationFrame(loop);
-  window.addEventListener("resize",function(){drawRingExplorer();drawPlane();drawViz();drawMission();drawMoons();drawSaturnFrame();drawDestination()})
+  window.addEventListener("resize",function(){drawRingExplorer();drawPlane();drawViz();drawMission();drawMoons();drawSaturnFrame();drawDestination();drawJourney();drawDrop()})
 })();
 </script>
 </body>
