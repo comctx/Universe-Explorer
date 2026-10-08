@@ -54,6 +54,8 @@ h1 span{display:block;margin-top:10px;color:#dfc58e;font-size:.43em;line-height:
   box-shadow:0 28px 60px rgba(0,0,0,.34)
 }
 #saturnCanvas{position:absolute;inset:0;width:100%;height:100%}
+.saturn-hero-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:3;background:#01050a}
+#saturnStage .stage-hud,#saturnStage .hotspot-layer,#saturnStage .stage-control{display:none}
 .stage-hud{
   position:absolute;left:12px;right:12px;top:12px;display:flex;
   justify-content:space-between;gap:8px;pointer-events:none
@@ -244,6 +246,7 @@ footer{padding:28px 16px 42px;text-align:center;color:#8298aa;font-size:12px}
 
   <div class="stage" id="saturnStage" aria-label="Animated Saturn with rings">
     <canvas id="saturnCanvas"></canvas>
+    <img class="saturn-hero-photo" src="images/saturn/saturn-hero-realistic.svg?v=20261007-6" alt="Realistic Saturn with rings, north-pole hexagon, Titan and Enceladus">
     <div class="stage-hud">
       <div class="hud-chip" id="viewModeChip">LIVE SATURN VIEW</div>
       <div class="hud-chip" id="rotationChip">ROTATING CLOUDS</div>
